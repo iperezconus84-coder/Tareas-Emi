@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda de Emilia 🐾</title>
+    <title>Agenda de Emilia - Pilar de la Niebla 🌫️</title>
     <!-- Manifest PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#f43f5e">
+    <meta name="theme-color" content="#0d9488">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,15 +15,18 @@
             theme: {
                 extend: {
                     colors: {
-                        kitty: {
-                            50: '#fff5f7',
-                            100: '#ffe4e6',
-                            200: '#fecdd3',
-                            300: '#fda4af',
-                            400: '#fb7185',
-                            500: '#f43f5e',
-                            600: '#e11d48',
-                            700: '#be123c',
+                        tokito: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            950: '#042f2e',
                         }
                     }
                 }
@@ -44,38 +47,36 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .cat-ears-card {
+        .tokito-card {
             position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #0d9488 100%);
         }
-        .cat-ears-card::before, .cat-ears-card::after {
-            content: '';
+        .tokito-card::after {
+            content: '🌫️';
             position: absolute;
-            top: -12px;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #f43f5e, #ec4899);
-            border-radius: 6px 14px 0 0;
-            z-index: 0;
+            right: 15px;
+            bottom: -10px;
+            font-size: 8rem;
+            opacity: 0.12;
+            pointer-events: none;
         }
-        .cat-ears-card::before { left: 24px; transform: rotate(-18deg); }
-        .cat-ears-card::after { right: 24px; transform: rotate(18deg); }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100 min-h-screen text-slate-700 pb-12">
+<body class="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 min-h-screen text-slate-100 pb-12">
 
     <!-- HEADER / SELECTOR DE ROL -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-pink-200">
+    <header class="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-teal-800/50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-r from-pink-400 to-rose-500 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
-                    <i class="fa-solid fa-cat text-2xl"></i>
+                <div class="bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 p-2.5 rounded-2xl shadow-md font-extrabold flex items-center justify-center">
+                    <i class="fa-solid fa-cloud text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xl text-slate-800 leading-tight flex items-center gap-1.5">
-                        Agenda de Emilia <span class="text-rose-500 text-lg">🐾</span>
+                    <h1 class="font-bold text-xl text-teal-200 leading-tight flex items-center gap-1.5">
+                        Emilia Tokito <span class="text-teal-400 text-sm font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
                     </h1>
-                    <p class="text-xs text-slate-500" id="presence-subtitle">
-                        <span id="status-dot" class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
+                    <p class="text-xs text-slate-400" id="presence-subtitle">
+                        <span id="status-dot" class="inline-block w-2 h-2 rounded-full bg-teal-400 animate-pulse mr-1"></span>
                         <span id="status-text">Cargando datos...</span>
                     </p>
                 </div>
@@ -83,19 +84,19 @@
 
             <!-- Botón de Instalación y Selector de Roles -->
             <div class="flex items-center gap-2">
-                <button id="btn-install-app" onclick="installPWA()" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 animate-bounce">
+                <button id="btn-install-app" onclick="installPWA()" class="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-slate-950 text-xs font-extrabold px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 animate-bounce">
                     <i class="fa-solid fa-mobile-screen-button text-sm"></i>
                     <span>Instalar app</span>
                 </button>
 
-                <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
-                    <button onclick="requestRoleSwitch('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                        <i class="fa-solid fa-cat mr-1 text-rose-500"></i> Emilia
+                <div class="flex items-center bg-slate-800/90 p-1 rounded-2xl border border-teal-800/60 text-sm font-semibold">
+                    <button onclick="requestRoleSwitch('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
+                        <i class="fa-solid fa-fan mr-1 text-teal-400"></i> Emilia
                     </button>
-                    <button onclick="requestRoleSwitch('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                    <button onclick="requestRoleSwitch('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
                         <i class="fa-solid fa-lock mr-1 text-xs"></i> Papá
                     </button>
-                    <button onclick="requestRoleSwitch('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                    <button onclick="requestRoleSwitch('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
                         <i class="fa-solid fa-lock mr-1 text-xs"></i> Mamá
                     </button>
                 </div>
@@ -104,23 +105,23 @@
     </header>
 
     <!-- MODAL DE PIN DE SEGURIDAD -->
-    <div id="pin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-xs w-full p-6 space-y-4 text-center shadow-2xl border border-pink-100 relative">
-            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+    <div id="pin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 rounded-3xl max-w-xs w-full p-6 space-y-4 text-center shadow-2xl border border-teal-700/50 relative text-slate-100">
+            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 p-1">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-            <div class="w-14 h-14 bg-slate-800 text-amber-400 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
-                <i class="fa-solid fa-user-lock"></i>
+            <div class="w-14 h-14 bg-teal-950 text-teal-400 border border-teal-700 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                <i class="fa-solid fa-user-shield"></i>
             </div>
             <div>
-                <h3 class="font-bold text-lg text-slate-800">Acceso de Padres 🔒</h3>
-                <p class="text-xs text-slate-500 mt-1">Ingresa el PIN de 4 dígitos (Inicial: 1234).</p>
+                <h3 class="font-bold text-lg text-teal-200">Acceso de Padres ⚔️</h3>
+                <p class="text-xs text-slate-400 mt-1">Ingresa el PIN de 4 dígitos (Inicial: 1234).</p>
             </div>
             
             <div class="space-y-3">
-                <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest border-2 border-slate-200 focus:border-rose-500 rounded-2xl py-2 focus:outline-none bg-slate-50" onkeypress="if(event.key==='Enter') verifyPin()">
-                <p id="pin-error" class="text-xs text-rose-500 font-bold hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> PIN incorrecto</p>
-                <button onclick="verifyPin()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
+                <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest border-2 border-teal-800 focus:border-teal-400 rounded-2xl py-2 focus:outline-none bg-slate-950 text-teal-300" onkeypress="if(event.key==='Enter') verifyPin()">
+                <p id="pin-error" class="text-xs text-rose-400 font-bold hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> PIN incorrecto</p>
+                <button onclick="verifyPin()" class="w-full bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
                     Ingresar
                 </button>
             </div>
@@ -128,32 +129,32 @@
     </div>
 
     <!-- MODAL DE INSTRUCCIONES DE INSTALACIÓN -->
-    <div id="install-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 text-center shadow-2xl border border-pink-100 relative">
-            <button onclick="closeInstallModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+    <div id="install-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 rounded-3xl max-w-sm w-full p-6 space-y-4 text-center shadow-2xl border border-teal-700/50 relative text-slate-100">
+            <button onclick="closeInstallModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 p-1">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-            <div class="w-16 h-16 bg-pink-100 text-rose-500 rounded-full flex items-center justify-center mx-auto text-3xl">
-                🐱
+            <div class="w-16 h-16 bg-teal-950 text-teal-400 border border-teal-700 rounded-full flex items-center justify-center mx-auto text-3xl">
+                🌫️
             </div>
-            <h3 class="font-bold text-lg text-slate-800">¡Instala la app en tu celular! 🐾</h3>
+            <h3 class="font-bold text-lg text-teal-200">¡Instala la app en tu celular! 🐾</h3>
             
-            <div class="text-xs text-slate-600 text-left space-y-3 bg-pink-50/60 p-4 rounded-2xl border border-pink-100">
-                <p class="font-semibold text-rose-600">En iPhone (Safari):</p>
+            <div class="text-xs text-slate-300 text-left space-y-3 bg-slate-950/80 p-4 rounded-2xl border border-teal-800/60">
+                <p class="font-semibold text-teal-400">En iPhone (Safari):</p>
                 <ol class="list-decimal list-inside space-y-1">
-                    <li>Toca el botón <b>Compartir</b> <i class="fa-solid fa-arrow-up-from-bracket text-rose-500"></i> abajo.</li>
+                    <li>Toca el botón <b>Compartir</b> <i class="fa-solid fa-arrow-up-from-bracket text-teal-400"></i> abajo.</li>
                     <li>Selecciona <b>Añadir a la pantalla de inicio</b> ➕.</li>
                 </ol>
-                <hr class="border-pink-200">
-                <p class="font-semibold text-rose-600">En Android (Chrome):</p>
+                <hr class="border-teal-900">
+                <p class="font-semibold text-teal-400">En Android (Chrome):</p>
                 <ol class="list-decimal list-inside space-y-1">
-                    <li>Toca los <b>3 puntos</b> <i class="fa-solid fa-ellipsis-vertical text-rose-500"></i> arriba a la derecha.</li>
+                    <li>Toca los <b>3 puntos</b> <i class="fa-solid fa-ellipsis-vertical text-teal-400"></i> arriba a la derecha.</li>
                     <li>Selecciona <b>Añadir a pantalla de inicio</b>.</li>
                 </ol>
             </div>
 
-            <button onclick="closeInstallModal()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
-                ¡Entendido! 🐾
+            <button onclick="closeInstallModal()" class="w-full bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
+                ¡Entendido! 🌫️
             </button>
         </div>
     </div>
@@ -163,49 +164,47 @@
 
         <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
-            <div class="cat-ears-card bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-4 -bottom-6 opacity-15 text-9xl">
-                    <i class="fa-solid fa-cat"></i>
-                </div>
+            <!-- Banner Muichiro Tokito -->
+            <div class="tokito-card rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden">
                 <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider backdrop-blur-md inline-flex items-center gap-1">
-                            ¡Hola, Emilia! 🐱✨
+                        <span class="bg-teal-950/80 text-teal-300 border border-teal-700/60 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider backdrop-blur-md inline-flex items-center gap-1.5">
+                            ¡Hola, Emilia! ⚔️ Pilar de la Niebla
                         </span>
-                        <h2 class="text-2xl md:text-3xl font-bold mt-1.5">Tu Espacio Gatuno</h2>
-                        <p class="text-pink-100 text-sm mt-0.5">Organiza tus tareas del colegio, cumple tus hábitos y suma huellitas 🐾.</p>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-2">Respiración de la Niebla 🌫️</h2>
+                        <p class="text-teal-200 text-sm mt-1">Cumple tus hábitos diarios, organiza tus tareas del colegio y domina tus metas.</p>
                     </div>
-                    <div class="flex items-center gap-3 bg-white/20 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/30 shadow-inner">
-                        <div class="text-3xl animate-bounce">🐾</div>
+                    <div class="flex items-center gap-3 bg-slate-950/60 backdrop-blur-md px-4 py-3 rounded-2xl border border-teal-500/40 shadow-inner">
+                        <div class="text-3xl animate-pulse">⚔️</div>
                         <div>
-                            <div class="text-xs text-pink-100 font-medium">Racha Gatuna</div>
-                            <div class="text-2xl font-extrabold" id="streak-count">5 días</div>
+                            <div class="text-xs text-teal-300 font-medium">Racha de Cazadora</div>
+                            <div class="text-2xl font-extrabold text-teal-100" id="streak-count">5 días</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Navegación de Pestañas -->
-            <div class="flex space-x-2 border-b border-pink-200 pb-2 overflow-x-auto hide-scrollbar">
-                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-rose-500 text-white shadow-md">
-                    <i class="fa-solid fa-paw mr-2"></i> Rutinas y Horarios
+            <div class="flex space-x-2 border-b border-teal-800/60 pb-2 overflow-x-auto hide-scrollbar">
+                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md">
+                    <i class="fa-solid fa-cloud-sun mr-2"></i> Rutinas y Horarios
                 </button>
-                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100">
-                    <i class="fa-solid fa-graduation-cap mr-2 text-purple-500"></i> Mi Agenda Escolar
+                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
+                    <i class="fa-solid fa-scroll mr-2 text-teal-400"></i> Mi Agenda Escolar
                 </button>
-                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100">
-                    <i class="fa-solid fa-comments mr-2 text-pink-500"></i> Muro & Chat
+                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
+                    <i class="fa-solid fa-comments mr-2 text-cyan-400"></i> Muro & Chat
                 </button>
             </div>
 
             <!-- Pestaña 1: Rutinas -->
             <div id="hija-tab-rutinas" class="space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-rose-500"></i> Mis Deberes Diarios
+                    <h3 class="font-bold text-lg text-teal-200 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-teal-400"></i> Mis Deberes Diarios
                     </h3>
-                    <span id="rutinas-progress" class="text-xs font-bold bg-rose-100 text-rose-700 px-3 py-1 rounded-full border border-rose-200">
-                        0/0 completados 🐾
+                    <span id="rutinas-progress" class="text-xs font-bold bg-teal-950 text-teal-300 px-3 py-1 rounded-full border border-teal-700">
+                        0/0 completados 🌫️
                     </span>
                 </div>
                 <div id="rutinas-list-container" class="grid gap-3"></div>
@@ -213,27 +212,26 @@
 
             <!-- Pestaña 2: Agenda Escolar -->
             <div id="hija-tab-agenda" class="space-y-6 hidden">
-                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md space-y-3 relative overflow-hidden">
-                    <div class="absolute right-2 bottom-0 opacity-10 text-8xl pointer-events-none">🐱</div>
-                    <h3 class="font-bold text-base flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square"></i> Anotar una nueva prueba o tarea del colegio 🐾
+                <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-5 rounded-3xl shadow-md border border-teal-700/50 space-y-3 relative overflow-hidden">
+                    <h3 class="font-bold text-base flex items-center gap-2 text-teal-300">
+                        <i class="fa-solid fa-pen-nib"></i> Anotar una nueva prueba o tarea del colegio 📜
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <select id="hija-agenda-type" class="bg-white/10 text-white border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
-                            <option value="evaluacion" class="text-slate-800">Prueba / Evaluación 📝</option>
-                            <option value="tarea" class="text-slate-800">Tarea Escolar 📖</option>
+                        <select id="hija-agenda-type" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
+                            <option value="evaluacion">Prueba / Evaluación 📝</option>
+                            <option value="tarea">Tarea Escolar 📖</option>
                         </select>
-                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-white/10 text-white placeholder-purple-200 border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
-                        <input type="date" id="hija-agenda-date" class="bg-white/10 text-white border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-slate-950 text-teal-100 placeholder-teal-600 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="date" id="hija-agenda-date" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
                     </div>
-                    <button onclick="addAgendaItemHija()" class="w-full bg-amber-300 hover:bg-amber-400 text-slate-900 font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus-circle"></i> Guardar en mi Agenda 🐾
+                    <button onclick="addAgendaItemHija()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold py-2.5 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> Guardar en mi Agenda ⚔️
                     </button>
                 </div>
 
                 <div class="space-y-3">
-                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-purple-500"></i> Mis Pendientes Escolares
+                    <h3 class="font-bold text-lg text-teal-200 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-teal-400"></i> Mis Pendientes Escolares
                     </h3>
                     <div id="agenda-list-container" class="space-y-3"></div>
                 </div>
@@ -242,20 +240,20 @@
             <!-- Pestaña 3: Muro & Chat -->
             <div id="hija-tab-social" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-col h-96">
-                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Muro de Papá y Mamá 🐾
+                    <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 flex flex-col h-96">
+                        <h3 class="font-bold text-teal-200 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Muro de Papá y Mamá 📜
                         </h3>
                         <div id="muro-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                     </div>
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-col h-96">
-                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane text-rose-500"></i> Chat Familiar
+                    <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 flex flex-col h-96">
+                        <h3 class="font-bold text-teal-200 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-teal-400"></i> Chat Familiar
                         </h3>
                         <div id="chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                         <div class="mt-3 flex gap-2">
-                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 border border-pink-200 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-rose-400" onkeypress="if(event.key==='Enter') sendChatMessage()">
-                            <button onclick="sendChatMessage()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-2xl text-sm font-semibold transition-all">
+                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-4 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                            <button onclick="sendChatMessage()" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
@@ -266,55 +264,56 @@
 
         <!-- ================= VISTA PAPÁ / MAMÁ (PANEL ADMIN) ================= -->
         <div id="view-admin" class="space-y-6 hidden">
-            <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-teal-800/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span id="admin-role-badge" class="bg-rose-500 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Panel de Papá / Mamá</span>
-                    <h2 class="text-2xl md:text-3xl font-bold mt-1">Supervisión Gatuna 🐾</h2>
+                    <span id="admin-role-badge" class="bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Panel de Papá / Mamá</span>
+                    <h2 class="text-2xl md:text-3xl font-bold mt-1 text-teal-100">Supervisión Tokito ⚔️</h2>
                     <p class="text-slate-300 text-sm mt-1">Gestiona las rutinas de Emilia, ajusta sus horarios y revisa sus notas.</p>
                 </div>
-                <div class="bg-slate-700/60 border border-slate-600 px-4 py-3 rounded-2xl flex items-center gap-3">
-                    <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
+                <div class="bg-slate-950/80 border border-teal-800 px-4 py-3 rounded-2xl flex items-center gap-3">
+                    <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-teal-400 animate-pulse"></div>
                     <div>
                         <div class="text-xs text-slate-400">Estado de Emilia</div>
-                        <div class="text-sm font-bold text-white" id="admin-status-text">Conectada - Al día</div>
+                        <div class="text-sm font-bold text-teal-200" id="admin-status-text">Conectada - Al día</div>
                     </div>
                 </div>
             </div>
 
             <!-- Configurar PIN y Ajustes -->
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-wrap justify-between items-center gap-4">
+            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 flex flex-wrap justify-between items-center gap-4">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center">
+                    <div class="w-10 h-10 bg-slate-950 border border-teal-800 text-teal-400 rounded-2xl flex items-center justify-center">
                         <i class="fa-solid fa-key"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-800 text-sm">PIN de Seguridad para Padres</h4>
-                        <p class="text-xs text-slate-500">Clave para bloquear el cambio de rol a Papá o Mamá.</p>
+                        <h4 class="font-bold text-teal-200 text-sm">PIN de Seguridad para Padres</h4>
+                        <p class="text-xs text-slate-400">Clave para bloquear el cambio de rol a Papá o Mamá.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <input type="password" id="new-pin-input" maxlength="4" placeholder="1234" class="w-20 text-center font-bold border border-slate-200 rounded-xl px-2 py-1.5 text-sm focus:outline-none focus:border-rose-400">
-                    <button onclick="changeAdminPin()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
+                    <input type="password" id="new-pin-input" maxlength="4" placeholder="1234" class="w-20 text-center font-bold bg-slate-950 text-teal-300 border border-teal-800 rounded-xl px-2 py-1.5 text-sm focus:outline-none focus:border-teal-400">
+                    <button onclick="changeAdminPin()" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
                         Guardar PIN
                     </button>
-                    <button onclick="resetDataToDefault()" title="Restablecer datos por defecto" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ml-2">
+                    <button onclick="resetDataToDefault()" title="Restablecer datos por defecto" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ml-2">
                         <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
                     </button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-clock text-rose-500"></i> Agregar Rutina con Horario
+                <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
+                    <h3 class="font-bold text-teal-200 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-teal-400"></i> Agregar Rutina con Horario
                     </h3>
                     <div class="space-y-2">
-                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full border border-slate-200 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-rose-400">
+                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
                         <div class="flex gap-2">
-                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
-                            <select id="new-rutina-icon" class="w-1/2 border border-slate-200 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-rose-400">
-                                <option value="fa-cat">🐱 Gatito</option>
-                                <option value="fa-paw">🐾 Huellita</option>
+                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                            <select id="new-rutina-icon" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-teal-400">
+                                <option value="fa-cloud">🌫️ Niebla Tokito</option>
+                                <option value="fa-shield-halved">⚔️ Espada Katana</option>
+                                <option value="fa-fan">🌀 Respiración</option>
                                 <option value="fa-tv">📺 Serie</option>
                                 <option value="fa-shirt">👕 Ropa</option>
                                 <option value="fa-bed">🛏️ Cama</option>
@@ -328,41 +327,41 @@
                                 <option value="fa-moon">🌙 Dormir</option>
                             </select>
                         </div>
-                        <button onclick="addRutina()" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-2xl text-sm font-bold transition-all">
+                        <button onclick="addRutina()" class="w-full bg-teal-500 hover:bg-teal-600 text-slate-950 py-2 rounded-2xl text-sm font-bold transition-all">
                             <i class="fa-solid fa-plus mr-1"></i> Agregar a Rutinas
                         </button>
                     </div>
-                    <div class="border-t border-pink-100 pt-3">
+                    <div class="border-t border-teal-900 pt-3">
                         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Editar Horarios</h4>
                         <div id="admin-rutinas-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
 
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
+                    <h3 class="font-bold text-teal-200 flex items-center gap-2">
                         <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
                     </h3>
                     <div class="space-y-2">
-                        <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="3" class="w-full border border-slate-200 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
-                        <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-2 rounded-2xl text-sm transition-all">
-                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 🐾
+                        <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="3" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                        <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">
+                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 🌫️
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 space-y-4">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-purple-500"></i> Agenda Escolar Registrada por Emilia
+            <div class="bg-slate-900 p-6 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
+                <h3 class="font-bold text-teal-200 flex items-center gap-2">
+                    <i class="fa-solid fa-scroll text-teal-400"></i> Agenda Escolar Registrada por Emilia
                 </h3>
-                <p class="text-xs text-slate-500">A continuación se muestran las pruebas, trabajos y notas ingresadas por Emilia.</p>
+                <p class="text-xs text-slate-400">A continuación se muestran las pruebas, trabajos y notas ingresadas por Emilia.</p>
                 <div id="admin-agenda-list" class="space-y-3"></div>
             </div>
         </div>
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT CORREGIDA Y LIMPIA -->
+    <!-- LÓGICA JAVASCRIPT ROBUSTA -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -378,19 +377,17 @@
             { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
-        const defaultAgenda = [
-            { id: 1, type: 'evaluacion', title: 'Prueba de Matemáticas (Fracciones)', date: '2026-10-20', completed: true, nota: '6.8' },
-            { id: 2, type: 'tarea', title: 'Maqueta de Ciencias Naturales', date: '2026-10-25', completed: false, nota: '' }
-        ];
+        // Agenda completamente vacía por defecto
+        const defaultAgenda = [];
 
         const defaultMuro = [
-            { id: 1, author: 'Papá', text: '¡Mucho éxito en tu semana Emilia! Recuerda descansar entre tareas. 🐾', date: '12 Oct' },
-            { id: 2, author: 'Mamá', text: '¡Te dejamos tus galletitas favoritas para el estudio! 🐱', date: '13 Oct' }
+            { id: 1, author: 'Papá', text: '¡Mucho éxito en tu semana Emilia! Recuerda descansar entre tareas. 🌫️', date: '12 Oct' },
+            { id: 2, author: 'Mamá', text: '¡Concentración de Pilar para tus estudios! ⚔️', date: '13 Oct' }
         ];
 
         const defaultChat = [
             { id: 1, sender: 'Papá', text: '¿Cómo te fue hoy en el colegio, Emilia?', time: '14:00' },
-            { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🐾.', time: '14:05' }
+            { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🌫️.', time: '14:05' }
         ];
 
         function sanitizeData(raw) {
@@ -398,7 +395,7 @@
             return {
                 adminPin: raw.adminPin || '1234',
                 rutinas: Array.isArray(raw.rutinas) && raw.rutinas.length > 0 ? raw.rutinas : defaultRutinas,
-                agenda: Array.isArray(raw.agenda) ? raw.agenda : defaultAgenda,
+                agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
                 muro: Array.isArray(raw.muro) ? raw.muro : defaultMuro,
                 chat: Array.isArray(raw.chat) ? raw.chat : defaultChat,
                 streak: typeof raw.streak === 'number' ? raw.streak : 5
@@ -454,7 +451,7 @@
         function updateStatus(online, message) {
             const dot = document.getElementById('status-dot');
             const txt = document.getElementById('status-text');
-            if (dot) dot.className = online ? "inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1" : "inline-block w-2 h-2 rounded-full bg-amber-400 mr-1";
+            if (dot) dot.className = online ? "inline-block w-2 h-2 rounded-full bg-teal-400 animate-pulse mr-1" : "inline-block w-2 h-2 rounded-full bg-amber-400 mr-1";
             if (txt) txt.innerText = message;
         }
 
@@ -473,7 +470,7 @@
         }
 
         function resetDataToDefault() {
-            if (confirm("¿Quieres restablecer las rutinas y la agenda al estado inicial?")) {
+            if (confirm("¿Quieres limpiar la agenda y dejar las rutinas al estado inicial?")) {
                 appData = sanitizeData({});
                 saveData();
                 render();
@@ -561,12 +558,12 @@
             document.getElementById('hija-tab-agenda').classList.add('hidden');
             document.getElementById('hija-tab-social').classList.add('hidden');
 
-            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
-            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
-            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
+            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
+            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
+            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
 
             document.getElementById(`hija-tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-rose-500 text-white shadow-md";
+            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md";
         }
 
         function addAgendaItemHija() {
@@ -636,7 +633,7 @@
         function addRutina() {
             const title = document.getElementById('new-rutina-title').value.trim();
             const time = document.getElementById('new-rutina-time').value || '12:00';
-            const icon = document.getElementById('new-rutina-icon').value || 'fa-paw';
+            const icon = document.getElementById('new-rutina-icon').value || 'fa-cloud';
             if (!title) return;
 
             appData.rutinas.push({
@@ -708,9 +705,9 @@
         function render() {
             const role = currentRole;
 
-            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-rose-500 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-500 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
 
             const viewHija = document.getElementById('view-hija');
             const viewAdmin = document.getElementById('view-admin');
@@ -738,20 +735,20 @@
                 const isProgress = rutina.status === 'progress';
 
                 const div = document.createElement('div');
-                div.className = 'flex items-center justify-between p-4 rounded-3xl border transition-all ' + (rutina.completed ? 'bg-emerald-50/70 border-emerald-200 opacity-80' : (isProgress ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/40 shadow-md' : 'bg-white border-pink-100 shadow-sm'));
+                div.className = 'flex items-center justify-between p-4 rounded-3xl border transition-all ' + (rutina.completed ? 'bg-emerald-950/40 border-emerald-700/60 opacity-80' : (isProgress ? 'bg-teal-950/90 border-teal-400 ring-2 ring-teal-400/40 shadow-lg' : 'bg-slate-900/90 border-teal-800/40 shadow-sm'));
                 
-                let timeBadge = '<span class="bg-pink-50 text-rose-600 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-pink-100"><i class="fa-regular fa-clock mr-1"></i>' + (rutina.time || '12:00') + '</span>';
-                let progressBadge = isProgress ? '<span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">🐾 En progreso</span>' : '';
+                let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + (rutina.time || '12:00') + '</span>';
+                let progressBadge = isProgress ? '<span class="text-[11px] font-bold text-teal-950 bg-teal-300 px-2 py-0.5 rounded-full">🌫️ En progreso</span>' : '';
                 let checkIcon = rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : '';
-                let titleClass = rutina.completed ? 'line-through text-slate-400' : '';
-                let iconClass = rutina.completed ? 'bg-emerald-500 text-white' : (isProgress ? 'bg-amber-500 text-white animate-pulse' : 'bg-rose-100 text-rose-600');
-                let btnBoltClass = isProgress ? 'bg-amber-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
-                let btnCheckClass = rutina.completed ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'border-slate-300 hover:border-rose-400 bg-white';
+                let titleClass = rutina.completed ? 'line-through text-slate-500' : 'text-slate-100';
+                let iconClass = rutina.completed ? 'bg-emerald-500 text-slate-950' : (isProgress ? 'bg-teal-400 text-slate-950 animate-pulse' : 'bg-teal-950 text-teal-300 border border-teal-700/60');
+                let btnBoltClass = isProgress ? 'bg-teal-400 text-slate-950 shadow-md font-bold' : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
+                let btnCheckClass = rutina.completed ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md' : 'border-slate-600 hover:border-teal-400 bg-slate-950';
 
                 div.innerHTML = '<div class="flex items-center space-x-3">' +
                     '<div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ' + iconClass + '"><i class="fa-solid ' + rutina.icon + '"></i></div>' +
                     '<div><div class="flex items-center gap-2">' + timeBadge + progressBadge + '</div>' +
-                    '<h4 class="font-semibold text-slate-800 text-sm md:text-base mt-1 ' + titleClass + '">' + rutina.title + '</h4></div></div>' +
+                    '<h4 class="font-semibold text-sm md:text-base mt-1 ' + titleClass + '">' + rutina.title + '</h4></div></div>' +
                     '<div class="flex items-center gap-2">' +
                     '<button onclick="setRutinaProgress(' + rutina.id + ')" title="Marcar como en progreso" class="p-2.5 rounded-2xl text-xs font-semibold transition-all ' + btnBoltClass + '"><i class="fa-solid fa-bolt"></i></button>' +
                     '<button onclick="toggleRutinaCheck(' + rutina.id + ')" class="w-9 h-9 rounded-2xl flex items-center justify-center border-2 transition-all ' + btnCheckClass + '">' + checkIcon + '</button>' +
@@ -760,42 +757,46 @@
                 rutinasContainer.appendChild(div);
             });
 
-            document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🐾';
+            document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🌫️';
 
-            // Agenda
+            // Agenda Escolar en Vista Emilia
             const agendaContainer = document.getElementById('agenda-list-container');
             agendaContainer.innerHTML = '';
-            appData.agenda.forEach(item => {
-                const isEval = item.type === 'evaluacion';
-                const div = document.createElement('div');
-                div.className = 'p-4 rounded-3xl border transition-all ' + (item.completed ? 'bg-slate-50 border-slate-200' : 'bg-white border-purple-100 shadow-sm');
-                
-                let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700') + '">' + item.type + '</span>';
-                let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-500">Mi Nota:</span><input type="text" value="' + (item.nota || '') + '" onchange="updateNota(' + item.id + ', this.value)" placeholder="Ej. 6.5" class="w-16 border border-purple-200 rounded-xl px-2 py-1 text-xs text-center font-bold text-purple-600 focus:outline-none focus:border-purple-500"></div>' : '';
-                let checkBtnClass = item.completed ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
-                let checkBtnText = item.completed ? 'Completada 🐾' : 'Marcar lista';
-                let checkBtnIcon = item.completed ? 'fa-check-double' : 'fa-check';
+            if (appData.agenda.length === 0) {
+                agendaContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6 bg-slate-900/60 rounded-3xl border border-teal-900/50">No tienes pruebas ni tareas anotadas. ¡Anota una arriba! 📜</p>';
+            } else {
+                appData.agenda.forEach(item => {
+                    const isEval = item.type === 'evaluacion';
+                    const div = document.createElement('div');
+                    div.className = 'p-4 rounded-3xl border transition-all ' + (item.completed ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-900 border-teal-800/50 shadow-sm');
+                    
+                    let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + item.type + '</span>';
+                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + (item.nota || '') + '" onchange="updateNota(' + item.id + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400"></div>' : '';
+                    let checkBtnClass = item.completed ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
+                    let checkBtnText = item.completed ? 'Completada ⚔️' : 'Marcar lista';
+                    let checkBtnIcon = item.completed ? 'fa-check-double' : 'fa-check';
 
-                div.innerHTML = '<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">' +
-                    '<div class="flex items-center space-x-3">' +
-                    '<div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white ' + (isEval ? 'bg-purple-500' : 'bg-indigo-500') + '"><i class="fa-solid ' + (isEval ? 'fa-file-lines' : 'fa-book') + '"></i></div>' +
-                    '<div>' + typeBadge + '<h4 class="font-semibold text-slate-800 text-sm md:text-base mt-0.5">' + item.title + '</h4>' +
-                    '<p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ' + item.date + '</p></div></div>' +
-                    '<div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">' + notaInput +
-                    '<button onclick="toggleAgendaCheck(' + item.id + ')" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ' + checkBtnClass + '"><i class="fa-solid ' + checkBtnIcon + '"></i> ' + checkBtnText + '</button>' +
-                    '<button onclick="deleteAgendaItem(' + item.id + ')" class="text-slate-400 hover:text-rose-500 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>' +
-                    '</div></div>';
+                    div.innerHTML = '<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">' +
+                        '<div class="flex items-center space-x-3">' +
+                        '<div class="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-950 font-bold ' + (isEval ? 'bg-teal-400' : 'bg-cyan-400') + '"><i class="fa-solid ' + (isEval ? 'fa-scroll' : 'fa-book') + '"></i></div>' +
+                        '<div>' + typeBadge + '<h4 class="font-semibold text-slate-100 text-sm md:text-base mt-0.5">' + item.title + '</h4>' +
+                        '<p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ' + item.date + '</p></div></div>' +
+                        '<div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">' + notaInput +
+                        '<button onclick="toggleAgendaCheck(' + item.id + ')" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ' + checkBtnClass + '"><i class="fa-solid ' + checkBtnIcon + '"></i> ' + checkBtnText + '</button>' +
+                        '<button onclick="deleteAgendaItem(' + item.id + ')" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>' +
+                        '</div></div>';
 
-                agendaContainer.appendChild(div);
-            });
+                    agendaContainer.appendChild(div);
+                });
+            }
 
             // Muro
             const muroContainer = document.getElementById('muro-container');
             muroContainer.innerHTML = '';
             appData.muro.forEach(post => {
                 const div = document.createElement('div');
-                div.className = "bg-amber-50/80 border border-amber-200/70 p-3.5 rounded-2xl";
-                div.innerHTML = '<div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-800"><i class="fa-solid fa-user-shield mr-1"></i> ' + post.author + '</span><span class="text-[10px] text-slate-400">' + post.date + '</span></div><p class="text-xs text-slate-700 leading-relaxed">' + post.text + '</p>';
+                div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl";
+                div.innerHTML = '<div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300"><i class="fa-solid fa-user-shield mr-1"></i> ' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p>';
                 muroContainer.appendChild(div);
             });
 
@@ -806,7 +807,7 @@
                 const isMe = msg.sender === 'Emilia';
                 const div = document.createElement('div');
                 div.className = 'flex flex-col ' + (isMe ? 'items-end' : 'items-start');
-                div.innerHTML = '<div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ' + (isMe ? 'bg-rose-500 text-white rounded-br-none' : 'bg-pink-50 border border-pink-100 text-slate-700 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div><span class="text-[9px] text-slate-400 mt-1 px-1">' + msg.time + '</span>';
+                div.innerHTML = '<div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div><span class="text-[9px] text-slate-500 mt-1 px-1">' + msg.time + '</span>';
                 chatContainer.appendChild(div);
             });
             chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -815,8 +816,8 @@
         function renderAdminView(role) {
             const isPapa = role === 'papa';
             const badge = document.getElementById('admin-role-badge');
-            badge.innerText = isPapa ? 'Panel de Papá 🐾' : 'Panel de Mamá 🐾';
-            badge.className = isPapa ? 'bg-slate-900 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider' : 'bg-pink-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider';
+            badge.innerText = isPapa ? 'Panel de Papá ⚔️' : 'Panel de Mamá ⚔️';
+            badge.className = isPapa ? 'bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider' : 'bg-teal-400 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider';
 
             const inProgressRutina = appData.rutinas.find(r => r.status === 'progress');
             const statusIndicator = document.getElementById('admin-presence-indicator');
@@ -826,7 +827,7 @@
                 statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
                 statusText.innerText = 'Haciendo: ' + inProgressRutina.title + ' (' + inProgressRutina.time + ')';
             } else {
-                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-400 animate-pulse";
+                statusIndicator.className = "w-3 h-3 rounded-full bg-teal-400 animate-pulse";
                 statusText.innerText = "Conectada - Al día";
             }
 
@@ -835,27 +836,27 @@
             adminRutinasList.innerHTML = '';
             appData.rutinas.forEach(rutina => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-pink-50/50 border border-pink-100 p-2.5 rounded-2xl text-sm gap-2";
-                div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + rutina.icon + ' text-rose-500"></i><span class="truncate text-slate-700 text-xs font-medium">' + rutina.title + '</span></div>' +
-                    '<div class="flex items-center gap-1"><input type="time" value="' + (rutina.time || '12:00') + '" onchange="updateRutinaTime(' + rutina.id + ', this.value)" class="text-xs border border-slate-200 rounded-lg px-1.5 py-0.5 text-slate-600 focus:outline-none focus:border-rose-400">' +
-                    '<button onclick="deleteRutina(' + rutina.id + ')" class="text-rose-500 hover:text-rose-700 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
+                div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-2.5 rounded-2xl text-sm gap-2";
+                div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + rutina.icon + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + rutina.title + '</span></div>' +
+                    '<div class="flex items-center gap-1"><input type="time" value="' + (rutina.time || '12:00') + '" onchange="updateRutinaTime(' + rutina.id + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
+                    '<button onclick="deleteRutina(' + rutina.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
                 adminRutinasList.appendChild(div);
             });
 
-            // Agenda registrada por Emilia
+            // Agenda registrada por Emilia en Vista Admin
             const adminAgendaList = document.getElementById('admin-agenda-list');
             adminAgendaList.innerHTML = '';
             if (appData.agenda.length === 0) {
-                adminAgendaList.innerHTML = '<p class="text-xs text-slate-400 italic">Emilia aún no ha registrado tareas o evaluaciones.</p>';
+                adminAgendaList.innerHTML = '<p class="text-xs text-slate-500 italic">Emilia aún no ha registrado tareas o evaluaciones.</p>';
             } else {
                 appData.agenda.forEach(item => {
                     const div = document.createElement('div');
-                    div.className = "flex items-center justify-between bg-purple-50/50 border border-purple-100 p-3 rounded-2xl text-sm";
-                    let notaInfo = item.nota ? '| Nota de Emilia: <b class="text-purple-600">' + item.nota + '</b>' : '| (Sin nota registrada)';
-                    div.innerHTML = '<div><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ' + (item.type === 'evaluacion' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700') + '">' + item.type + '</span>' +
-                        '<h4 class="font-semibold text-slate-800 text-sm mt-1">' + item.title + '</h4>' +
+                    div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-3 rounded-2xl text-sm";
+                    let notaInfo = item.nota ? '| Nota de Emilia: <b class="text-teal-300">' + item.nota + '</b>' : '| (Sin nota registrada)';
+                    div.innerHTML = '<div><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ' + (item.type === 'evaluacion' ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + item.type + '</span>' +
+                        '<h4 class="font-semibold text-slate-100 text-sm mt-1">' + item.title + '</h4>' +
                         '<span class="text-xs text-slate-400">Fecha: ' + item.date + ' ' + notaInfo + '</span></div>' +
-                        '<button onclick="deleteAgendaItem(' + item.id + ')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>';
+                        '<button onclick="deleteAgendaItem(' + item.id + ')" class="bg-rose-950/80 border border-rose-800 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>';
                     adminAgendaList.appendChild(div);
                 });
             }
