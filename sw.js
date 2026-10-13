@@ -1,8 +1,9 @@
 // Service worker de la Agenda de Emilia: permite abrir la app sin internet
 // y que cada versión nueva llegue apenas hay conexión.
-const CACHE = 'agenda-emilia-v1';
+const CACHE = 'agenda-emilia-v2';
 const PRECACHE = ['./', './index.html', './manifest.json',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
+  './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png',
+  './avatars/niebla.svg', './avatars/agua.svg', './avatars/llama.svg', './avatars/trueno.svg', './avatars/flor.svg', './avatars/mariposa.svg'];
 
 // Librerías externas que se guardan para usarlas sin conexión
 const CDN_HOSTS = ['cdn.tailwindcss.com', 'cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com',
@@ -51,4 +52,15 @@ self.addEventListener('fetch', event => {
       }))
     );
   }
+});
+
+// Al tocar un aviso de misión, abre (o trae al frente) la app
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) { if ('focus' in c) return c.focus(); }
+      return self.clients.openWindow('./');
+    })
+  );
 });

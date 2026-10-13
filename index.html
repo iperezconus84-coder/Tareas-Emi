@@ -253,6 +253,9 @@
         </div>
     </div>
 
+    <!-- AVISO DE MISIÓN (recordatorio) -->
+    <div id="reminder-toast" class="fixed left-0 right-0 bottom-4 z-50 px-4 hidden"></div>
+
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-4xl mx-auto px-4 mt-6">
 
@@ -310,6 +313,7 @@
             <!-- Pestaña 1: Entrenamiento (una misión a la vez) -->
             <div id="hija-tab-rutinas" class="space-y-4">
                 <div id="training-container"></div>
+                <div id="reminder-settings"></div>
 
                 <details id="all-missions" class="group">
                     <summary class="cursor-pointer select-none flex items-center justify-center gap-2 text-xs font-bold text-teal-300 bg-slate-900/80 border border-teal-800/50 rounded-2xl py-2.5 hover:border-teal-500">
@@ -505,12 +509,14 @@
                 <div class="bg-slate-950/70 border border-teal-800/50 rounded-2xl p-3 space-y-2">
                     <p class="text-xs font-bold text-teal-300"><i class="fa-solid fa-plus mr-1"></i> Agregar premio</p>
                     <div class="grid grid-cols-1 sm:grid-cols-6 gap-2">
-                        <select id="cat-kind" onchange="document.getElementById('cat-theme').classList.toggle('hidden', this.value !== 'tema'); document.getElementById('cat-name').classList.toggle('hidden', this.value === 'tema');" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                        <select id="cat-kind" onchange="document.getElementById('cat-theme').classList.toggle('hidden', this.value !== 'tema'); document.getElementById('cat-avatar').classList.toggle('hidden', this.value !== 'avatar'); document.getElementById('cat-name').classList.toggle('hidden', this.value !== 'real');" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
                             <option value="real">Premio real</option>
                             <option value="tema">Tema de la app</option>
+                            <option value="avatar">Avatar (emblema)</option>
                         </select>
                         <input type="text" id="cat-name" placeholder="Ej. Un helado" class="sm:col-span-3 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
                         <select id="cat-theme" class="sm:col-span-3 hidden bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></select>
+                        <select id="cat-avatar" class="sm:col-span-3 hidden bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></select>
                         <input type="number" id="cat-cost" min="1" placeholder="Puntos" class="text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
                     </div>
                     <button onclick="addCatalogItem()" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">Agregar a la tienda</button>
@@ -639,8 +645,20 @@
             { id: 'nezuko', name: 'Nezuko Kamado', tag: 'Nezuko 🌸', role: 'Cazadora / Demon', emoji: '🌸', color: 'bg-pink-950 text-pink-300 border-pink-500', url: 'https://cdn.myanimelist.net/images/characters/16/386017.jpg' },
             { id: 'mitsuri', name: 'Mitsuri Kanroji', tag: 'Mitsuri 💖', role: 'Pilar del Amor', emoji: '💖', color: 'bg-rose-950 text-rose-300 border-rose-500', url: 'https://cdn.myanimelist.net/images/characters/3/410287.jpg' },
             { id: 'shinobu', name: 'Shinobu Kocho', tag: 'Shinobu 🦋', role: 'Pilar del Insecto', emoji: '🦋', color: 'bg-purple-950 text-purple-300 border-purple-500', url: 'https://cdn.myanimelist.net/images/characters/11/410288.jpg' },
-            { id: 'kanao', name: 'Kanao Tsuyuri', tag: 'Kanao 🌿', role: 'Cazadora Talentosa', emoji: '🌿', color: 'bg-cyan-950 text-cyan-300 border-cyan-500', url: 'https://cdn.myanimelist.net/images/characters/10/410290.jpg' }
+            { id: 'kanao', name: 'Kanao Tsuyuri', tag: 'Kanao 🌿', role: 'Cazadora Talentosa', emoji: '🌿', color: 'bg-cyan-950 text-cyan-300 border-cyan-500', url: 'https://cdn.myanimelist.net/images/characters/10/410290.jpg' },
+            // Emblemas originales de respiraciones: se desbloquean en la tienda
+            { id: 'emb-niebla', name: 'Emblema Niebla', tag: 'Niebla', role: 'Cazadora de la Niebla', emoji: '🌫️', color: 'bg-teal-950 text-teal-300 border-teal-500', url: 'avatars/niebla.svg', locked: true },
+            { id: 'emb-agua', name: 'Emblema Agua', tag: 'Agua', role: 'Cazadora del Agua', emoji: '🌊', color: 'bg-blue-950 text-blue-300 border-blue-500', url: 'avatars/agua.svg', locked: true },
+            { id: 'emb-llama', name: 'Emblema Llama', tag: 'Llama', role: 'Cazadora de la Llama', emoji: '🔥', color: 'bg-orange-950 text-orange-300 border-orange-500', url: 'avatars/llama.svg', locked: true },
+            { id: 'emb-trueno', name: 'Emblema Trueno', tag: 'Trueno', role: 'Cazadora del Trueno', emoji: '⚡', color: 'bg-yellow-950 text-yellow-300 border-yellow-500', url: 'avatars/trueno.svg', locked: true },
+            { id: 'emb-flor', name: 'Emblema Flor', tag: 'Flor', role: 'Cazadora de la Flor', emoji: '🌸', color: 'bg-pink-950 text-pink-300 border-pink-500', url: 'avatars/flor.svg', locked: true },
+            { id: 'emb-mariposa', name: 'Emblema Mariposa', tag: 'Mariposa', role: 'Cazadora del Insecto', emoji: '🦋', color: 'bg-purple-950 text-purple-300 border-purple-500', url: 'avatars/mariposa.svg', locked: true }
         ];
+
+        function avatarUnlocked(id) {
+            const a = availableAvatars.find(x => x.id === id);
+            return !!(a && (!a.locked || (appData.unlockedAvatars || {})[id]));
+        }
 
         function handleImgError(imgElement, emoji, bgClasses) {
             if (!imgElement || !imgElement.parentNode) return;
@@ -696,7 +714,8 @@
                 pointsConfig: Object.assign({ rutina: 1, dia: 5, agenda: 3, semana: 20 }, raw.pointsConfig || {}),
                 catalog: ensureArray(raw.catalog, []).sort((a, b) => Number(a.cost) - Number(b.cost)),
                 redemptions: ensureArray(raw.redemptions, []).sort((a, b) => Number(b.id) - Number(a.id)),
-                unlockedThemes: (raw.unlockedThemes && typeof raw.unlockedThemes === 'object') ? raw.unlockedThemes : {}
+                unlockedThemes: (raw.unlockedThemes && typeof raw.unlockedThemes === 'object') ? raw.unlockedThemes : {},
+                unlockedAvatars: (raw.unlockedAvatars && typeof raw.unlockedAvatars === 'object') ? raw.unlockedAvatars : {}
             };
         }
 
@@ -1029,7 +1048,7 @@
         // Cada lista se guarda en la nube como un mapa { k<id>: elemento }, así cada
         // cambio toca solo su elemento y dos celulares no se pisan entre sí.
         const META_FIELDS = ['adminPin', 'adminPinHash', 'streak', 'selectedAvatar', 'theme', 'rewardTitle',
-            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history', 'pointsConfig', 'unlockedThemes'];
+            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history', 'pointsConfig', 'unlockedThemes', 'unlockedAvatars'];
 
         function itemKey(id) { return 'k' + id; }
 
@@ -1103,7 +1122,7 @@
 
         function selectAvatar(avatarId) {
             const avatar = availableAvatars.find(a => a.id === avatarId);
-            if (avatar) {
+            if (avatar && avatarUnlocked(avatar.id)) {
                 appData.selectedAvatar = avatar;
                 persist(metaPaths('selectedAvatar'));
                 render();
@@ -1123,11 +1142,15 @@
             container.innerHTML = '';
             availableAvatars.forEach(avatar => {
                 const isSelected = appData.selectedAvatar && appData.selectedAvatar.id === avatar.id;
+                const open = avatarUnlocked(avatar.id);
                 const btn = document.createElement('button');
                 btn.onclick = () => selectAvatar(avatar.id);
-                btn.className = 'p-2 rounded-2xl border text-center transition-all flex flex-col items-center ' + (isSelected ? 'border-teal-400 bg-teal-950/80 ring-2 ring-teal-400' : 'border-slate-800 bg-slate-950 hover:border-slate-600');
+                btn.disabled = !open;
+                if (!open) btn.title = 'Canjéalo en la Tienda';
+                btn.className = 'relative p-2 rounded-2xl border text-center transition-all flex flex-col items-center ' + (isSelected ? 'border-teal-400 bg-teal-950/80 ring-2 ring-teal-400' : (open ? 'border-slate-800 bg-slate-950 hover:border-slate-600' : 'border-slate-800 bg-slate-950 opacity-50'));
                 btn.innerHTML = '<img src="' + avatar.url + '" onerror="handleImgError(this, \'' + avatar.emoji + '\', \'' + avatar.color + '\')" class="w-14 h-14 rounded-xl object-cover mb-1 border" alt="' + avatar.name + '">' +
-                    '<span class="text-[10px] font-bold text-slate-200 truncate w-full">' + avatar.name + '</span>';
+                    '<span class="text-[10px] font-bold text-slate-200 truncate w-full">' + avatar.name + '</span>' +
+                    (open ? '' : '<span class="absolute top-1 right-1 w-5 h-5 rounded-full bg-amber-400 text-slate-950 text-[9px] flex items-center justify-center"><i class="fa-solid fa-lock"></i></span>');
                 container.appendChild(btn);
             });
         }
@@ -1476,6 +1499,7 @@
 
             renderPointsCard();
             renderTraining();
+            renderReminderSettings();
             renderShop();
 
             // Renderizar Rutinas y Barra de Progreso
@@ -1730,6 +1754,14 @@
             inosuke: { name: 'Inosuke', label: 'Bestia',   swatch: '#64748b' }
         };
 
+        function avatarUrl(id) { return ((availableAvatars.find(a => a.id === id)) || {}).url || ''; }
+
+        function itemOwned(item) {
+            if (item.kind === 'tema') return themeUnlocked(item.themeId);
+            if (item.kind === 'avatar') return avatarUnlocked(item.avatarId);
+            return false;
+        }
+
         function themeUnlocked(id) {
             return !!(THEMES[id] && (THEMES[id].free || appData.unlockedThemes[id]));
         }
@@ -1826,7 +1858,7 @@
 
         // ================= TARJETA DE PUNTOS (inicio de Emilia) =================
         function nextGoal(balance) {
-            const items = appData.catalog.filter(c => !(c.kind === 'tema' && themeUnlocked(c.themeId)));
+            const items = appData.catalog.filter(c => !itemOwned(c));
             const affordable = items.filter(c => c.cost <= balance);
             if (affordable.length) return { item: affordable[affordable.length - 1], ready: true };
             const next = items.find(c => c.cost > balance);
@@ -2017,6 +2049,95 @@
             attachSwipe(document.getElementById('mission-card'));
         }
 
+        // ================= RECORDATORIOS DE MISIONES =================
+        // Con la app abierta (o recién minimizada en Android), avisa cuando llega la hora de cada misión.
+        function minutesOf(hhmm) { const [h, m] = String(hhmm || '0:0').split(':').map(Number); return h * 60 + m; }
+
+        function remindedToday() {
+            try { return JSON.parse(localStorage.getItem('reminded_' + localDateStr()) || '[]'); } catch (e) { return []; }
+        }
+
+        function markReminded(ids) {
+            try { localStorage.setItem('reminded_' + localDateStr(), JSON.stringify(ids)); } catch (e) {}
+        }
+
+        function checkReminders() {
+            if (currentRole !== 'hija') return;
+            const now = new Date();
+            const nowMin = now.getHours() * 60 + now.getMinutes();
+            const done = remindedToday();
+            // Solo misiones cuya hora llegó en los últimos 30 minutos (no avisa todo lo atrasado de golpe)
+            const due = todayRutinas().filter(r => !r.completed && r.status !== 'progress' && !done.includes(r.id))
+                .filter(r => { const d = nowMin - minutesOf(r.time); return d >= 0 && d <= 30; });
+            if (!due.length) return;
+            markReminded(done.concat(due.map(r => r.id)));
+            showReminder(due[due.length - 1]);
+        }
+
+        function playChime() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [660, 880].forEach((f, i) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+                    const t = ctx.currentTime + i * 0.18;
+                    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.25, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+                    o.start(t); o.stop(t + 0.32);
+                });
+            } catch (e) {}
+        }
+
+        function showReminder(r) {
+            const title = '¡Hora de tu misión, cazadora!';
+            const body = r.time + ' · ' + r.title;
+            try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+            playChime();
+            // Si la app está minimizada y hay permiso, aviso del sistema
+            if (document.hidden && 'Notification' in window && Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification(title, {
+                    body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', tag: 'mision-' + r.id, vibrate: [200, 100, 200]
+                })).catch(() => {});
+            }
+            const box = document.getElementById('reminder-toast');
+            box.innerHTML = '<div class="max-w-md mx-auto bg-slate-900 border-2 border-teal-400 rounded-3xl p-4 shadow-2xl flex items-center gap-3">' +
+                '<span class="w-12 h-12 rounded-2xl bg-teal-400 text-slate-950 flex items-center justify-center text-xl shrink-0 animate-pulse"><i class="fa-solid fa-bell"></i></span>' +
+                '<div class="flex-1 min-w-0"><p class="text-xs font-extrabold text-teal-300 uppercase tracking-wider">' + title + '</p>' +
+                '<p class="text-sm font-bold text-white break-words">' + esc(body) + '</p></div>' +
+                '<div class="flex flex-col gap-1.5 shrink-0"><button onclick="goToMission(' + Number(r.id) + ')" class="bg-teal-400 hover:bg-teal-300 text-slate-950 text-xs font-extrabold px-3 py-2 rounded-xl">Ir</button>' +
+                '<button onclick="closeReminder()" class="text-slate-400 hover:text-white text-xs">Cerrar</button></div></div>';
+            box.classList.remove('hidden');
+        }
+
+        function closeReminder() { document.getElementById('reminder-toast').classList.add('hidden'); }
+
+        function goToMission(id) {
+            closeReminder();
+            try { localStorage.setItem('training_started', localDateStr()); } catch (e) {}
+            trainingFocusId = id;
+            switchHijaTab('rutinas');
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function enableSystemReminders() {
+            if (!('Notification' in window)) return;
+            Notification.requestPermission().then(() => render());
+        }
+
+        function renderReminderSettings() {
+            const box = document.getElementById('reminder-settings');
+            if (!box) return;
+            const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+            let right;
+            if (perm === 'default') right = '<button onclick="enableSystemReminders()" class="bg-slate-800 hover:bg-slate-700 text-teal-200 border border-teal-700 text-[11px] font-bold px-3 py-1.5 rounded-xl shrink-0">Activar avisos</button>';
+            else if (perm === 'granted') right = '<span class="text-[11px] font-bold text-emerald-300 shrink-0"><i class="fa-solid fa-check mr-1"></i>Activados</span>';
+            else right = '';
+            box.innerHTML = '<div class="flex items-center gap-3 bg-slate-900/70 border border-teal-900/60 rounded-2xl px-3 py-2.5">' +
+                '<i class="fa-solid fa-bell text-teal-400"></i>' +
+                '<p class="flex-1 text-[11px] text-slate-400">Te avisaré a la hora de cada misión mientras la app esté abierta.' +
+                (perm === 'default' ? ' Activa los avisos para recibirlos también con la app minimizada.' : '') + '</p>' + right + '</div>';
+        }
+
         // ================= TIENDA (Emilia) =================
         function redeemItem(id) {
             if (currentRole !== 'hija') return;
@@ -2024,12 +2145,14 @@
             if (!item) return;
             const bal = pointsBalance();
             if (bal < item.cost) return;
-            if (item.kind === 'tema' && themeUnlocked(item.themeId)) return;
+            if (itemOwned(item)) return;
             if (!confirm('¿Canjear "' + item.name + '" por ' + item.cost + ' puntos?')) return;
 
             const isTheme = item.kind === 'tema';
-            const red = { id: Date.now(), itemId: item.id, name: item.name, cost: item.cost, kind: item.kind || 'real', themeId: item.themeId || '',
-                date: localDateStr(), status: isTheme ? 'entregado' : 'pendiente', deliveredBy: isTheme ? 'Automático' : '', deliveredDate: isTheme ? localDateStr() : '' };
+            const isAvatar = item.kind === 'avatar';
+            const digital = isTheme || isAvatar;
+            const red = { id: Date.now(), itemId: item.id, name: item.name, cost: item.cost, kind: item.kind || 'real', themeId: item.themeId || '', avatarId: item.avatarId || '',
+                date: localDateStr(), status: digital ? 'entregado' : 'pendiente', deliveredBy: digital ? 'Automático' : '', deliveredDate: digital ? localDateStr() : '' };
             appData.redemptions.unshift(red);
             const paths = itemPath('redemptions', red);
             setLedger(paths, 'c_' + red.id, -item.cost, 'Canje: ' + item.name, 'canje', red.date);
@@ -2037,10 +2160,14 @@
                 appData.unlockedThemes[item.themeId] = true;
                 paths['unlockedThemes/' + item.themeId] = true;
             }
+            if (isAvatar) {
+                appData.unlockedAvatars[item.avatarId] = true;
+                paths['unlockedAvatars/' + item.avatarId] = true;
+            }
             persist(paths);
             if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
             render();
-            alert(isTheme ? '¡Tema desbloqueado! Elígelo tocando tu avatar.' : '¡Canje listo! Papá o mamá te lo entregarán.');
+            alert(isTheme ? '¡Tema desbloqueado! Elígelo tocando tu avatar.' : (isAvatar ? '¡Avatar desbloqueado! Elígelo tocando tu avatar.' : '¡Canje listo! Papá o mamá te lo entregarán.'));
         }
 
         function renderShop() {
@@ -2058,10 +2185,12 @@
             } else {
                 html += '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' + appData.catalog.map(item => {
                     const isTheme = item.kind === 'tema';
-                    const owned = isTheme && themeUnlocked(item.themeId);
+                    const owned = itemOwned(item);
                     const can = !owned && bal >= item.cost;
                     const pct = Math.min(100, Math.round(bal / item.cost * 100));
-                    const icon = isTheme
+                    const icon = item.kind === 'avatar'
+                        ? '<img src="' + esc(avatarUrl(item.avatarId)) + '" class="w-12 h-12 rounded-2xl object-cover shadow" alt="">'
+                        : isTheme
                         ? '<span class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl text-white shadow" style="background:' + ((THEMES[item.themeId] || {}).swatch || '#334155') + '"><i class="fa-solid fa-palette"></i></span>'
                         : '<span class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-amber-950 border border-amber-600 text-amber-300"><i class="fa-solid fa-gift"></i></span>';
                     let action;
@@ -2116,14 +2245,20 @@
             const kind = document.getElementById('cat-kind').value;
             const cost = parseInt(document.getElementById('cat-cost').value, 10);
             let name = document.getElementById('cat-name').value.trim(), themeId = '';
+            let avatarId = '';
             if (kind === 'tema') {
                 themeId = document.getElementById('cat-theme').value;
                 if (!themeId) { alert('No quedan temas por agregar.'); return; }
                 name = 'Tema ' + THEMES[themeId].name + ' (' + THEMES[themeId].label + ')';
             }
+            if (kind === 'avatar') {
+                avatarId = document.getElementById('cat-avatar').value;
+                if (!avatarId) { alert('No quedan avatares por agregar.'); return; }
+                name = 'Avatar: ' + availableAvatars.find(a => a.id === avatarId).name;
+            }
             if (!name) { alert('Escribe el nombre del premio.'); return; }
             if (!cost || cost < 1) { alert('Escribe cuántos puntos cuesta.'); return; }
-            const item = { id: Date.now(), name, cost, kind, themeId };
+            const item = { id: Date.now(), name, cost, kind, themeId, avatarId };
             appData.catalog.push(item);
             appData.catalog.sort((a, b) => a.cost - b.cost);
             document.getElementById('cat-name').value = '';
@@ -2149,11 +2284,13 @@
                 { name: '30 minutos extra de pantalla', cost: 60, kind: 'real' },
                 { name: 'Tema Rengoku (Llamas)', cost: 80, kind: 'tema', themeId: 'rengoku' },
                 { name: 'Tema Inosuke (Bestia)', cost: 80, kind: 'tema', themeId: 'inosuke' },
+                { name: 'Avatar: Emblema Niebla', cost: 50, kind: 'avatar', avatarId: 'emb-niebla' },
+                { name: 'Avatar: Emblema Trueno', cost: 50, kind: 'avatar', avatarId: 'emb-trueno' },
                 { name: 'Elegir la película del fin de semana', cost: 100, kind: 'real' }
             ];
             const paths = {};
             examples.forEach((e, i) => {
-                const item = Object.assign({ id: base + i, themeId: '' }, e);
+                const item = Object.assign({ id: base + i, themeId: '', avatarId: '' }, e);
                 appData.catalog.push(item);
                 Object.assign(paths, itemPath('catalog', item));
             });
@@ -2180,6 +2317,14 @@
                 delete appData.unlockedThemes[r.themeId];
                 paths['unlockedThemes/' + r.themeId] = null;
                 if (appData.theme === r.themeId) { appData.theme = 'tokito'; Object.assign(paths, metaPaths('theme')); }
+            }
+            if (r.kind === 'avatar' && r.avatarId) {
+                delete appData.unlockedAvatars[r.avatarId];
+                paths['unlockedAvatars/' + r.avatarId] = null;
+                if (appData.selectedAvatar && appData.selectedAvatar.id === r.avatarId) {
+                    appData.selectedAvatar = availableAvatars[0];
+                    Object.assign(paths, metaPaths('selectedAvatar'));
+                }
             }
             persist(paths);
             render();
@@ -2217,13 +2362,23 @@
                 if (opts.includes(prev)) sel.value = prev;
             }
 
+            const asel = document.getElementById('cat-avatar');
+            if (asel) {
+                const usedA = appData.catalog.filter(c => c.kind === 'avatar').map(c => c.avatarId);
+                const optsA = availableAvatars.filter(a => a.locked && !usedA.includes(a.id));
+                const prevA = asel.value;
+                asel.innerHTML = optsA.length ? optsA.map(a => '<option value="' + a.id + '">' + a.name + '</option>').join('') : '<option value="">Ya agregaste todos los avatares</option>';
+                if (optsA.some(a => a.id === prevA)) asel.value = prevA;
+            }
+
             const cat = document.getElementById('admin-catalog');
             if (!appData.catalog.length) {
                 cat.innerHTML = '<div class="text-center space-y-2 py-2"><p class="text-xs text-slate-400">La tienda está vacía.</p>' +
                     '<button onclick="loadExampleCatalog()" class="bg-slate-800 hover:bg-slate-700 text-teal-200 border border-teal-700 text-xs font-bold px-4 py-2 rounded-xl">Cargar premios de ejemplo</button></div>';
             } else {
                 cat.innerHTML = appData.catalog.map(item => '<div class="flex items-center gap-3 bg-slate-950 border border-teal-900/60 rounded-2xl px-3 py-2">' +
-                    (item.kind === 'tema' ? '<span class="w-7 h-7 rounded-lg shrink-0" style="background:' + ((THEMES[item.themeId] || {}).swatch || '#334155') + '"></span>' : '<span class="w-7 h-7 rounded-lg shrink-0 bg-amber-950 border border-amber-700 text-amber-300 flex items-center justify-center text-xs"><i class="fa-solid fa-gift"></i></span>') +
+                    (item.kind === 'avatar' ? '<img src="' + esc(avatarUrl(item.avatarId)) + '" class="w-7 h-7 rounded-lg shrink-0 object-cover" alt="">' :
+                    item.kind === 'tema' ? '<span class="w-7 h-7 rounded-lg shrink-0" style="background:' + ((THEMES[item.themeId] || {}).swatch || '#334155') + '"></span>' : '<span class="w-7 h-7 rounded-lg shrink-0 bg-amber-950 border border-amber-700 text-amber-300 flex items-center justify-center text-xs"><i class="fa-solid fa-gift"></i></span>') +
                     '<span class="flex-1 min-w-0 text-sm text-slate-200 break-words">' + esc(item.name) + '</span>' +
                     '<span class="text-xs font-extrabold text-amber-300 shrink-0">' + Number(item.cost) + ' pts</span>' +
                     '<button onclick="deleteCatalogItem(' + Number(item.id) + ')" class="text-slate-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button></div>').join('');
@@ -2485,8 +2640,11 @@
 
         // Si la app queda abierta pasada la medianoche, o vuelve a primer plano otro día
         setInterval(() => { if (checkDailyReset()) render(); }, 60000);
+        setInterval(checkReminders, 30000);
+        setTimeout(checkReminders, 3000);
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && checkDailyReset()) render();
+            if (document.visibilityState === 'visible') checkReminders();
         });
     </script>
 </body>
