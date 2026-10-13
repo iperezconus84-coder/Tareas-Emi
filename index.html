@@ -91,13 +91,14 @@
     <header class="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-teal-800/50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <button onclick="openProfileModal()" title="Cambiar mi avatar y tema" class="relative group focus:outline-none">
+                <div id="header-parent-icon" class="hidden w-10 h-10 rounded-2xl flex items-center justify-center text-lg border-2 shadow-md"></div>
+                <button id="header-avatar-btn" onclick="openProfileModal()" title="Cambiar mi avatar y tema" class="relative group focus:outline-none">
                     <img id="header-avatar" src="https://cdn.myanimelist.net/images/characters/6/410292.jpg" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3408/3408506.png';" alt="Avatar Emilia" class="w-10 h-10 rounded-2xl object-cover border-2 border-teal-400 shadow-md group-hover:scale-105 transition-all">
                     <span class="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow"><i class="fa-solid fa-paintbrush"></i></span>
                 </button>
                 <div>
                     <h1 class="font-bold text-xl text-teal-200 leading-tight flex items-center gap-1.5">
-                        Emilia <span id="header-subtitle" class="text-teal-400 text-xs font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
+                        <span id="header-name">Emilia</span> <span id="header-subtitle" class="text-teal-400 text-xs font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
                     </h1>
                     <p class="text-xs text-slate-400" id="presence-subtitle">
                         <span id="status-dot" class="inline-block w-2 h-2 rounded-full bg-teal-400 animate-pulse mr-1"></span>
@@ -113,20 +114,28 @@
                     <span>Instalar app</span>
                 </button>
 
-                <div class="flex items-center bg-slate-800/90 p-1 rounded-2xl border border-teal-800/60 text-sm font-semibold">
-                    <button onclick="requestRoleSwitch('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
-                        <i class="fa-solid fa-fan mr-1 text-teal-400"></i> Emilia
-                    </button>
-                    <button onclick="requestRoleSwitch('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
-                        <i class="fa-solid fa-lock mr-1 text-xs"></i> Papá
-                    </button>
-                    <button onclick="requestRoleSwitch('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300">
-                        <i class="fa-solid fa-lock mr-1 text-xs"></i> Mamá
-                    </button>
-                </div>
+                <button onclick="goToWelcome()" title="Cambiar de perfil" class="bg-slate-800/90 hover:bg-slate-700 border border-teal-800/60 text-teal-200 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5">
+                    <i class="fa-solid fa-users"></i> <span>Cambiar</span>
+                </button>
             </div>
         </div>
     </header>
+
+    <!-- BIENVENIDA: ELEGIR PERFIL -->
+    <div id="welcome-screen" class="fixed inset-0 z-[55] bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 overflow-y-auto hidden">
+        <div class="min-h-full max-w-md mx-auto px-5 py-10 flex flex-col justify-center gap-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 mx-auto bg-teal-950 text-teal-400 border border-teal-500 rounded-2xl flex items-center justify-center text-3xl shadow-inner"><i class="fa-solid fa-torii-gate"></i></div>
+                <p class="text-[11px] font-extrabold text-teal-300 uppercase tracking-[0.25em]">Cuartel de la familia</p>
+                <h2 class="text-3xl font-extrabold text-white">¿Quién entra hoy?</h2>
+            </div>
+            <div id="welcome-cards" class="space-y-3"></div>
+            <label class="flex items-center justify-center gap-2 text-sm text-slate-300 cursor-pointer">
+                <input type="checkbox" id="welcome-remember" class="w-4 h-4 accent-teal-400" checked>
+                Recordar mi perfil en este celular
+            </label>
+        </div>
+    </div>
 
     <!-- PANTALLA DE INGRESO (CUENTA FAMILIAR) -->
     <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 z-[60] flex items-center justify-center p-4 hidden">
@@ -199,7 +208,7 @@
     </div>
 
     <!-- MODAL DE PIN DE SEGURIDAD -->
-    <div id="pin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div id="pin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 rounded-3xl max-w-xs w-full p-6 space-y-4 text-center shadow-2xl border border-teal-700/50 relative text-slate-100">
             <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-200 p-1">
                 <i class="fa-solid fa-xmark text-lg"></i>
@@ -208,8 +217,8 @@
                 <i class="fa-solid fa-user-shield"></i>
             </div>
             <div>
-                <h3 class="font-bold text-lg text-teal-200">Acceso de Padres ⚔️</h3>
-                <p class="text-xs text-slate-400 mt-1">Ingresa el PIN de 4 dígitos.</p>
+                <h3 id="pin-title" class="font-bold text-lg text-teal-200">Acceso de Padres</h3>
+                <p class="text-xs text-slate-400 mt-1">Ingresa tu PIN de 4 dígitos.</p>
             </div>
             
             <div class="space-y-3">
@@ -531,8 +540,8 @@
                         <i class="fa-solid fa-key"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-teal-200 text-sm">PIN de Seguridad para Padres</h4>
-                        <p class="text-xs text-slate-400">Clave para bloquear el cambio de rol a Papá o Mamá.</p>
+                        <h4 id="pin-section-title" class="font-bold text-teal-200 text-sm">Tu PIN personal</h4>
+                        <p id="pin-section-sub" class="text-xs text-slate-400">Cada uno tiene el suyo: este cambia solo tu PIN.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -692,6 +701,8 @@
                 // PIN antiguo en texto plano (se convierte a huella al primer uso)
                 adminPin: raw.adminPin || (raw.adminPinHash ? '' : '1234'),
                 adminPinHash: raw.adminPinHash || '',
+                pinHashPapa: raw.pinHashPapa || '',
+                pinHashMama: raw.pinHashMama || '',
                 rutinas: sortRutinas(ensureArray(raw.rutinas, defaultRutinas)),
                 agenda: ensureArray(raw.agenda, []).sort((a, b) => Number(a.id) - Number(b.id)),
                 muro: ensureArray(raw.muro, []).sort((a, b) => Number(b.id) - Number(a.id)),
@@ -889,7 +900,16 @@
             return changed;
         }
 
-        let currentRole = localStorage.getItem('agenda_current_role') || 'hija';
+        // Perfil del celular: si se pidió recordarlo, abre directo; si no, muestra la bienvenida.
+        // ('none' = pantalla de bienvenida)
+        let currentRole = (() => {
+            try {
+                const saved = localStorage.getItem('agenda_current_role');
+                const remember = localStorage.getItem('agenda_remember_role');
+                if (saved && remember !== '0' && ['hija', 'papa', 'mama'].includes(saved)) return saved;
+            } catch (e) {}
+            return 'none';
+        })();
         let rawStored = null;
         try { rawStored = JSON.parse(localStorage.getItem('agenda_app_data')); } catch(e){}
         let appData = sanitizeData(rawStored);
@@ -1046,7 +1066,7 @@
 
         function logoutFamily() {
             if (confirm('¿Cerrar la sesión familiar en este celular? Habrá que volver a ingresar el correo y la contraseña.')) {
-                switchRole('hija');
+                goToWelcome();
                 firebase.auth().signOut();
             }
         }
@@ -1090,7 +1110,7 @@
         // Cada lista se guarda en la nube como un mapa { k<id>: elemento }, así cada
         // cambio toca solo su elemento y dos celulares no se pisan entre sí.
         const META_FIELDS = ['adminPin', 'adminPinHash', 'streak', 'selectedAvatar', 'theme', 'rewardTitle',
-            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history', 'pointsConfig', 'unlockedThemes', 'unlockedAvatars'];
+            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history', 'pointsConfig', 'unlockedThemes', 'unlockedAvatars', 'pinHashPapa', 'pinHashMama'];
 
         function itemKey(id) { return 'k' + id; }
 
@@ -1105,7 +1125,7 @@
             fields.forEach(f => {
                 let v = appData[f];
                 if (f === 'adminPin') v = appData.adminPinHash ? null : (v || '1234');
-                if (f === 'adminPinHash') v = v || null;
+                if (f === 'adminPinHash' || f === 'pinHashPapa' || f === 'pinHashMama') v = v || null;
                 paths[f] = (v === undefined) ? null : v;
             });
             return paths;
@@ -1197,17 +1217,28 @@
             });
         }
 
-        function requestRoleSwitch(role) {
-            if (role === 'hija') {
-                switchRole('hija');
-            } else {
-                if (currentRole === role) return;
-                pendingRole = role;
-                document.getElementById('pin-input').value = '';
-                document.getElementById('pin-error').classList.add('hidden');
-                document.getElementById('pin-modal').classList.remove('hidden');
-                setTimeout(() => document.getElementById('pin-input').focus(), 100);
-            }
+        function roleKey(role) { return role === 'papa' ? 'pinHashPapa' : 'pinHashMama'; }
+        function roleName(role) { return role === 'papa' ? 'Papá' : (role === 'mama' ? 'Mamá' : 'Emilia'); }
+
+        function chooseProfile(role) {
+            try { localStorage.setItem('agenda_remember_role', document.getElementById('welcome-remember').checked ? '1' : '0'); } catch (e) {}
+            if (role === 'hija') { switchRole('hija'); return; }
+            pendingRole = role;
+            document.getElementById('pin-title').innerText = 'PIN de ' + roleName(role);
+            document.getElementById('pin-input').value = '';
+            document.getElementById('pin-error').classList.add('hidden');
+            document.getElementById('pin-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('pin-input').focus(), 100);
+        }
+
+        // Compatibilidad con llamadas antiguas
+        function requestRoleSwitch(role) { chooseProfile(role); }
+
+        function goToWelcome() {
+            currentRole = 'none';
+            try { localStorage.removeItem('agenda_current_role'); } catch (e) {}
+            syncPresence();
+            render();
         }
 
         // El PIN no se guarda tal cual: se guarda su huella (SHA-256)
@@ -1218,23 +1249,22 @@
         }
 
         async function verifyPin() {
+            const role = pendingRole;
+            if (!role) return;
             const enteredPin = document.getElementById('pin-input').value.trim();
+            const own = appData[roleKey(role)];
             let ok = false;
-
-            if (appData.adminPinHash) {
-                ok = (await hashPin(enteredPin)) === appData.adminPinHash;
+            if (own) {
+                ok = (await hashPin(enteredPin)) === own;
             } else {
-                ok = enteredPin === (appData.adminPin || '1234');
+                // Aún sin PIN propio: vale el PIN familiar anterior, y queda como PIN propio
+                ok = appData.adminPinHash ? (await hashPin(enteredPin)) === appData.adminPinHash : enteredPin === (appData.adminPin || '1234');
                 if (ok) {
-                    // Migración: se reemplaza el PIN visible por su huella
-                    appData.adminPinHash = await hashPin(enteredPin);
-                    appData.adminPin = '';
-                    persist(metaPaths('adminPin', 'adminPinHash'));
+                    appData[roleKey(role)] = await hashPin(enteredPin);
+                    persist(metaPaths(roleKey(role)));
                 }
             }
-
             if (ok) {
-                const role = pendingRole;
                 closePinModal();
                 switchRole(role);
             } else {
@@ -1250,11 +1280,11 @@
 
         async function changeAdminPin() {
             const newPin = document.getElementById('new-pin-input').value.trim();
+            if (currentRole !== 'papa' && currentRole !== 'mama') return;
             if (/^\d{4}$/.test(newPin)) {
-                appData.adminPinHash = await hashPin(newPin);
-                appData.adminPin = '';
-                persist(metaPaths('adminPin', 'adminPinHash'));
-                alert('¡PIN cambiado con éxito!');
+                appData[roleKey(currentRole)] = await hashPin(newPin);
+                persist(metaPaths(roleKey(currentRole)));
+                alert('¡Tu PIN de ' + roleName(currentRole) + ' quedó cambiado!');
                 document.getElementById('new-pin-input').value = '';
             } else {
                 alert('El PIN debe ser un número de exactamente 4 dígitos.');
@@ -1263,7 +1293,10 @@
 
         function switchRole(role) {
             currentRole = role;
-            localStorage.setItem('agenda_current_role', role);
+            try {
+                if (localStorage.getItem('agenda_remember_role') === '0') localStorage.removeItem('agenda_current_role');
+                else localStorage.setItem('agenda_current_role', role);
+            } catch (e) {}
             syncPresence();
             render();
         }
@@ -1507,14 +1540,30 @@
                 document.getElementById('banner-title-role').innerText = currentAvatar.role;
                 document.getElementById('banner-tag').innerText = currentAvatar.tag;
 
-                document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-500 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
-                document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
-                document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+                // Encabezado según el perfil
+                const isKid = role === 'hija' || role === 'none';
+                document.getElementById('header-avatar-btn').classList.toggle('hidden', !isKid);
+                const pIcon = document.getElementById('header-parent-icon');
+                pIcon.classList.toggle('hidden', isKid);
+                if (!isKid) {
+                    pIcon.className = 'w-10 h-10 rounded-2xl flex items-center justify-center text-lg border-2 shadow-md ' + PARENT_STYLE[role].box;
+                    pIcon.innerHTML = '<i class="fa-solid ' + PARENT_STYLE[role].icon + '"></i>';
+                    document.getElementById('header-name').innerText = roleName(role);
+                    document.getElementById('header-subtitle').innerText = 'Panel de padres';
+                } else {
+                    document.getElementById('header-name').innerText = 'Emilia';
+                }
 
                 const viewHija = document.getElementById('view-hija');
                 const viewAdmin = document.getElementById('view-admin');
+                const welcome = document.getElementById('welcome-screen');
+                welcome.classList.toggle('hidden', role !== 'none');
 
-                if (role === 'hija') {
+                if (role === 'none') {
+                    viewHija.classList.add('hidden');
+                    viewAdmin.classList.add('hidden');
+                    renderWelcome();
+                } else if (role === 'hija') {
                     viewHija.classList.remove('hidden');
                     viewAdmin.classList.add('hidden');
                     renderHijaView();
@@ -1700,6 +1749,38 @@
                 '<div class="space-y-2">' + rows + '</div></div>';
         }
 
+        const PARENT_STYLE = {
+            papa: { icon: 'fa-user-shield', box: 'bg-sky-950 border-sky-400 text-sky-300', ring: 'border-sky-500/50' },
+            mama: { icon: 'fa-heart', box: 'bg-rose-950 border-rose-400 text-rose-300', ring: 'border-rose-500/50' }
+        };
+
+        function renderWelcome() {
+            const box = document.getElementById('welcome-cards');
+            if (!box) return;
+            const av = appData.selectedAvatar || availableAvatars[0];
+            const pending = daysAwaitingConfirmation().reduce((s, d) => s + d.count, 0);
+            const reds = appData.redemptions.filter(r => r.status !== 'entregado').length;
+            const chip = (txt, cls) => '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full ' + cls + '">' + txt + '</span>';
+            const card = (onclick, icon, name, sub, chips, ring, lock) =>
+                '<button onclick="' + onclick + '" class="w-full flex items-center gap-4 bg-slate-900/90 hover:bg-slate-900 border-2 ' + ring + ' rounded-3xl p-4 text-left transition-all shadow-lg">' +
+                icon + '<span class="flex-1 min-w-0"><span class="block text-xl font-extrabold text-white">' + name + '</span>' +
+                '<span class="block text-xs text-slate-400 mt-0.5">' + sub + '</span>' +
+                (chips ? '<span class="flex flex-wrap gap-1.5 mt-2">' + chips + '</span>' : '') + '</span>' +
+                '<i class="fa-solid ' + (lock ? 'fa-lock' : 'fa-chevron-right') + ' text-slate-500"></i></button>';
+            const emiIcon = '<img src="' + esc(av.url) + '" onerror="handleImgError(this, \'' + av.emoji + '\')" class="w-16 h-16 rounded-2xl object-cover border-2 border-teal-400 shrink-0" alt="">';
+            const parentIcon = r => '<span class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl border-2 shrink-0 ' + PARENT_STYLE[r].box + '"><i class="fa-solid ' + PARENT_STYLE[r].icon + '"></i></span>';
+            box.innerHTML =
+                card("chooseProfile('hija')", emiIcon, 'Emilia', esc(av.role),
+                    chip('<i class="fa-solid fa-fire mr-1"></i>Racha ' + (appData.streak || 0), 'bg-orange-950 text-orange-300 border border-orange-800') +
+                    chip('<i class="fa-solid fa-coins mr-1"></i>' + pointsBalance() + ' puntos', 'bg-amber-950 text-amber-300 border border-amber-800'),
+                    'border-teal-500/60', false) +
+                card("chooseProfile('mama')", parentIcon('mama'), 'Mamá', 'Confirma las misiones de Emilia',
+                    (pending ? chip(pending + (pending === 1 ? ' rutina por confirmar' : ' rutinas por confirmar'), 'bg-amber-400 text-slate-950') : '') +
+                    (reds ? chip(reds + ' por entregar', 'bg-amber-950 text-amber-300 border border-amber-800') : ''),
+                    PARENT_STYLE.mama.ring, true) +
+                card("chooseProfile('papa')", parentIcon('papa'), 'Papá', 'Acompaña y reconoce a Emilia', '', PARENT_STYLE.papa.ring, true);
+        }
+
         function renderAdminView(role) {
             const isPapa = role === 'papa';
             renderPendingAlert(isPapa);
@@ -1722,7 +1803,8 @@
                 statusText.innerText = pres.text;
             } else {
                 statusIndicator.className = "w-3 h-3 rounded-full bg-slate-500";
-                statusText.innerText = pres.text + (inProgressRutina ? ' · dejó a medias: ' + inProgressRutina.title : '');
+                const everSeen = !!(((appData.presence || {}).emilia || {}).lastSeen);
+                statusText.innerText = pres.text + (inProgressRutina && everSeen ? ' · dejó a medias: ' + inProgressRutina.title : '');
             }
 
             // Rutinas Admin List
