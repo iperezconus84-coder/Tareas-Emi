@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda de Emilia 🐾</title>
+    <!-- Manifest PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f43f5e">
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -30,12 +34,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Quicksand -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         body { font-family: 'Quicksand', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Orejitas de Gatito en las Tarjetas Principales */
         .cat-ears-card {
             position: relative;
         }
@@ -51,16 +59,11 @@
         }
         .cat-ears-card::before { left: 24px; transform: rotate(-18deg); }
         .cat-ears-card::after { right: 24px; transform: rotate(18deg); }
-        
-        .cat-badge {
-            background: #fff0f3;
-            border: 2px solid #fecdd3;
-        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100 min-h-screen text-slate-700 pb-12">
 
-    <!-- HEADER / SELECTOR DE ROL CON MOTIVOS DE GATITO -->
+    <!-- HEADER / SELECTOR DE ROL -->
     <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-pink-200">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
@@ -72,32 +75,69 @@
                         Agenda de Emilia <span class="text-rose-500 text-lg">🐾</span>
                     </h1>
                     <p class="text-xs text-slate-500" id="presence-subtitle">
-                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Gatito en línea
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Sincronizado en la Nube
                     </p>
                 </div>
             </div>
 
-            <!-- Selector de Roles -->
-            <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
-                <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                    <i class="fa-solid fa-cat mr-1 text-rose-500"></i> Emilia
+            <!-- Botón de Instalación y Selector de Roles -->
+            <div class="flex items-center gap-2">
+                <button id="btn-install-app" onclick="installPWA()" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 animate-bounce">
+                    <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+                    <span>Instalar en el teléfono</span>
                 </button>
-                <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                    <i class="fa-solid fa-user-tie mr-1"></i> Papá
-                </button>
-                <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                    <i class="fa-solid fa-heart mr-1 text-pink-500"></i> Mamá
-                </button>
+
+                <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
+                    <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                        <i class="fa-solid fa-cat mr-1 text-rose-500"></i> Emilia
+                    </button>
+                    <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                        <i class="fa-solid fa-user-tie mr-1"></i> Papá
+                    </button>
+                    <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                        <i class="fa-solid fa-heart mr-1 text-pink-500"></i> Mamá
+                    </button>
+                </div>
             </div>
         </div>
     </header>
+
+    <!-- MODAL DE INSTRUCCIONES DE INSTALACIÓN -->
+    <div id="install-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 text-center shadow-2xl border border-pink-100 relative">
+            <button onclick="closeInstallModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="w-16 h-16 bg-pink-100 text-rose-500 rounded-full flex items-center justify-center mx-auto text-3xl">
+                🐱
+            </div>
+            <h3 class="font-bold text-lg text-slate-800">¡Instala la app en tu celular! 🐾</h3>
+            
+            <div class="text-xs text-slate-600 text-left space-y-3 bg-pink-50/60 p-4 rounded-2xl border border-pink-100">
+                <p class="font-semibold text-rose-600">En iPhone (Safari):</p>
+                <ol class="list-decimal list-inside space-y-1">
+                    <li>Toca el botón <b>Compartir</b> <i class="fa-solid fa-arrow-up-from-bracket text-rose-500"></i> abajo.</li>
+                    <li>Selecciona <b>Añadir a la pantalla de inicio</b> ➕.</li>
+                </ol>
+                <hr class="border-pink-200">
+                <p class="font-semibold text-rose-600">En Android (Chrome):</p>
+                <ol class="list-decimal list-inside space-y-1">
+                    <li>Toca los <b>3 puntos</b> <i class="fa-solid fa-ellipsis-vertical text-rose-500"></i> arriba a la derecha.</li>
+                    <li>Selecciona <b>Añadir a pantalla de inicio</b>.</li>
+                </ol>
+            </div>
+
+            <button onclick="closeInstallModal()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
+                ¡Entendido! 🐾
+            </button>
+        </div>
+    </div>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-4xl mx-auto px-4 mt-6">
 
         <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
-            <!-- Banner Gamificado con Orejas de Gatito -->
             <div class="cat-ears-card bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
                 <div class="absolute -right-4 -bottom-6 opacity-15 text-9xl">
                     <i class="fa-solid fa-cat"></i>
@@ -120,7 +160,7 @@
                 </div>
             </div>
 
-            <!-- Navegación de Pestañas con Iconos Gatunos -->
+            <!-- Navegación de Pestañas -->
             <div class="flex space-x-2 border-b border-pink-200 pb-2 overflow-x-auto hide-scrollbar">
                 <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-rose-500 text-white shadow-md">
                     <i class="fa-solid fa-paw mr-2"></i> Rutinas y Horarios
@@ -133,7 +173,7 @@
                 </button>
             </div>
 
-            <!-- Pestaña 1: Rutinas y Deberes -->
+            <!-- Pestaña 1: Rutinas -->
             <div id="hija-tab-rutinas" class="space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
@@ -143,14 +183,11 @@
                         0/0 completados 🐾
                     </span>
                 </div>
-                <div id="rutinas-list-container" class="grid gap-3">
-                    <!-- Tarjetas de rutinas cargadas por script -->
-                </div>
+                <div id="rutinas-list-container" class="grid gap-3"></div>
             </div>
 
-            <!-- Pestaña 2: Agenda Escolar (Administrada por Emilia) -->
+            <!-- Pestaña 2: Agenda Escolar -->
             <div id="hija-tab-agenda" class="space-y-6 hidden">
-                <!-- Formulario Bonito de Gatito para Emilia -->
                 <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md space-y-3 relative overflow-hidden">
                     <div class="absolute right-2 bottom-0 opacity-10 text-8xl pointer-events-none">🐱</div>
                     <h3 class="font-bold text-base flex items-center gap-2">
@@ -169,7 +206,6 @@
                     </button>
                 </div>
 
-                <!-- Lista de Pendientes Escolares -->
                 <div class="space-y-3">
                     <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-calendar-days text-purple-500"></i> Mis Pendientes Escolares
@@ -221,7 +257,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Configurar Rutinas -->
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-clock text-rose-500"></i> Agregar Rutina con Horario
@@ -256,7 +291,6 @@
                     </div>
                 </div>
 
-                <!-- Mensaje al Muro -->
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
@@ -270,7 +304,6 @@
                 </div>
             </div>
 
-            <!-- Listado de Agenda registrado por Emilia -->
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 space-y-4">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-graduation-cap text-purple-500"></i> Agenda Escolar Registrada por Emilia
@@ -282,8 +315,25 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT -->
+    <!-- LÓGICA JAVASCRIPT & FIREBASE -->
     <script>
+        // Configuración de tu proyecto en Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBErTj5Oldva3Z9Ubr0uC0tvWNeAjBdrjo",
+            authDomain: "agenda-emi.firebaseapp.com",
+            databaseURL: "https://agenda-emi-default-rtdb.firebaseio.com",
+            projectId: "agenda-emi",
+            storageBucket: "agenda-emi.firebasestorage.app",
+            messagingSenderId: "886433027334",
+            appId: "1:886433027334:web:674673e5ca6b3995b3fa87"
+        };
+
+        // Inicialización de Firebase Realtime Database
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const appRef = db.ref('agenda_emilia');
+
+        // Datos Iniciales por Defecto
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
             { id: 2, time: "15:15", title: "Cambiarme de ropa", icon: "fa-shirt", completed: false, status: 'idle' },
@@ -322,13 +372,70 @@
             streak: 5
         };
 
+        // Escuchar cambios en la nube (Firebase Realtime)
+        appRef.on('value', (snapshot) => {
+            const cloudData = snapshot.val();
+            if (cloudData) {
+                appData.rutinas = cloudData.rutinas || defaultRutinas;
+                appData.agenda = cloudData.agenda || defaultAgenda;
+                appData.muro = cloudData.muro || defaultMuro;
+                appData.chat = cloudData.chat || defaultChat;
+                appData.streak = cloudData.streak || 5;
+                
+                localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+                render();
+            } else {
+                // Si la base de datos está vacía, subir los datos por defecto iniciales
+                saveData();
+            }
+        });
+
         function saveData() {
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+            // Enviar actualización a Firebase
+            appRef.set({
+                rutinas: appData.rutinas,
+                agenda: appData.agenda,
+                muro: appData.muro,
+                chat: appData.chat,
+                streak: appData.streak
+            });
+        }
+
+        // Lógica de Instalación PWA
+        let deferredPrompt;
+        const installBtn = document.getElementById('btn-install-app');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('App instalada');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                document.getElementById('install-modal').classList.remove('hidden');
+            }
+        }
+
+        function closeInstallModal() {
+            document.getElementById('install-modal').classList.add('hidden');
+        }
+
+        if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+            if (installBtn) installBtn.classList.add('hidden');
         }
 
         function switchRole(role) {
             appData.role = role;
-            saveData();
+            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
             render();
         }
 
@@ -484,9 +591,9 @@
         function render() {
             const role = appData.role;
 
-            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-rose-500 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-rose-500 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
 
             const viewHija = document.getElementById('view-hija');
             const viewAdmin = document.getElementById('view-admin');
