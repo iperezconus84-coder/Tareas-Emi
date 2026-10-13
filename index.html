@@ -130,7 +130,7 @@
             <div>
                 <h3 class="font-extrabold text-2xl text-teal-200">¡Misión Cumplida! 🎉</h3>
                 <p class="text-xs text-teal-100 mt-2 leading-relaxed">
-                    ¡Impresionante Emilia! Has completado todas tus tareas de hoy. ¡Sumaste +1 día a tu racha de cazadora! 🌫️
+                    ¡Impresionante Emilia! Completaste todas tus rutinas de hoy. Cuando mamá las confirme, sumarás +1 día a tu racha de cazadora 🌫️
                 </p>
             </div>
             <button onclick="closeWinModal()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black py-3 rounded-2xl text-sm transition-all shadow-xl uppercase tracking-wider">
@@ -639,7 +639,9 @@
                 lastResetDate: raw.lastResetDate || '',
                 history: (raw.history && typeof raw.history === 'object' && !Array.isArray(raw.history)) ? raw.history : {},
                 // log[fecha][k<idRutina>] = true cuando esa rutina se cumplió ese día
-                log: (raw.log && typeof raw.log === 'object' && !Array.isArray(raw.log)) ? raw.log : {}
+                log: (raw.log && typeof raw.log === 'object' && !Array.isArray(raw.log)) ? raw.log : {},
+                // confirm[fecha][k<idRutina>] = 'ok' (confirmada por mamá) | 'rejected' (rechazada)
+                confirm: (raw.confirm && typeof raw.confirm === 'object' && !Array.isArray(raw.confirm)) ? raw.confirm : {}
             };
         }
 
@@ -680,21 +682,69 @@
         }
 
         // Marca o desmarca el día de hoy como cumplido según el estado de las rutinas
-        function refreshTodayStatus() {
-            const today = localDateStr();
-            const total = appData.rutinas.length;
-            const allDone = total > 0 && appData.rutinas.every(r => r.completed);
-            if (allDone) {
-                appData.history[today] = true;
-                appData.lastCompletedDate = today;
-            } else {
-                delete appData.history[today];
-            }
+        function dayAllDone(date) {
+            const l = appData.log[date] || {};
+            return appData.rutinas.length > 0 && appData.rutinas.every(r => l[itemKey(r.id)]);
+        }
+
+        function dayAllConfirmed(date) {
+            const c = appData.confirm[date] || {};
+            return appData.rutinas.length > 0 && appData.rutinas.every(r => c[itemKey(r.id)] === 'ok');
+        }
+
+        // Un día cuenta para la racha cuando todas las rutinas están marcadas
+        // y mamá las confirmó todas. Devuelve las rutas a guardar.
+        function recomputeDay(date) {
+            const done = dayAllDone(date);
+            const ok = done && dayAllConfirmed(date);
+            if (ok) appData.history[date] = true; else delete appData.history[date];
+            if (done && date === localDateStr()) appData.lastCompletedDate = date;
             appData.streak = computeStreak();
-            return Object.assign(
-                { ['history/' + today]: allDone ? true : null },
-                metaPaths('streak', 'lastCompletedDate')
-            );
+            return Object.assign({ ['history/' + date]: ok ? true : null }, metaPaths('streak', 'lastCompletedDate'));
+        }
+
+        function refreshTodayStatus() {
+            return recomputeDay(localDateStr());
+        }
+
+        // Mamá confirma ('ok'), rechaza ('rejected') o quita su revisión (null)
+        function confirmRutina(date, id, verdict) {
+            if (currentRole !== 'mama') return;
+            const k = itemKey(id);
+            if (!appData.confirm[date]) appData.confirm[date] = {};
+            const paths = {};
+            if (verdict) appData.confirm[date][k] = verdict; else delete appData.confirm[date][k];
+            paths['confirm/' + date + '/' + k] = verdict || null;
+
+            if (verdict === 'rejected') {
+                if (appData.log[date]) delete appData.log[date][k];
+                paths['log/' + date + '/' + k] = null;
+                if (date === localDateStr()) {
+                    const r = appData.rutinas.find(x => x.id === id);
+                    if (r) {
+                        r.completed = false; r.status = 'idle';
+                        paths['rutinas/' + k + '/completed'] = false;
+                        paths['rutinas/' + k + '/status'] = 'idle';
+                    }
+                }
+            }
+            persist(Object.assign(paths, recomputeDay(date)));
+            render();
+        }
+
+        function confirmAllDay(date) {
+            if (currentRole !== 'mama') return;
+            if (!appData.confirm[date]) appData.confirm[date] = {};
+            const paths = {};
+            appData.rutinas.forEach(r => {
+                const k = itemKey(r.id);
+                if (rutinaStateFor(r, date) === 'done' && appData.confirm[date][k] !== 'ok') {
+                    appData.confirm[date][k] = 'ok';
+                    paths['confirm/' + date + '/' + k] = 'ok';
+                }
+            });
+            persist(Object.assign(paths, recomputeDay(date)));
+            render();
         }
 
         // Al cambiar de día: desmarca las rutinas y recalcula la racha.
@@ -868,7 +918,8 @@
                         agenda: toMap(appData.agenda),
                         muro: toMap(appData.muro),
                         chat: toMap(appData.chat),
-                        log: appData.log
+                        log: appData.log,
+                        confirm: appData.confirm
                     }
                 );
                 appRef.set(full).catch(err => console.warn(err));
@@ -1117,6 +1168,9 @@
                 else delete appData.log[today][itemKey(rutina.id)];
                 const paths = Object.assign(itemPath('rutinas', rutina), refreshTodayStatus());
                 paths['log/' + today + '/' + itemKey(rutina.id)] = rutina.completed ? true : null;
+                if (appData.confirm[today]) delete appData.confirm[today][itemKey(rutina.id)];
+                paths['confirm/' + today + '/' + itemKey(rutina.id)] = null;
+                Object.assign(paths, refreshTodayStatus());
                 if (!wasCompletedBefore && completedNow === total && total > 0) {
                     triggerCelebration();
                 }
@@ -1342,6 +1396,9 @@
                 
                 let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + esc(rutina.time || '17:00') + '</span>';
                 let progressBadge = isProgress ? '<span class="text-[11px] font-bold text-teal-950 bg-teal-300 px-2 py-0.5 rounded-full">🌫️ En progreso</span>' : '';
+                const verdict = (appData.confirm[localDateStr()] || {})[itemKey(rutina.id)];
+                if (verdict === 'ok' && rutina.completed) progressBadge += '<span class="text-[10px] font-bold text-emerald-300 bg-emerald-950 border border-emerald-700 px-2 py-0.5 rounded-full"><i class="fa-solid fa-stamp mr-1"></i>Confirmada</span>';
+                if (verdict === 'rejected' && !rutina.completed) progressBadge += '<span class="text-[10px] font-bold text-rose-300 bg-rose-950 border border-rose-800 px-2 py-0.5 rounded-full"><i class="fa-solid fa-xmark mr-1"></i>Mamá la rechazó</span>';
                 let checkIcon = rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : '';
                 let titleClass = rutina.completed ? 'line-through text-slate-500' : 'text-slate-100';
                 let iconClass = rutina.completed ? 'bg-emerald-500 text-slate-950' : (isProgress ? 'bg-teal-400 text-slate-950 animate-pulse' : 'bg-teal-950 text-teal-300 border border-teal-700/60');
@@ -1350,7 +1407,7 @@
 
                 div.innerHTML = '<div class="flex items-center space-x-3">' +
                     '<div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ' + iconClass + '"><i class="fa-solid ' + esc(rutina.icon) + '"></i></div>' +
-                    '<div><div class="flex items-center gap-2">' + timeBadge + progressBadge + '</div>' +
+                    '<div><div class="flex flex-wrap items-center gap-1.5">' + timeBadge + progressBadge + '</div>' +
                     '<h4 class="font-semibold text-sm md:text-base mt-1 ' + titleClass + '">' + esc(rutina.title) + '</h4></div></div>' +
                     '<div class="flex items-center gap-2">' +
                     '<button onclick="setRutinaProgress(' + Number(rutina.id) + ')" title="Marcar como en progreso" class="p-2.5 rounded-2xl text-xs font-semibold transition-all ' + btnBoltClass + '"><i class="fa-solid fa-bolt"></i></button>' +
@@ -1367,8 +1424,11 @@
             document.getElementById('rutinas-progress').innerText = completedCount + '/' + totalCount + ' completados';
             
             const msgElem = document.getElementById('rutinas-status-msg');
-            if (percentage === 100) {
-                msgElem.innerText = '¡Misión cumplida! Todo listo por hoy ⚔️✨';
+            const todayStr = localDateStr();
+            if (percentage === 100 && appData.history[todayStr]) {
+                msgElem.innerText = '¡Misión cumplida y confirmada por mamá! ⚔️✨';
+            } else if (percentage === 100) {
+                msgElem.innerText = '¡Todo listo! Falta que mamá lo confirme 🌫️';
             } else if (percentage >= 50) {
                 msgElem.innerText = '¡Vas por más de la mitad! Sigue así 🌫️';
             } else {
@@ -1602,7 +1662,8 @@
                 const dots =
                     (hasEval ? '<span class="w-1.5 h-1.5 rounded-full ' + (isSel ? 'bg-slate-950' : 'bg-amber-400') + '"></span>' : '') +
                     (hasTarea ? '<span class="w-1.5 h-1.5 rounded-full ' + (isSel ? 'bg-slate-950' : 'bg-cyan-400') + '"></span>' : '') +
-                    (appData.history[ds] ? '<i class="fa-solid fa-check text-[8px] ' + (isSel ? 'text-slate-950' : 'text-emerald-400') + '"></i>' : '');
+                    (appData.history[ds] ? '<i class="fa-solid fa-check text-[8px] ' + (isSel ? 'text-slate-950' : 'text-emerald-400') + '"></i>'
+                        : (appData.log[ds] && dayAllDone(ds) ? '<i class="fa-solid fa-hourglass-half text-[7px] ' + (isSel ? 'text-slate-950' : 'text-amber-400') + '"></i>' : ''));
                 weekHtml += '<button onclick="plannerSelect(\'' + ds + '\')" class="rounded-2xl border py-2 flex flex-col items-center gap-0.5 transition-all ' + cls + '">' +
                     '<span class="text-[9px] font-bold tracking-wider ' + (isSel ? '' : 'text-slate-500') + '">' + DIAS_CORTOS[d.getDay()] + '</span>' +
                     '<span class="text-base font-extrabold leading-none">' + d.getDate() + '</span>' +
@@ -1615,6 +1676,7 @@
             let badge = '';
             if (rel === 0) badge = '<span class="text-[10px] font-extrabold bg-teal-400 text-slate-950 px-2 py-0.5 rounded-full uppercase">Hoy</span>';
             if (appData.history[plannerDate]) badge += '<span class="text-[10px] font-extrabold bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full uppercase"><i class="fa-solid fa-check mr-1"></i>Día cumplido</span>';
+            else if (appData.log[plannerDate] && dayAllDone(plannerDate)) badge += '<span class="text-[10px] font-extrabold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full uppercase"><i class="fa-solid fa-hourglass-half mr-1"></i>Espera confirmación</span>';
 
             // --- Misiones escolares del día
             const dayItems = appData.agenda.filter(a => a.date === plannerDate)
@@ -1656,16 +1718,39 @@
                 planned: ['bg-slate-800 text-slate-400', 'fa-calendar', 'text-slate-500', 'Programada'],
                 unknown: ['bg-slate-800 text-slate-500', 'fa-minus', 'text-slate-500', 'Sin registro']
             };
-            let doneCount = 0, rutinasHtml = '';
+            let doneCount = 0, confirmedCount = 0, toConfirm = 0, rutinasHtml = '';
+            const isMama = currentRole === 'mama';
+            const dayConfirm = appData.confirm[plannerDate] || {};
+            // Solo se revisan días con registro detallado (desde que existe la confirmación)
+            const reviewable = plannerDate <= today && (plannerDate === today || !!appData.log[plannerDate]);
             appData.rutinas.forEach(r => {
                 const st = rutinaStateFor(r, plannerDate);
+                const verdict = dayConfirm[itemKey(r.id)];
                 if (st === 'done') doneCount++;
+                if (st === 'done' && verdict === 'ok') confirmedCount++;
+                if (st === 'done' && verdict !== 'ok') toConfirm++;
                 const [chip, icon, txt, label] = stateStyle[st];
+                let review = '';
+                if (reviewable && st === 'done' && verdict === 'ok') {
+                    review = isMama
+                        ? '<button onclick="confirmRutina(\'' + plannerDate + '\', ' + Number(r.id) + ', null)" title="Quitar confirmación" class="text-[10px] font-extrabold px-2 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-700"><i class="fa-solid fa-stamp mr-1"></i>OK</button>'
+                        : '<span title="Confirmada por mamá" class="w-6 h-6 rounded-md flex items-center justify-center bg-emerald-950 text-emerald-300 border border-emerald-700"><i class="fa-solid fa-stamp text-[10px]"></i></span>';
+                } else if (reviewable && st === 'done' && isMama) {
+                    review = '<button onclick="confirmRutina(\'' + plannerDate + '\', ' + Number(r.id) + ', \'ok\')" title="Confirmar" class="w-8 h-8 rounded-lg border-2 border-emerald-600 text-emerald-300 hover:bg-emerald-600 hover:text-slate-950 transition-all"><i class="fa-solid fa-check text-xs"></i></button>' +
+                        '<button onclick="confirmRutina(\'' + plannerDate + '\', ' + Number(r.id) + ', \'rejected\')" title="Rechazar" class="w-8 h-8 rounded-lg border-2 border-rose-700 text-rose-300 hover:bg-rose-700 hover:text-white transition-all"><i class="fa-solid fa-xmark text-xs"></i></button>';
+                } else if (reviewable && st === 'done') {
+                    review = '<span title="Esperando confirmación de mamá" class="w-6 h-6 rounded-md flex items-center justify-center bg-amber-950 text-amber-300 border border-amber-700"><i class="fa-solid fa-hourglass-half text-[10px]"></i></span>';
+                } else if (verdict === 'rejected' && st !== 'done') {
+                    review = isMama
+                        ? '<button onclick="confirmRutina(\'' + plannerDate + '\', ' + Number(r.id) + ', null)" title="Quitar rechazo" class="text-[10px] font-extrabold px-2 py-1 rounded-lg bg-rose-950 text-rose-300 border border-rose-800">Rechazada</button>'
+                        : '<span class="text-[10px] font-extrabold px-2 py-1 rounded-lg bg-rose-950 text-rose-300 border border-rose-800">Rechazada</span>';
+                }
                 rutinasHtml += '<div class="flex items-center gap-3 py-2 border-b border-teal-950 last:border-0">' +
                     '<span class="w-12 text-[11px] font-bold text-teal-300 shrink-0">' + esc(r.time) + '</span>' +
                     '<i class="fa-solid ' + esc(r.icon) + ' text-teal-500 w-4 text-center shrink-0"></i>' +
                     '<span class="flex-1 text-xs md:text-sm min-w-0 truncate ' + (st === 'done' ? 'text-slate-400' : 'text-slate-200') + '">' + esc(r.title) + '</span>' +
                     '<span class="flex items-center gap-1 text-[10px] font-bold shrink-0 ' + txt + '"><span class="w-5 h-5 rounded-md flex items-center justify-center ' + chip + '"><i class="fa-solid ' + icon + ' text-[9px]"></i></span><span class="hidden sm:inline">' + label + '</span></span>' +
+                    (review ? '<span class="flex items-center gap-1 shrink-0">' + review + '</span>' : '') +
                     '</div>';
             });
             const total = appData.rutinas.length;
@@ -1676,7 +1761,8 @@
                 '<div class="flex flex-wrap items-center gap-2"><h4 class="font-extrabold text-teal-100 text-base">' + longDate(plannerDate) + '</h4>' + badge + '</div>' +
                 '<div class="space-y-2"><p class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-scroll"></i> Misiones escolares</p>' + itemsHtml + '</div>' +
                 '<div class="space-y-1"><div class="flex items-center justify-between"><p class="text-xs font-bold text-teal-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-clock"></i> Rutinas del día</p>' +
-                (showCount ? '<span class="text-[11px] font-bold text-slate-400">' + doneCount + ' de ' + total + '</span>' : '') + '</div>' +
+                (showCount ? '<span class="text-[11px] font-bold text-slate-400">' + doneCount + ' de ' + total + (reviewable && doneCount ? ' · ' + confirmedCount + ' confirmadas' : '') + '</span>' : '') + '</div>' +
+                (isMama && reviewable && toConfirm > 0 ? '<button onclick="confirmAllDay(\'' + plannerDate + '\')" class="w-full mt-1 mb-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-stamp"></i> Confirmar las ' + toConfirm + ' rutinas marcadas</button>' : '') +
                 (showCount ? '<div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden"><div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-full rounded-full" style="width:' + pct + '%"></div></div>' : '') +
                 '<div class="bg-slate-950/60 rounded-2xl px-3 border border-teal-900/40">' + rutinasHtml + '</div></div>';
 
