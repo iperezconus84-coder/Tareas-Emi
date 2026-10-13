@@ -572,6 +572,10 @@
                 .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
+        function sortRutinas(list) {
+            return list.slice().sort((a, b) => (a.time > b.time) ? 1 : (a.time < b.time ? -1 : Number(a.id) - Number(b.id)));
+        }
+
         function ensureArray(val, defaultVal = []) {
             if (!val) return defaultVal;
             if (Array.isArray(val)) return val;
@@ -585,10 +589,11 @@
                 // PIN antiguo en texto plano (se convierte a huella al primer uso)
                 adminPin: raw.adminPin || (raw.adminPinHash ? '' : '1234'),
                 adminPinHash: raw.adminPinHash || '',
-                rutinas: ensureArray(raw.rutinas, defaultRutinas),
-                agenda: ensureArray(raw.agenda, []),
-                muro: ensureArray(raw.muro, []),
-                chat: ensureArray(raw.chat, []),
+                rutinas: sortRutinas(ensureArray(raw.rutinas, defaultRutinas)),
+                agenda: ensureArray(raw.agenda, []).sort((a, b) => Number(a.id) - Number(b.id)),
+                muro: ensureArray(raw.muro, []).sort((a, b) => Number(b.id) - Number(a.id)),
+                chat: ensureArray(raw.chat, []).sort((a, b) => Number(a.id) - Number(b.id)),
+                schema: raw.schema || 1,
                 streak: typeof raw.streak === 'number' ? raw.streak : 0,
                 selectedAvatar: raw.selectedAvatar || availableAvatars[0],
                 theme: raw.theme || 'tokito',
@@ -648,6 +653,10 @@
                 delete appData.history[today];
             }
             appData.streak = computeStreak();
+            return Object.assign(
+                { ['history/' + today]: allDone ? true : null },
+                metaPaths('streak', 'lastCompletedDate')
+            );
         }
 
         // Al cambiar de día: desmarca las rutinas y recalcula la racha.
@@ -656,25 +665,32 @@
             const today = localDateStr();
             migrateHistory();
             let changed = false;
+            const paths = {};
 
             if (appData.lastResetDate !== today) {
                 const firstRun = appData.lastResetDate === '';
                 const allDone = appData.rutinas.length > 0 && appData.rutinas.every(r => r.completed);
                 // En la primera ejecución se respeta lo marcado si hoy ya estaba todo listo
                 if (!(firstRun && allDone && appData.lastCompletedDate === today)) {
-                    appData.rutinas.forEach(r => { r.completed = false; r.status = 'idle'; });
+                    appData.rutinas.forEach(r => {
+                        r.completed = false; r.status = 'idle';
+                        paths['rutinas/' + itemKey(r.id) + '/completed'] = false;
+                        paths['rutinas/' + itemKey(r.id) + '/status'] = 'idle';
+                    });
                 }
                 appData.lastResetDate = today;
+                Object.assign(paths, metaPaths('lastResetDate', 'history'));
                 changed = true;
             }
 
             const streak = computeStreak();
             if (streak !== appData.streak) {
                 appData.streak = streak;
+                Object.assign(paths, metaPaths('streak'));
                 changed = true;
             }
 
-            if (changed) saveData();
+            if (changed) persist(paths);
             return changed;
         }
 
@@ -727,7 +743,13 @@
                 const cloudData = snapshot.val();
                 if (cloudData) {
                     appData = sanitizeData(cloudData);
-                    checkDailyReset();
+                    if (appData.schema < 2) {
+                        // Formato antiguo (listas): se reescribe una vez en el formato nuevo
+                        checkDailyReset();
+                        saveData();
+                    } else {
+                        checkDailyReset();
+                    }
                     localStorage.setItem('agenda_app_data', JSON.stringify(appData));
                     updateStatus(true, 'Sincronizado en la Nube ☁️');
                     render();
@@ -797,24 +819,61 @@
             appData.muro = ensureArray(appData.muro, []);
             appData.chat = ensureArray(appData.chat, []);
 
+            appData.schema = 2;
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
             if (appRef) {
-                appRef.set({
-                    adminPin: appData.adminPinHash ? null : (appData.adminPin || '1234'),
-                    adminPinHash: appData.adminPinHash || null,
-                    rutinas: appData.rutinas,
-                    agenda: appData.agenda,
-                    muro: appData.muro,
-                    chat: appData.chat,
-                    streak: appData.streak,
-                    selectedAvatar: appData.selectedAvatar,
-                    theme: appData.theme,
-                    rewardTitle: appData.rewardTitle,
-                    rewardTarget: appData.rewardTarget,
-                    lastCompletedDate: appData.lastCompletedDate,
-                    lastResetDate: appData.lastResetDate,
-                    history: appData.history
-                }).catch(err => console.warn(err));
+                const full = Object.assign(
+                    { schema: 2 },
+                    metaPaths(...META_FIELDS),
+                    {
+                        rutinas: toMap(appData.rutinas),
+                        agenda: toMap(appData.agenda),
+                        muro: toMap(appData.muro),
+                        chat: toMap(appData.chat)
+                    }
+                );
+                appRef.set(full).catch(err => console.warn(err));
+            }
+        }
+
+        // ===== Guardado por partes =====
+        // Cada lista se guarda en la nube como un mapa { k<id>: elemento }, así cada
+        // cambio toca solo su elemento y dos celulares no se pisan entre sí.
+        const META_FIELDS = ['adminPin', 'adminPinHash', 'streak', 'selectedAvatar', 'theme', 'rewardTitle',
+            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history'];
+
+        function itemKey(id) { return 'k' + id; }
+
+        function toMap(list) {
+            const map = {};
+            list.forEach(item => { map[itemKey(item.id)] = item; });
+            return map;
+        }
+
+        function metaPaths(...fields) {
+            const paths = {};
+            fields.forEach(f => {
+                let v = appData[f];
+                if (f === 'adminPin') v = appData.adminPinHash ? null : (v || '1234');
+                if (f === 'adminPinHash') v = v || null;
+                paths[f] = (v === undefined) ? null : v;
+            });
+            return paths;
+        }
+
+        function itemPath(collection, item) {
+            return { [collection + '/' + itemKey(item.id)]: item };
+        }
+
+        function removePath(collection, id) {
+            return { [collection + '/' + itemKey(id)]: null };
+        }
+
+        // Guarda en este celular y envía a la nube solo las rutas indicadas
+        function persist(paths) {
+            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+            if (appRef && Object.keys(paths).length) {
+                appRef.update(paths).catch(err => console.warn(err));
             }
         }
 
@@ -849,7 +908,7 @@
             if (title) appData.rewardTitle = title;
             if (!isNaN(target) && target > 0) appData.rewardTarget = target;
 
-            saveData();
+            persist(metaPaths('rewardTitle', 'rewardTarget'));
             alert('¡Configuración del Premio guardada exitosamente!');
             render();
         }
@@ -867,14 +926,14 @@
             const avatar = availableAvatars.find(a => a.id === avatarId);
             if (avatar) {
                 appData.selectedAvatar = avatar;
-                saveData();
+                persist(metaPaths('selectedAvatar'));
                 render();
             }
         }
 
         function selectTheme(themeName) {
             appData.theme = themeName;
-            saveData();
+            persist(metaPaths('theme'));
             render();
         }
 
@@ -925,7 +984,7 @@
                     // Migración: se reemplaza el PIN visible por su huella
                     appData.adminPinHash = await hashPin(enteredPin);
                     appData.adminPin = '';
-                    saveData();
+                    persist(metaPaths('adminPin', 'adminPinHash'));
                 }
             }
 
@@ -949,7 +1008,7 @@
             if (/^\d{4}$/.test(newPin)) {
                 appData.adminPinHash = await hashPin(newPin);
                 appData.adminPin = '';
-                saveData();
+                persist(metaPaths('adminPin', 'adminPinHash'));
                 alert('¡PIN cambiado con éxito!');
                 document.getElementById('new-pin-input').value = '';
             } else {
@@ -1009,18 +1068,12 @@
             const date = document.getElementById('hija-agenda-date').value;
             if (!title || !date) return;
 
-            appData.agenda.push({
-                id: Date.now(),
-                type,
-                title,
-                date,
-                completed: false,
-                nota: ''
-            });
+            const item = { id: Date.now(), type, title, date, completed: false, nota: '' };
+            appData.agenda.push(item);
 
             document.getElementById('hija-agenda-title').value = '';
             document.getElementById('hija-agenda-date').value = '';
-            saveData();
+            persist(itemPath('agenda', item));
             render();
         }
 
@@ -1034,12 +1087,12 @@
                 const total = appData.rutinas.length;
                 const completedNow = appData.rutinas.filter(r => r.completed).length;
 
-                refreshTodayStatus();
+                const paths = Object.assign(itemPath('rutinas', rutina), refreshTodayStatus());
                 if (!wasCompletedBefore && completedNow === total && total > 0) {
                     triggerCelebration();
                 }
 
-                saveData();
+                persist(paths);
                 render();
             }
         }
@@ -1047,9 +1100,16 @@
         function setRutinaProgress(id) {
             const rutina = appData.rutinas.find(r => r.id === id);
             if (rutina) {
-                appData.rutinas.forEach(r => { if(r.id !== id) r.status = 'idle'; });
+                const paths = {};
+                appData.rutinas.forEach(r => {
+                    if (r.id !== id && r.status !== 'idle') {
+                        r.status = 'idle';
+                        paths['rutinas/' + itemKey(r.id) + '/status'] = 'idle';
+                    }
+                });
                 rutina.status = rutina.status === 'progress' ? 'idle' : 'progress';
-                saveData();
+                paths['rutinas/' + itemKey(rutina.id) + '/status'] = rutina.status;
+                persist(paths);
                 render();
             }
         }
@@ -1058,7 +1118,7 @@
             const item = appData.agenda.find(a => a.id === id);
             if (item) {
                 item.completed = !item.completed;
-                saveData();
+                persist({ ['agenda/' + itemKey(item.id) + '/completed']: item.completed });
                 render();
             }
         }
@@ -1067,13 +1127,13 @@
             const item = appData.agenda.find(a => a.id === id);
             if (item) {
                 item.nota = nota;
-                saveData();
+                persist({ ['agenda/' + itemKey(item.id) + '/nota']: nota });
             }
         }
 
         function deleteAgendaItem(id) {
             appData.agenda = appData.agenda.filter(a => a.id !== id);
-            saveData();
+            persist(removePath('agenda', id));
             render();
         }
 
@@ -1083,26 +1143,17 @@
             const icon = document.getElementById('new-rutina-icon').value || 'fa-cloud';
             if (!title) return;
 
-            appData.rutinas.push({
-                id: Date.now(),
-                time,
-                title,
-                icon,
-                completed: false,
-                status: 'idle'
-            });
-
-            appData.rutinas.sort((a, b) => (a.time > b.time) ? 1 : -1);
+            const rutina = { id: Date.now(), time, title, icon, completed: false, status: 'idle' };
+            appData.rutinas.push(rutina);
+            appData.rutinas = sortRutinas(appData.rutinas);
             document.getElementById('new-rutina-title').value = '';
-            refreshTodayStatus();
-            saveData();
+            persist(Object.assign(itemPath('rutinas', rutina), refreshTodayStatus()));
             render();
         }
 
         function deleteRutina(id) {
             appData.rutinas = appData.rutinas.filter(r => r.id !== id);
-            refreshTodayStatus();
-            saveData();
+            persist(Object.assign(removePath('rutinas', id), refreshTodayStatus()));
             render();
         }
 
@@ -1110,8 +1161,8 @@
             const rutina = appData.rutinas.find(r => r.id === id);
             if (rutina) {
                 rutina.time = newTime;
-                appData.rutinas.sort((a, b) => (a.time > b.time) ? 1 : -1);
-                saveData();
+                appData.rutinas = sortRutinas(appData.rutinas);
+                persist({ ['rutinas/' + itemKey(rutina.id) + '/time']: newTime });
                 render();
             }
         }
@@ -1121,21 +1172,22 @@
             if (!text) return;
 
             const author = currentRole === 'papa' ? 'Papá' : 'Mamá';
-            appData.muro.unshift({
+            const post = {
                 id: Date.now(),
                 author,
                 text,
                 date: new Date().toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })
-            });
+            };
+            appData.muro.unshift(post);
 
             document.getElementById('muro-input').value = '';
-            saveData();
+            persist(itemPath('muro', post));
             render();
         }
 
         function deleteMuroPost(id) {
             appData.muro = appData.muro.filter(m => m.id !== id);
-            saveData();
+            persist(removePath('muro', id));
             render();
         }
 
@@ -1146,15 +1198,23 @@
             if (!text) return;
 
             const sender = currentRole === 'hija' ? 'Emilia' : (currentRole === 'papa' ? 'Papá' : 'Mamá');
-            appData.chat.push({
+            const msg = {
                 id: Date.now(),
                 sender,
                 text,
                 time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
-            });
+            };
+            appData.chat.push(msg);
+            const paths = itemPath('chat', msg);
+
+            // Se guardan los últimos 40 mensajes para que el chat no crezca sin límite
+            while (appData.chat.length > 40) {
+                const old = appData.chat.shift();
+                Object.assign(paths, removePath('chat', old.id));
+            }
 
             input.value = '';
-            saveData();
+            persist(paths);
             render();
         }
 
