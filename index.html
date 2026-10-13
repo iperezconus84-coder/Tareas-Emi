@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda y Rutinas - Emilia</title>
+    <title>Agenda de Emilia 🐾</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,12 +11,15 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#fdf4f8',
-                            100: '#fbe8f2',
-                            500: '#ec4899',
-                            600: '#db2777',
-                            700: '#be185d',
+                        kitty: {
+                            50: '#fff5f7',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
                         }
                     }
                 }
@@ -25,41 +28,65 @@
     </script>
     <!-- FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'Quicksand', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Orejitas de Gatito en las Tarjetas Principales */
+        .cat-ears-card {
+            position: relative;
+        }
+        .cat-ears-card::before, .cat-ears-card::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            border-radius: 6px 14px 0 0;
+            z-index: 0;
+        }
+        .cat-ears-card::before { left: 24px; transform: rotate(-18deg); }
+        .cat-ears-card::after { right: 24px; transform: rotate(18deg); }
+        
+        .cat-badge {
+            background: #fff0f3;
+            border: 2px solid #fecdd3;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 min-h-screen text-slate-700 pb-12">
+<body class="bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100 min-h-screen text-slate-700 pb-12">
 
-    <!-- HEADER / SELECTOR DE ROL -->
-    <header class="bg-white shadow-md sticky top-0 z-50 border-b border-pink-100">
+    <!-- HEADER / SELECTOR DE ROL CON MOTIVOS DE GATITO -->
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-pink-200">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-2.5 rounded-2xl shadow-md">
-                    <i class="fa-solid fa-child-reaching text-xl"></i>
+                <div class="bg-gradient-to-r from-pink-400 to-rose-500 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-cat text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg text-slate-800 leading-tight">Agenda de Emilia</h1>
+                    <h1 class="font-bold text-xl text-slate-800 leading-tight flex items-center gap-1.5">
+                        Agenda de Emilia <span class="text-rose-500 text-lg">🐾</span>
+                    </h1>
                     <p class="text-xs text-slate-500" id="presence-subtitle">
-                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1"></span> En línea
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Gatito en línea
                     </p>
                 </div>
             </div>
 
             <!-- Selector de Roles -->
-            <div class="flex items-center bg-slate-100 p-1 rounded-xl shadow-inner text-sm font-medium">
-                <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
-                    <i class="fa-solid fa-star mr-1"></i> Emilia
+            <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
+                <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                    <i class="fa-solid fa-cat mr-1 text-rose-500"></i> Emilia
                 </button>
-                <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
+                <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
                     <i class="fa-solid fa-user-tie mr-1"></i> Papá
                 </button>
-                <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
-                    <i class="fa-solid fa-heart mr-1"></i> Mamá
+                <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                    <i class="fa-solid fa-heart mr-1 text-pink-500"></i> Mamá
                 </button>
             </div>
         </div>
@@ -70,91 +97,104 @@
 
         <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
-            <!-- Banner Gamificado -->
-            <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl">
-                    <i class="fa-solid fa-trophy"></i>
+            <!-- Banner Gamificado con Orejas de Gatito -->
+            <div class="cat-ears-card bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-4 -bottom-6 opacity-15 text-9xl">
+                    <i class="fa-solid fa-cat"></i>
                 </div>
                 <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider backdrop-blur-sm">¡Hola, Emilia! ✨</span>
-                        <h2 class="text-2xl md:text-3xl font-bold mt-1">Tu espacio personal</h2>
-                        <p class="text-pink-100 text-sm mt-1">Organiza tus tareas del colegio, cumple tus rutinas y mantén tu racha.</p>
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider backdrop-blur-md inline-flex items-center gap-1">
+                            ¡Hola, Emilia! 🐱✨
+                        </span>
+                        <h2 class="text-2xl md:text-3xl font-bold mt-1.5">Tu Espacio Gatuno</h2>
+                        <p class="text-pink-100 text-sm mt-0.5">Organiza tus tareas del colegio, cumple tus hábitos y suma huellitas 🐾.</p>
                     </div>
-                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/20">
-                        <div class="text-3xl text-amber-300 animate-bounce">🔥</div>
+                    <div class="flex items-center gap-3 bg-white/20 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/30 shadow-inner">
+                        <div class="text-3xl animate-bounce">🐾</div>
                         <div>
-                            <div class="text-xs text-pink-100 font-medium">Racha Actual</div>
+                            <div class="text-xs text-pink-100 font-medium">Racha Gatuna</div>
                             <div class="text-2xl font-extrabold" id="streak-count">5 días</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Navegación de Pestañas -->
-            <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto hide-scrollbar">
-                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-pink-500 text-white shadow-md">
-                    <i class="fa-solid fa-clock-rotate-left mr-2"></i> Rutinas y Horarios
+            <!-- Navegación de Pestañas con Iconos Gatunos -->
+            <div class="flex space-x-2 border-b border-pink-200 pb-2 overflow-x-auto hide-scrollbar">
+                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-rose-500 text-white shadow-md">
+                    <i class="fa-solid fa-paw mr-2"></i> Rutinas y Horarios
                 </button>
-                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
-                    <i class="fa-solid fa-graduation-cap mr-2"></i> Mi Agenda Escolar
+                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100">
+                    <i class="fa-solid fa-graduation-cap mr-2 text-purple-500"></i> Mi Agenda Escolar
                 </button>
-                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
-                    <i class="fa-solid fa-comments mr-2"></i> Muro & Chat
+                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100">
+                    <i class="fa-solid fa-comments mr-2 text-pink-500"></i> Muro & Chat
                 </button>
             </div>
 
             <!-- Pestaña 1: Rutinas y Deberes -->
             <div id="hija-tab-rutinas" class="space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-list-check text-pink-500 mr-2"></i> Mis Deberes Diarios</h3>
-                    <span id="rutinas-progress" class="text-xs font-bold bg-pink-100 text-pink-700 px-3 py-1 rounded-full">0/0 completados</span>
+                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-rose-500"></i> Mis Deberes Diarios
+                    </h3>
+                    <span id="rutinas-progress" class="text-xs font-bold bg-rose-100 text-rose-700 px-3 py-1 rounded-full border border-rose-200">
+                        0/0 completados 🐾
+                    </span>
                 </div>
                 <div id="rutinas-list-container" class="grid gap-3">
-                    <!-- Tarjetas de rutinas -->
+                    <!-- Tarjetas de rutinas cargadas por script -->
                 </div>
             </div>
 
             <!-- Pestaña 2: Agenda Escolar (Administrada por Emilia) -->
             <div id="hija-tab-agenda" class="space-y-6 hidden">
-                <!-- Formulario para que Emilia agregue sus pruebas/tareas -->
-                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md space-y-3">
-                    <h3 class="font-bold text-base flex items-center"><i class="fa-solid fa-pen-to-square mr-2"></i> Anotar una nueva evaluación o tarea escolar</h3>
+                <!-- Formulario Bonito de Gatito para Emilia -->
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md space-y-3 relative overflow-hidden">
+                    <div class="absolute right-2 bottom-0 opacity-10 text-8xl pointer-events-none">🐱</div>
+                    <h3 class="font-bold text-base flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Anotar una nueva prueba o tarea del colegio 🐾
+                    </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <select id="hija-agenda-type" class="bg-white/10 text-white placeholder-purple-200 border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
-                            <option value="evaluacion" class="text-slate-800">Prueba / Evaluación</option>
-                            <option value="tarea" class="text-slate-800">Tarea Escolar</option>
+                        <select id="hija-agenda-type" class="bg-white/10 text-white border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                            <option value="evaluacion" class="text-slate-800">Prueba / Evaluación 📝</option>
+                            <option value="tarea" class="text-slate-800">Tarea Escolar 📖</option>
                         </select>
-                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar? (ej. Prueba de Historia)..." class="bg-white/10 text-white placeholder-purple-200 border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
-                        <input type="date" id="hija-agenda-date" class="bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-white/10 text-white placeholder-purple-200 border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                        <input type="date" id="hija-agenda-date" class="bg-white/10 text-white border border-white/30 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:bg-purple-700">
                     </div>
-                    <button onclick="addAgendaItemHija()" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
-                        <i class="fa-solid fa-plus-circle mr-1"></i> Guardar en mi Agenda
+                    <button onclick="addAgendaItemHija()" class="w-full bg-amber-300 hover:bg-amber-400 text-slate-900 font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> Guardar en mi Agenda 🐾
                     </button>
                 </div>
 
-                <!-- Lista de Evaluaciones y Tareas de Emilia -->
+                <!-- Lista de Pendientes Escolares -->
                 <div class="space-y-3">
-                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-calendar-days text-purple-500 mr-2"></i> Mis Pendientes Escolares</h3>
-                    <div id="agenda-list-container" class="space-y-3">
-                        <!-- Items cargados -->
-                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-purple-500"></i> Mis Pendientes Escolares
+                    </h3>
+                    <div id="agenda-list-container" class="space-y-3"></div>
                 </div>
             </div>
 
             <!-- Pestaña 3: Muro & Chat -->
             <div id="hija-tab-social" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-96">
-                        <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-note-sticky text-amber-400 mr-2"></i> Muro de Papá y Mamá</h3>
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-col h-96">
+                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Muro de Papá y Mamá 🐾
+                        </h3>
                         <div id="muro-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                     </div>
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-96">
-                        <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-paper-plane text-pink-500 mr-2"></i> Chat Familiar</h3>
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-col h-96">
+                        <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-rose-500"></i> Chat Familiar
+                        </h3>
                         <div id="chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                         <div class="mt-3 flex gap-2">
-                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-pink-500" onkeypress="if(event.key==='Enter') sendChatMessage()">
-                            <button onclick="sendChatMessage()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 border border-pink-200 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-rose-400" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                            <button onclick="sendChatMessage()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-2xl text-sm font-semibold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
@@ -167,63 +207,82 @@
         <div id="view-admin" class="space-y-6 hidden">
             <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span id="admin-role-badge" class="bg-pink-500 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Panel de Papá / Mamá</span>
-                    <h2 class="text-2xl md:text-3xl font-bold mt-1">Supervisión y Apoyo</h2>
-                    <p class="text-slate-300 text-sm mt-1">Gestiona las rutinas diarias de Emilia, revisa su agenda escolar y apóyala en tiempo real.</p>
+                    <span id="admin-role-badge" class="bg-rose-500 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Panel de Papá / Mamá</span>
+                    <h2 class="text-2xl md:text-3xl font-bold mt-1">Supervisión Gatuna 🐾</h2>
+                    <p class="text-slate-300 text-sm mt-1">Gestiona las rutinas de Emilia, ajusta sus horarios y revisa sus notas.</p>
                 </div>
                 <div class="bg-slate-700/60 border border-slate-600 px-4 py-3 rounded-2xl flex items-center gap-3">
-                    <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
                     <div>
-                        <div class="text-xs text-slate-400">Actividad actual de Emilia</div>
+                        <div class="text-xs text-slate-400">Estado de Emilia</div>
                         <div class="text-sm font-bold text-white" id="admin-status-text">Conectada - Al día</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Controles Administrador -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Configurar Rutinas y Horarios -->
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-4">
-                    <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-clock text-pink-500 mr-2"></i> Crear Rutina o Deber con Horario</h3>
+                <!-- Configurar Rutinas -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-rose-500"></i> Agregar Rutina con Horario
+                    </h3>
                     <div class="space-y-2">
-                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full border border-slate-200 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-rose-400">
                         <div class="flex gap-2">
-                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
-                            <input type="text" id="new-rutina-icon" placeholder="Icono (ej. fa-star)" value="fa-star" class="w-1/2 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 border border-slate-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-rose-400">
+                            <select id="new-rutina-icon" class="w-1/2 border border-slate-200 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-rose-400">
+                                <option value="fa-cat">🐱 Gatito</option>
+                                <option value="fa-paw">🐾 Huellita</option>
+                                <option value="fa-tv">📺 Serie</option>
+                                <option value="fa-shirt">👕 Ropa</option>
+                                <option value="fa-bed">🛏️ Cama</option>
+                                <option value="fa-broom">🧹 Limpiar</option>
+                                <option value="fa-hands-holding-child">🤝 Ayudar</option>
+                                <option value="fa-book-open">📖 Cuadernos</option>
+                                <option value="fa-pencil">✏️ Tareas</option>
+                                <option value="fa-utensils">🍽️ Cenar</option>
+                                <option value="fa-shower">🚿 Ducha</option>
+                                <option value="fa-face-smile">🪥 Dientes</option>
+                                <option value="fa-moon">🌙 Dormir</option>
+                            </select>
                         </div>
-                        <button onclick="addRutina()" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-xl text-sm font-semibold transition-all">
+                        <button onclick="addRutina()" class="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-2xl text-sm font-bold transition-all">
                             <i class="fa-solid fa-plus mr-1"></i> Agregar a Rutinas
                         </button>
                     </div>
-                    <div class="border-t pt-3">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Editar Horarios de Rutinas</h4>
+                    <div class="border-t border-pink-100 pt-3">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Editar Horarios</h4>
                         <div id="admin-rutinas-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
 
                 <!-- Mensaje al Muro -->
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-4">
-                    <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-note-sticky text-amber-400 mr-2"></i> Dejar Nota en el Muro de Emilia</h3>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
+                    </h3>
                     <div class="space-y-2">
-                        <textarea id="muro-input" placeholder="Escribe un mensaje de ánimo o recomendación..." rows="3" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500"></textarea>
-                        <button onclick="addMuroPost()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-sm font-semibold transition-all">
-                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar en Muro
+                        <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="3" class="w-full border border-slate-200 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                        <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-2 rounded-2xl text-sm transition-all">
+                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 🐾
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Listado de Agenda registrado por Emilia -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
-                <h3 class="font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-purple-500 mr-2"></i> Agenda Escolar Anotada por Emilia</h3>
-                <p class="text-xs text-slate-500">Aquí puedes revisar las pruebas y tareas que Emilia ha registrado, junto con las notas que ha obtenido.</p>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100 space-y-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-purple-500"></i> Agenda Escolar Registrada por Emilia
+                </h3>
+                <p class="text-xs text-slate-500">A continuación se muestran las pruebas, trabajos y notas ingresadas por Emilia.</p>
                 <div id="admin-agenda-list" class="space-y-3"></div>
             </div>
         </div>
 
     </main>
 
-    <!-- SCRIPT DE LÓGICA -->
+    <!-- LÓGICA JAVASCRIPT -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -245,13 +304,13 @@
         ];
 
         const defaultMuro = [
-            { id: 1, author: 'Papá', text: '¡Mucho éxito organizando tus pruebas esta semana!', date: '12 Oct' },
-            { id: 2, author: 'Mamá', text: '¡Avisa si necesitas ayuda para estudiar!', date: '13 Oct' }
+            { id: 1, author: 'Papá', text: '¡Mucho éxito en tu semana Emilia! Recuerda descansar entre tareas. 🐾', date: '12 Oct' },
+            { id: 2, author: 'Mamá', text: '¡Te dejamos tus galletitas favoritas para el estudio! 🐱', date: '13 Oct' }
         ];
 
         const defaultChat = [
             { id: 1, sender: 'Papá', text: '¿Cómo te fue hoy en el colegio, Emilia?', time: '14:00' },
-            { id: 2, sender: 'Emilia', text: '¡Bien! Anoté una tarea nueva en mi agenda.', time: '14:05' }
+            { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🐾.', time: '14:05' }
         ];
 
         let appData = JSON.parse(localStorage.getItem('agenda_app_data')) || {
@@ -278,15 +337,14 @@
             document.getElementById('hija-tab-agenda').classList.add('hidden');
             document.getElementById('hija-tab-social').classList.add('hidden');
 
-            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
-            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
-            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
+            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
+            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
+            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-white text-slate-600 hover:bg-pink-50 shadow-sm border border-pink-100";
 
             document.getElementById(`hija-tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-pink-500 text-white shadow-md";
+            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-rose-500 text-white shadow-md";
         }
 
-        // Función para que EMILIA registre sus propias tareas y pruebas
         function addAgendaItemHija() {
             const type = document.getElementById('hija-agenda-type').value;
             const title = document.getElementById('hija-agenda-title').value.trim();
@@ -354,7 +412,7 @@
         function addRutina() {
             const title = document.getElementById('new-rutina-title').value.trim();
             const time = document.getElementById('new-rutina-time').value || '12:00';
-            const icon = document.getElementById('new-rutina-icon').value.trim() || 'fa-star';
+            const icon = document.getElementById('new-rutina-icon').value || 'fa-paw';
             if (!title) return;
 
             appData.rutinas.push({
@@ -426,9 +484,9 @@
         function render() {
             const role = appData.role;
 
-            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-pink-500 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
-            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-rose-500 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3.5 py-1.5 rounded-xl transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3.5 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
 
             const viewHija = document.getElementById('view-hija');
             const viewAdmin = document.getElementById('view-admin');
@@ -456,25 +514,25 @@
                 const isProgress = rutina.status === 'progress';
 
                 const div = document.createElement('div');
-                div.className = `flex items-center justify-between p-4 rounded-2xl border transition-all ${rutina.completed ? 'bg-emerald-50/60 border-emerald-200 opacity-80' : (isProgress ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/40 shadow-md' : 'bg-white border-slate-100 shadow-sm')}`;
+                div.className = `flex items-center justify-between p-4 rounded-3xl border transition-all ${rutina.completed ? 'bg-emerald-50/70 border-emerald-200 opacity-80' : (isProgress ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/40 shadow-md' : 'bg-white border-pink-100 shadow-sm')}`;
                 div.innerHTML = `
                     <div class="flex items-center space-x-3">
-                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ${rutina.completed ? 'bg-emerald-500 text-white' : (isProgress ? 'bg-amber-500 text-white animate-pulse' : 'bg-pink-100 text-pink-600')}">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ${rutina.completed ? 'bg-emerald-500 text-white' : (isProgress ? 'bg-amber-500 text-white animate-pulse' : 'bg-rose-100 text-rose-600')}">
                             <i class="fa-solid ${rutina.icon}"></i>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2 py-0.5 rounded-md border border-slate-200"><i class="fa-regular fa-clock mr-1"></i>${rutina.time || '12:00'}</span>
-                                ${isProgress ? '<span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-fire mr-1"></i>En progreso</span>' : ''}
+                                <span class="bg-pink-50 text-rose-600 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-pink-100"><i class="fa-regular fa-clock mr-1"></i>${rutina.time || '12:00'}</span>
+                                ${isProgress ? '<span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">🐾 En progreso</span>' : ''}
                             </div>
                             <h4 class="font-semibold text-slate-800 text-sm md:text-base mt-1 ${rutina.completed ? 'line-through text-slate-400' : ''}">${rutina.title}</h4>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="setRutinaProgress(${rutina.id})" title="Marcar como en progreso" class="p-2.5 rounded-xl text-xs font-semibold transition-all ${isProgress ? 'bg-amber-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                        <button onclick="setRutinaProgress(${rutina.id})" title="Marcar como en progreso" class="p-2.5 rounded-2xl text-xs font-semibold transition-all ${isProgress ? 'bg-amber-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                             <i class="fa-solid fa-bolt"></i>
                         </button>
-                        <button onclick="toggleRutinaCheck(${rutina.id})" class="w-9 h-9 rounded-xl flex items-center justify-center border-2 transition-all ${rutina.completed ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'border-slate-300 hover:border-pink-500 bg-white'}">
+                        <button onclick="toggleRutinaCheck(${rutina.id})" class="w-9 h-9 rounded-2xl flex items-center justify-center border-2 transition-all ${rutina.completed ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'border-slate-300 hover:border-rose-400 bg-white'}">
                             ${rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : ''}
                         </button>
                     </div>
@@ -482,7 +540,7 @@
                 rutinasContainer.appendChild(div);
             });
 
-            document.getElementById('rutinas-progress').innerText = `${completedCount}/${appData.rutinas.length} completados`;
+            document.getElementById('rutinas-progress').innerText = `${completedCount}/${appData.rutinas.length} completados 🐾`;
 
             // Agenda
             const agendaContainer = document.getElementById('agenda-list-container');
@@ -490,11 +548,11 @@
             appData.agenda.forEach(item => {
                 const isEval = item.type === 'evaluacion';
                 const div = document.createElement('div');
-                div.className = `p-4 rounded-2xl border transition-all ${item.completed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100 shadow-sm'}`;
+                div.className = `p-4 rounded-3xl border transition-all ${item.completed ? 'bg-slate-50 border-slate-200' : 'bg-white border-purple-100 shadow-sm'}`;
                 div.innerHTML = `
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white ${isEval ? 'bg-purple-500' : 'bg-indigo-500'}">
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white ${isEval ? 'bg-purple-500' : 'bg-indigo-500'}">
                                 <i class="fa-solid ${isEval ? 'fa-file-lines' : 'fa-book'}"></i>
                             </div>
                             <div>
@@ -507,11 +565,11 @@
                             ${isEval ? `
                                 <div class="flex items-center gap-1">
                                     <span class="text-xs font-bold text-slate-500">Mi Nota:</span>
-                                    <input type="text" value="${item.nota \vert{}\vert{} ''}" onchange="updateNota(${item.id}, this.value)" placeholder="Ej. 6.5" class="w-16 border border-slate-200 rounded-lg px-2 py-1 text-xs text-center font-bold text-purple-600 focus:outline-none focus:border-purple-500">
+                                    <input type="text" value="${item.nota \vert{}\vert{} ''}" onchange="updateNota(${item.id}, this.value)" placeholder="Ej. 6.5" class="w-16 border border-purple-200 rounded-xl px-2 py-1 text-xs text-center font-bold text-purple-600 focus:outline-none focus:border-purple-500">
                                 </div>
                             ` : ''}
-                            <button onclick="toggleAgendaCheck(${item.id})" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all ${item.completed ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
-                                <i class="fa-solid ${item.completed ? 'fa-check-double' : 'fa-check'}"></i> ${item.completed ? 'Completada' : 'Marcar lista'}
+                            <button onclick="toggleAgendaCheck(${item.id})" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ${item.completed ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                <i class="fa-solid ${item.completed ? 'fa-check-double' : 'fa-check'}"></i> ${item.completed ? 'Completada 🐾' : 'Marcar lista'}
                             </button>
                             <button onclick="deleteAgendaItem(${item.id})" class="text-slate-400 hover:text-rose-500 p-1 text-xs">
                                 <i class="fa-solid fa-trash"></i>
@@ -527,7 +585,7 @@
             muroContainer.innerHTML = '';
             appData.muro.forEach(post => {
                 const div = document.createElement('div');
-                div.className = "bg-amber-50/70 border border-amber-200/60 p-3.5 rounded-2xl";
+                div.className = "bg-amber-50/80 border border-amber-200/70 p-3.5 rounded-2xl";
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-xs text-amber-800"><i class="fa-solid fa-user-shield mr-1"></i> ${post.author}</span>
@@ -546,8 +604,8 @@
                 const div = document.createElement('div');
                 div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
                 div.innerHTML = `
-                    <div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ${isMe ? 'bg-pink-500 text-white rounded-br-none' : 'bg-slate-100 text-slate-700 rounded-bl-none'}">
-                        <div class="font-bold text-[10px] opacity-75 mb-0.5">${msg.sender}</div>
+                    <div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ${isMe ? 'bg-rose-500 text-white rounded-br-none' : 'bg-pink-50 border border-pink-100 text-slate-700 rounded-bl-none'}">
+                        <div class="font-bold text-[10px] opacity-80 mb-0.5">${msg.sender}</div>
                         <div>${msg.text}</div>
                     </div>
                     <span class="text-[9px] text-slate-400 mt-1 px-1">${msg.time}</span>
@@ -560,8 +618,8 @@
         function renderAdminView(role) {
             const isPapa = role === 'papa';
             const badge = document.getElementById('admin-role-badge');
-            badge.innerText = isPapa ? 'Panel de Papá' : 'Panel de Mamá';
-            badge.className = isPapa ? 'bg-slate-900 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider' : 'bg-pink-600 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider';
+            badge.innerText = isPapa ? 'Panel de Papá 🐾' : 'Panel de Mamá 🐾';
+            badge.className = isPapa ? 'bg-slate-900 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider' : 'bg-pink-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider';
 
             const inProgressRutina = appData.rutinas.find(r => r.status === 'progress');
             const statusIndicator = document.getElementById('admin-presence-indicator');
@@ -571,7 +629,7 @@
                 statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
                 statusText.innerText = `Haciendo: ${inProgressRutina.title} (${inProgressRutina.time})`;
             } else {
-                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-400 animate-pulse";
                 statusText.innerText = "Conectada - Al día";
             }
 
@@ -580,14 +638,14 @@
             adminRutinasList.innerHTML = '';
             appData.rutinas.forEach(rutina => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-sm gap-2";
+                div.className = "flex items-center justify-between bg-pink-50/50 border border-pink-100 p-2.5 rounded-2xl text-sm gap-2";
                 div.innerHTML = `
                     <div class="flex items-center space-x-2 truncate">
-                        <i class="fa-solid ${rutina.icon} text-pink-500"></i>
+                        <i class="fa-solid ${rutina.icon} text-rose-500"></i>
                         <span class="truncate text-slate-700 text-xs font-medium">${rutina.title}</span>
                     </div>
                     <div class="flex items-center gap-1">
-                        <input type="time" value="${rutina.time || '12:00'}" onchange="updateRutinaTime(${rutina.id}, this.value)" class="text-xs border border-slate-200 rounded px-1 py-0.5 text-slate-600 focus:outline-none focus:border-pink-500">
+                        <input type="time" value="${rutina.time || '12:00'}" onchange="updateRutinaTime(${rutina.id}, this.value)" class="text-xs border border-slate-200 rounded-lg px-1.5 py-0.5 text-slate-600 focus:outline-none focus:border-rose-400">
                         <button onclick="deleteRutina(${rutina.id})" class="text-rose-500 hover:text-rose-700 p-1 text-xs">
                             <i class="fa-solid fa-trash"></i>
                         </button>
@@ -604,12 +662,12 @@
             } else {
                 appData.agenda.forEach(item => {
                     const div = document.createElement('div');
-                    div.className = "flex items-center justify-between bg-slate-50 border border-slate-100 p-3 rounded-2xl text-sm";
+                    div.className = "flex items-center justify-between bg-purple-50/50 border border-purple-100 p-3 rounded-2xl text-sm";
                     div.innerHTML = `
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${item.type === 'evaluacion' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'}">${item.type}</span>
                             <h4 class="font-semibold text-slate-800 text-sm mt-1">${item.title}</h4>
-                            <span class="text-xs text-slate-400">Fecha: ${item.date} ${item.nota ? `| Nota ingresada por Emilia: <b class="text-purple-600">${item.nota}</b>` : '| (Sin nota)'}</span>
+                            <span class="text-xs text-slate-400">Fecha: ${item.date} ${item.nota ? `| Nota de Emilia: <b class="text-purple-600">${item.nota}</b>` : '| (Sin nota registrada)'}</span>
                         </div>
                         <button onclick="deleteAgendaItem(${item.id})" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all">
                             <i class="fa-solid fa-trash mr-1"></i> Eliminar
