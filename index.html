@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- Botón de Instalación y Selector de Roles -->
+            <!-- Botón de Instalación y Selector de Roles protegidos -->
             <div class="flex items-center gap-2">
                 <button id="btn-install-app" onclick="installPWA()" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 animate-bounce">
                     <i class="fa-solid fa-mobile-screen-button text-sm"></i>
@@ -88,19 +88,43 @@
                 </button>
 
                 <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
-                    <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                    <button onclick="requestRoleSwitch('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
                         <i class="fa-solid fa-cat mr-1 text-rose-500"></i> Emilia
                     </button>
-                    <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                        <i class="fa-solid fa-user-tie mr-1"></i> Papá
+                    <button onclick="requestRoleSwitch('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                        <i class="fa-solid fa-lock mr-1 text-xs"></i> Papá
                     </button>
-                    <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
-                        <i class="fa-solid fa-heart mr-1 text-pink-500"></i> Mamá
+                    <button onclick="requestRoleSwitch('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600">
+                        <i class="fa-solid fa-lock mr-1 text-xs"></i> Mamá
                     </button>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- MODAL DE PIN DE SEGURIDAD -->
+    <div id="pin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-6 space-y-4 text-center shadow-2xl border border-pink-100 relative">
+            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="w-14 h-14 bg-slate-800 text-amber-400 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-lg text-slate-800">Acceso de Padres 🔒</h3>
+                <p class="text-xs text-slate-500 mt-1">Ingresa el PIN de 4 dígitos para continuar.</p>
+            </div>
+            
+            <div class="space-y-3">
+                <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest border-2 border-slate-200 focus:border-rose-500 rounded-2xl py-2 focus:outline-none bg-slate-50" onkeypress="if(event.key==='Enter') verifyPin()">
+                <p id="pin-error" class="text-xs text-rose-500 font-bold hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> PIN incorrecto</p>
+                <button onclick="verifyPin()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
+                    Ingresar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL DE INSTRUCCIONES DE INSTALACIÓN -->
     <div id="install-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -256,6 +280,25 @@
                 </div>
             </div>
 
+            <!-- Configurar PIN y Ajustes -->
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">PIN de Seguridad para Padres</h4>
+                        <p class="text-xs text-slate-500">Clave para bloquear el cambio de rol a Papá o Mamá.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="password" id="new-pin-input" maxlength="4" placeholder="1234" class="w-20 text-center font-bold border border-slate-200 rounded-xl px-2 py-1.5 text-sm focus:outline-none focus:border-rose-400">
+                    <button onclick="changeAdminPin()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        Guardar PIN
+                    </button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-pink-100 space-y-4">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2">
@@ -365,6 +408,7 @@
 
         let appData = JSON.parse(localStorage.getItem('agenda_app_data')) || {
             role: 'hija',
+            adminPin: '1234',
             rutinas: defaultRutinas,
             agenda: defaultAgenda,
             muro: defaultMuro,
@@ -372,10 +416,13 @@
             streak: 5
         };
 
-        // Escuchar cambios en la nube (Firebase Realtime)
+        let pendingRole = null;
+
+        // Escuchar cambios en Firebase
         appRef.on('value', (snapshot) => {
             const cloudData = snapshot.val();
             if (cloudData) {
+                appData.adminPin = cloudData.adminPin || '1234';
                 appData.rutinas = cloudData.rutinas || defaultRutinas;
                 appData.agenda = cloudData.agenda || defaultAgenda;
                 appData.muro = cloudData.muro || defaultMuro;
@@ -385,15 +432,14 @@
                 localStorage.setItem('agenda_app_data', JSON.stringify(appData));
                 render();
             } else {
-                // Si la base de datos está vacía, subir los datos por defecto iniciales
                 saveData();
             }
         });
 
         function saveData() {
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
-            // Enviar actualización a Firebase
             appRef.set({
+                adminPin: appData.adminPin || '1234',
                 rutinas: appData.rutinas,
                 agenda: appData.agenda,
                 muro: appData.muro,
@@ -402,7 +448,57 @@
             });
         }
 
-        // Lógica de Instalación PWA
+        // LÓGICA DE CONTROL DE ROLES Y PIN DE SEGURIDAD
+        function requestRoleSwitch(role) {
+            if (role === 'hija') {
+                switchRole('hija');
+            } else {
+                if (appData.role === role) return; // Ya está en ese rol
+                pendingRole = role;
+                document.getElementById('pin-input').value = '';
+                document.getElementById('pin-error').classList.add('hidden');
+                document.getElementById('pin-modal').classList.remove('hidden');
+                setTimeout(() => document.getElementById('pin-input').focus(), 100);
+            }
+        }
+
+        function verifyPin() {
+            const enteredPin = document.getElementById('pin-input').value.trim();
+            const correctPin = appData.adminPin || '1234';
+
+            if (enteredPin === correctPin) {
+                closePinModal();
+                switchRole(pendingRole);
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+                document.getElementById('pin-input').value = '';
+            }
+        }
+
+        function closePinModal() {
+            document.getElementById('pin-modal').classList.add('hidden');
+            pendingRole = null;
+        }
+
+        function changeAdminPin() {
+            const newPin = document.getElementById('new-pin-input').value.trim();
+            if (newPin.length === 4 && !isNaN(newPin)) {
+                appData.adminPin = newPin;
+                saveData();
+                alert('¡PIN cambiado con éxito a ' + newPin + '!');
+                document.getElementById('new-pin-input').value = '';
+            } else {
+                alert('El PIN debe ser un número de exactamente 4 dígitos.');
+            }
+        }
+
+        function switchRole(role) {
+            appData.role = role;
+            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+            render();
+        }
+
+        // Lógica PWA
         let deferredPrompt;
         const installBtn = document.getElementById('btn-install-app');
 
@@ -431,12 +527,6 @@
 
         if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
             if (installBtn) installBtn.classList.add('hidden');
-        }
-
-        function switchRole(role) {
-            appData.role = role;
-            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
-            render();
         }
 
         function switchHijaTab(tab) {
