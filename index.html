@@ -35,6 +35,7 @@
     <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <style>
         body { font-family: 'Quicksand', sans-serif; }
@@ -98,6 +99,27 @@
             </div>
         </div>
     </header>
+
+    <!-- PANTALLA DE INGRESO (CUENTA FAMILIAR) -->
+    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 z-[60] flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900/95 rounded-3xl max-w-sm w-full p-6 space-y-5 text-center shadow-2xl border border-teal-700/50 text-slate-100">
+            <div class="w-16 h-16 bg-teal-950 text-teal-400 border border-teal-500 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-inner">
+                <i class="fa-solid fa-torii-gate"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-xl text-teal-200">Cuartel de la Familia</h3>
+                <p class="text-xs text-slate-400 mt-1">Ingresa con la cuenta familiar para sincronizar la agenda. Solo se pide una vez en cada celular.</p>
+            </div>
+            <div class="space-y-3 text-left">
+                <input type="email" id="login-email" autocomplete="username" placeholder="Correo de la familia" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-400 select-text">
+                <input type="password" id="login-password" autocomplete="current-password" placeholder="Contraseña" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-400 select-text" onkeypress="if(event.key==='Enter') loginFamily()">
+                <p id="login-error" class="text-xs text-rose-400 font-bold hidden"></p>
+                <button id="login-btn" onclick="loginFamily()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold py-3 rounded-2xl text-sm transition-all shadow-xl uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Entrar al cuartel
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL CELEBRACIÓN 100% -->
     <div id="win-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
@@ -420,6 +442,9 @@
                     <button onclick="resetDataToDefault()" title="Restablecer datos por defecto" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ml-2">
                         <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
                     </button>
+                    <button onclick="logoutFamily()" title="Cerrar la sesión familiar en este celular" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Salir
+                    </button>
                 </div>
             </div>
 
@@ -676,28 +701,87 @@
             if (typeof firebase !== 'undefined') {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
-                appRef = db.ref('agenda_emilia');
 
-                appRef.on('value', (snapshot) => {
-                    const cloudData = snapshot.val();
-                    if (cloudData) {
-                        appData = sanitizeData(cloudData);
-                        checkDailyReset();
-                        localStorage.setItem('agenda_app_data', JSON.stringify(appData));
-                        updateStatus(true, 'Sincronizado en la Nube ☁️');
-                        render();
+                // La base de datos solo se conecta cuando el celular inició sesión
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        connectCloud();
                     } else {
-                        saveData();
-                        updateStatus(true, 'Nube Activada ☁️');
+                        disconnectCloud();
+                        document.getElementById('login-screen').classList.remove('hidden');
+                        updateStatus(false, 'Esperando ingreso');
                     }
-                }, (error) => {
-                    updateStatus(false, 'Modo Local Activo');
                 });
             } else {
                 updateStatus(false, 'Modo Local Activo');
             }
         } catch (e) {
             updateStatus(false, 'Modo Local Activo');
+        }
+
+        function connectCloud() {
+            if (appRef) return;
+            appRef = db.ref('agenda_emilia');
+            appRef.on('value', (snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData) {
+                    appData = sanitizeData(cloudData);
+                    checkDailyReset();
+                    localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+                    updateStatus(true, 'Sincronizado en la Nube ☁️');
+                    render();
+                } else {
+                    saveData();
+                    updateStatus(true, 'Nube Activada ☁️');
+                }
+            }, (error) => {
+                updateStatus(false, 'Sin permiso en la nube');
+            });
+        }
+
+        function disconnectCloud() {
+            if (appRef) { appRef.off(); appRef = null; }
+        }
+
+        const loginErrors = {
+            'auth/invalid-credential': 'Correo o contraseña incorrectos.',
+            'auth/wrong-password': 'Correo o contraseña incorrectos.',
+            'auth/user-not-found': 'Correo o contraseña incorrectos.',
+            'auth/invalid-email': 'El correo no es válido.',
+            'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
+            'auth/network-request-failed': 'Sin conexión a internet.',
+            'auth/operation-not-allowed': 'El ingreso con correo no está activado en Firebase.'
+        };
+
+        async function loginFamily() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+            errorEl.classList.add('hidden');
+            if (!email || !password) {
+                errorEl.textContent = 'Escribe el correo y la contraseña.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            btn.disabled = true;
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                document.getElementById('login-password').value = '';
+            } catch (err) {
+                errorEl.textContent = loginErrors[err.code] || 'No se pudo ingresar. Inténtalo de nuevo.';
+                errorEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function logoutFamily() {
+            if (confirm('¿Cerrar la sesión familiar en este celular? Habrá que volver a ingresar el correo y la contraseña.')) {
+                switchRole('hija');
+                firebase.auth().signOut();
+            }
         }
 
         function updateStatus(online, message) {
