@@ -715,7 +715,9 @@
                 catalog: ensureArray(raw.catalog, []).sort((a, b) => Number(a.cost) - Number(b.cost)),
                 redemptions: ensureArray(raw.redemptions, []).sort((a, b) => Number(b.id) - Number(a.id)),
                 unlockedThemes: (raw.unlockedThemes && typeof raw.unlockedThemes === 'object') ? raw.unlockedThemes : {},
-                unlockedAvatars: (raw.unlockedAvatars && typeof raw.unlockedAvatars === 'object') ? raw.unlockedAvatars : {}
+                unlockedAvatars: (raw.unlockedAvatars && typeof raw.unlockedAvatars === 'object') ? raw.unlockedAvatars : {},
+                // presence.emilia = { online, lastSeen } — lo escribe solo el celular en modo Emilia
+                presence: (raw.presence && typeof raw.presence === 'object') ? raw.presence : {}
             };
         }
 
@@ -930,6 +932,44 @@
         }
 
         let connWatch = null;
+        let cloudConnected = false;
+
+        // ===== Presencia real de Emilia =====
+        // Solo el celular en modo Emilia publica si la app está abierta y visible.
+        // Si el celular pierde la conexión o se cierra la app, Firebase marca "fuera de línea" solo.
+        function syncPresence() {
+            if (!appRef || !cloudConnected || typeof firebase === 'undefined') return;
+            try {
+                const ref = appRef.child('presence/emilia');
+                const TS = firebase.database.ServerValue.TIMESTAMP;
+                if (currentRole === 'hija') {
+                    ref.onDisconnect().update({ online: false, lastSeen: TS });
+                    ref.update({ online: document.visibilityState !== 'hidden', lastSeen: TS });
+                } else if (presenceWasMine) {
+                    ref.onDisconnect().cancel();
+                    ref.update({ online: false, lastSeen: TS });
+                }
+                presenceWasMine = currentRole === 'hija';
+            } catch (e) { console.warn('Presencia:', e); }
+        }
+        let presenceWasMine = false;
+
+        function presenceLabel() {
+            const p = (appData.presence || {}).emilia;
+            if (!p || !p.lastSeen) return { online: false, text: 'Aún no se ha conectado' };
+            if (p.online) return { online: true, text: 'En línea ahora' };
+            const mins = Math.max(0, Math.round((Date.now() - Number(p.lastSeen)) / 60000));
+            let when;
+            if (mins < 1) when = 'hace un momento';
+            else if (mins < 60) when = 'hace ' + mins + ' min';
+            else {
+                const d = new Date(Number(p.lastSeen));
+                const hh = pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+                const ds = localDateStr(d);
+                when = ds === localDateStr() ? 'hoy a las ' + hh : (ds === addDays(localDateStr(), -1) ? 'ayer a las ' + hh : shortDate(ds) + ' a las ' + hh);
+            }
+            return { online: false, text: 'Última vez: ' + when };
+        }
         function connectCloud() {
             if (appRef) return;
             if (!connWatch) {
@@ -937,8 +977,10 @@
                 connWatch = db.ref('.info/connected');
                 connWatch.on('value', snap => {
                     if (!appRef) return;
-                    if (snap.val() === true) updateStatus(true, 'Sincronizado en la Nube ☁️');
+                    cloudConnected = snap.val() === true;
+                    if (cloudConnected) updateStatus(true, 'Sincronizado en la Nube ☁️');
                     else updateStatus(false, 'Sin conexión: se guardará al volver');
+                    syncPresence();
                 });
             }
             appRef = db.ref('agenda_emilia');
@@ -1222,6 +1264,7 @@
         function switchRole(role) {
             currentRole = role;
             localStorage.setItem('agenda_current_role', role);
+            syncPresence();
             render();
         }
 
@@ -1670,12 +1713,16 @@
             const statusIndicator = document.getElementById('admin-presence-indicator');
             const statusText = document.getElementById('admin-status-text');
 
-            if (inProgressRutina) {
+            const pres = presenceLabel();
+            if (inProgressRutina && pres.online) {
                 statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
                 statusText.innerText = 'Haciendo: ' + inProgressRutina.title + ' (' + inProgressRutina.time + ')';
-            } else {
+            } else if (pres.online) {
                 statusIndicator.className = "w-3 h-3 rounded-full bg-teal-400 animate-pulse";
-                statusText.innerText = "Conectada - Al día";
+                statusText.innerText = pres.text;
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-slate-500";
+                statusText.innerText = pres.text + (inProgressRutina ? ' · dejó a medias: ' + inProgressRutina.title : '');
             }
 
             // Rutinas Admin List
@@ -2641,10 +2688,12 @@
         // Si la app queda abierta pasada la medianoche, o vuelve a primer plano otro día
         setInterval(() => { if (checkDailyReset()) render(); }, 60000);
         setInterval(checkReminders, 30000);
+        setInterval(() => { if (currentRole !== 'hija') render(); }, 60000);
         setTimeout(checkReminders, 3000);
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && checkDailyReset()) render();
             if (document.visibilityState === 'visible') checkReminders();
+            syncPresence();
         });
     </script>
 </body>
