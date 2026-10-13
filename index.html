@@ -51,14 +51,9 @@
             position: relative;
             background: linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #0d9488 100%);
         }
-        .tokito-card::after {
-            content: '🌫️';
-            position: absolute;
-            right: 15px;
-            bottom: -10px;
-            font-size: 8rem;
-            opacity: 0.12;
-            pointer-events: none;
+        .avatar-img {
+            object-fit: cover;
+            object-position: center;
         }
     </style>
 </head>
@@ -68,12 +63,10 @@
     <header class="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-teal-800/50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 p-2.5 rounded-2xl shadow-md font-extrabold flex items-center justify-center">
-                    <i class="fa-solid fa-cloud text-xl"></i>
-                </div>
+                <img src="https://cdn-icons-png.flaticon.com/512/3408/3408506.png" alt="Tokito Avatar" class="w-10 h-10 rounded-2xl bg-teal-900 p-1 border border-teal-500 shadow-md">
                 <div>
                     <h1 class="font-bold text-xl text-teal-200 leading-tight flex items-center gap-1.5">
-                        Emilia Tokito <span class="text-teal-400 text-sm font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
+                        Emilia Tokito <span class="text-teal-400 text-xs font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
                     </h1>
                     <p class="text-xs text-slate-400" id="presence-subtitle">
                         <span id="status-dot" class="inline-block w-2 h-2 rounded-full bg-teal-400 animate-pulse mr-1"></span>
@@ -164,18 +157,27 @@
 
         <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
-            <!-- Banner Muichiro Tokito -->
+            
+            <!-- Banner Ilustrado de Muichiro Tokito -->
             <div class="tokito-card rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <span class="bg-teal-950/80 text-teal-300 border border-teal-700/60 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider backdrop-blur-md inline-flex items-center gap-1.5">
-                            ¡Hola, Emilia! ⚔️ Pilar de la Niebla
-                        </span>
-                        <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-2">Respiración de la Niebla 🌫️</h2>
-                        <p class="text-teal-200 text-sm mt-1">Cumple tus hábitos diarios, organiza tus tareas del colegio y domina tus metas.</p>
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <!-- Ilustración Chibi / Anime de Muichiro Tokito -->
+                        <div class="relative shrink-0">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=TokitoEmilia&backgroundColor=14b8a6" alt="Tokito Chibi" class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-slate-900 border-2 border-teal-400 shadow-xl object-cover">
+                            <span class="absolute -bottom-2 -right-1 bg-teal-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">Tokito 🌫️</span>
+                        </div>
+                        <div>
+                            <span class="bg-teal-950/90 text-teal-300 border border-teal-700/60 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider inline-flex items-center gap-1.5">
+                                ¡Hola, Emilia! ⚔️ Pilar de la Niebla
+                            </span>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-1.5">Respiración de la Niebla</h2>
+                            <p class="text-teal-200 text-xs md:text-sm mt-0.5">Cumple tus hábitos diarios, organiza tus tareas del colegio y domina tus metas.</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3 bg-slate-950/60 backdrop-blur-md px-4 py-3 rounded-2xl border border-teal-500/40 shadow-inner">
-                        <div class="text-3xl animate-pulse">⚔️</div>
+
+                    <div class="flex items-center gap-3 bg-slate-950/70 backdrop-blur-md px-4 py-3 rounded-2xl border border-teal-500/40 shadow-inner w-full md:w-auto justify-center">
+                        <div class="text-3xl animate-bounce">⚔️</div>
                         <div>
                             <div class="text-xs text-teal-300 font-medium">Racha de Cazadora</div>
                             <div class="text-2xl font-extrabold text-teal-100" id="streak-count">0 días</div>
@@ -265,10 +267,15 @@
         <!-- ================= VISTA PAPÁ / MAMÁ (PANEL ADMIN) ================= -->
         <div id="view-admin" class="space-y-6 hidden">
             <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border border-teal-800/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <span id="admin-role-badge" class="bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Panel de Papá / Mamá</span>
-                    <h2 class="text-2xl md:text-3xl font-bold mt-1 text-teal-100">Supervisión Tokito ⚔️</h2>
-                    <p class="text-slate-300 text-sm mt-1">Gestiona las rutinas de Emilia, ajusta sus horarios y revisa sus notas.</p>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-950 border border-teal-700 flex items-center justify-center text-teal-300 text-2xl shadow-inner">
+                        🛡️
+                    </div>
+                    <div>
+                        <span id="admin-role-badge" class="bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Panel de Papá / Mamá</span>
+                        <h2 class="text-2xl md:text-3xl font-bold mt-1 text-teal-100">Supervisión Tokito ⚔️</h2>
+                        <p class="text-slate-300 text-sm mt-0.5">Gestiona las rutinas de Emilia, ajusta sus horarios y revisa sus notas.</p>
+                    </div>
                 </div>
                 <div class="bg-slate-950/80 border border-teal-800 px-4 py-3 rounded-2xl flex items-center gap-3">
                     <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-teal-400 animate-pulse"></div>
@@ -361,7 +368,7 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT -->
+    <!-- LÓGICA JAVASCRIPT ROBUSTA -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -388,6 +395,13 @@
             { id: 1, sender: 'Papá', text: '¿Cómo te fue hoy en el colegio, Emilia?', time: '14:00' },
             { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🌫️.', time: '14:05' }
         ];
+
+        // Avatares visuales para cada integrante
+        const avatars = {
+            'Emilia': 'https://api.dicebear.com/7.x/bottts/svg?seed=TokitoEmilia&backgroundColor=14b8a6',
+            'Papá': 'https://api.dicebear.com/7.x/bottts/svg?seed=PapaHero&backgroundColor=0284c7',
+            'Mamá': 'https://api.dicebear.com/7.x/bottts/svg?seed=MamaHero&backgroundColor=ec4899'
+        };
 
         function sanitizeData(raw) {
             if (!raw || typeof raw !== 'object') raw = {};
@@ -759,11 +773,14 @@
 
             document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🌫️';
 
-            // Agenda Escolar
+            // Agenda Escolar con ilustración de estado vacío
             const agendaContainer = document.getElementById('agenda-list-container');
             agendaContainer.innerHTML = '';
             if (appData.agenda.length === 0) {
-                agendaContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6 bg-slate-900/60 rounded-3xl border border-teal-900/50">No tienes pruebas ni tareas anotadas. ¡Anota una arriba! 📜</p>';
+                agendaContainer.innerHTML = '<div class="text-center py-8 px-4 bg-slate-900/60 rounded-3xl border border-teal-900/50 space-y-2">' +
+                    '<img src="https://api.dicebear.com/7.x/bottts/svg?seed=EmptyAgenda&backgroundColor=0f766e" class="w-16 h-16 mx-auto rounded-2xl p-1 bg-slate-950 border border-teal-800/80 shadow-md" alt="Agenda vacía">' +
+                    '<p class="text-xs text-teal-200 font-bold">¡Tu agenda escolar está al día!</p>' +
+                    '<p class="text-[11px] text-slate-400">No tienes pruebas ni tareas anotadas por el momento. 📜</p></div>';
             } else {
                 appData.agenda.forEach(item => {
                     const isEval = item.type === 'evaluacion';
@@ -794,20 +811,26 @@
             const muroContainer = document.getElementById('muro-container');
             muroContainer.innerHTML = '';
             appData.muro.forEach(post => {
+                const avatarSrc = avatars[post.author] || avatars['Papá'];
                 const div = document.createElement('div');
-                div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl";
-                div.innerHTML = '<div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300"><i class="fa-solid fa-user-shield mr-1"></i> ' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p>';
+                div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl flex gap-3 items-start";
+                div.innerHTML = '<img src="' + avatarSrc + '" class="w-8 h-8 rounded-xl bg-slate-900 border border-amber-500/50 shrink-0" alt="Avatar">' +
+                    '<div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300">' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p></div>';
                 muroContainer.appendChild(div);
             });
 
-            // Chat
+            // Chat con Avatares
             const chatContainer = document.getElementById('chat-container');
             chatContainer.innerHTML = '';
             appData.chat.forEach(msg => {
                 const isMe = msg.sender === 'Emilia';
+                const avatarSrc = avatars[msg.sender] || avatars['Emilia'];
                 const div = document.createElement('div');
-                div.className = 'flex flex-col ' + (isMe ? 'items-end' : 'items-start');
-                div.innerHTML = '<div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div><span class="text-[9px] text-slate-500 mt-1 px-1">' + msg.time + '</span>';
+                div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
+                div.innerHTML = '<img src="' + avatarSrc + '" class="w-7 h-7 rounded-xl bg-slate-950 border border-teal-800 shrink-0" alt="Avatar">' +
+                    '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
+                    '<div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
+                    '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
                 chatContainer.appendChild(div);
             });
             chatContainer.scrollTop = chatContainer.scrollHeight;
