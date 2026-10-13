@@ -178,7 +178,7 @@
                         <div class="text-3xl animate-pulse">⚔️</div>
                         <div>
                             <div class="text-xs text-teal-300 font-medium">Racha de Cazadora</div>
-                            <div class="text-2xl font-extrabold text-teal-100" id="streak-count">5 días</div>
+                            <div class="text-2xl font-extrabold text-teal-100" id="streak-count">0 días</div>
                         </div>
                     </div>
                 </div>
@@ -361,7 +361,7 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT ROBUSTA -->
+    <!-- LÓGICA JAVASCRIPT -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -377,7 +377,6 @@
             { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
-        // Agenda completamente vacía por defecto
         const defaultAgenda = [];
 
         const defaultMuro = [
@@ -398,7 +397,7 @@
                 agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
                 muro: Array.isArray(raw.muro) ? raw.muro : defaultMuro,
                 chat: Array.isArray(raw.chat) ? raw.chat : defaultChat,
-                streak: typeof raw.streak === 'number' ? raw.streak : 5
+                streak: typeof raw.streak === 'number' ? raw.streak : 0
             };
         }
 
@@ -470,8 +469,9 @@
         }
 
         function resetDataToDefault() {
-            if (confirm("¿Quieres limpiar la agenda y dejar las rutinas al estado inicial?")) {
+            if (confirm("¿Quieres limpiar la agenda y reiniciar los datos al estado inicial?")) {
                 appData = sanitizeData({});
+                appData.streak = 0;
                 saveData();
                 render();
             }
@@ -724,7 +724,7 @@
         }
 
         function renderHijaView() {
-            document.getElementById('streak-count').innerText = appData.streak + ' días';
+            document.getElementById('streak-count').innerText = (appData.streak || 0) + ' días';
 
             const rutinasContainer = document.getElementById('rutinas-list-container');
             rutinasContainer.innerHTML = '';
@@ -759,7 +759,7 @@
 
             document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🌫️';
 
-            // Agenda Escolar en Vista Emilia
+            // Agenda Escolar
             const agendaContainer = document.getElementById('agenda-list-container');
             agendaContainer.innerHTML = '';
             if (appData.agenda.length === 0) {
@@ -843,7 +843,7 @@
                 adminRutinasList.appendChild(div);
             });
 
-            // Agenda registrada por Emilia en Vista Admin
+            // Agenda registrada por Emilia
             const adminAgendaList = document.getElementById('admin-agenda-list');
             adminAgendaList.innerHTML = '';
             if (appData.agenda.length === 0) {
