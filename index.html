@@ -7,6 +7,12 @@
     <!-- Manifest PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d9488">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Agenda Emilia">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -420,7 +426,10 @@
                 </div>
             </div>
 
-            <div class="space-y-4">
+            <!-- AVISO DE PENDIENTES -->
+            <div id="admin-pending-alert"></div>
+
+            <div id="admin-planner-section" class="space-y-4">
                 <!-- PLANNER SEMANAL (admin) -->
                 <div class="bg-slate-900 border border-teal-800/60 rounded-3xl p-4 md:p-5 space-y-4 shadow-md">
                     <div class="flex items-center justify-between gap-2">
@@ -456,7 +465,7 @@
             </div>
 
             <!-- PUNTOS Y TIENDA (PADRES) -->
-            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-amber-500/40 space-y-4">
+            <div id="admin-points-section" class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-amber-500/40 space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h3 class="font-bold text-amber-300 flex items-center gap-2 text-base">
                         <i class="fa-solid fa-coins text-amber-400"></i> Puntos de Emilia
@@ -901,8 +910,18 @@
             updateStatus(false, 'Modo Local Activo');
         }
 
+        let connWatch = null;
         function connectCloud() {
             if (appRef) return;
+            if (!connWatch) {
+                // Muestra si hay conexión; sin internet los cambios se guardan al volver
+                connWatch = db.ref('.info/connected');
+                connWatch.on('value', snap => {
+                    if (!appRef) return;
+                    if (snap.val() === true) updateStatus(true, 'Sincronizado en la Nube ☁️');
+                    else updateStatus(false, 'Sin conexión: se guardará al volver');
+                });
+            }
             appRef = db.ref('agenda_emilia');
             appRef.on('value', (snapshot) => {
                 const cloudData = snapshot.val();
@@ -1553,8 +1572,70 @@
             }
         }
 
+        // Días (últimos 7) con rutinas marcadas que esperan la confirmación de mamá
+        function daysAwaitingConfirmation() {
+            const today = localDateStr(), out = [];
+            for (let i = 0; i < 7; i++) {
+                const d = addDays(today, -i);
+                const l = appData.log[d];
+                if (!l) continue;
+                const c = appData.confirm[d] || {};
+                const n = rutinasFor(d).filter(r => l[itemKey(r.id)] && c[itemKey(r.id)] !== 'ok').length;
+                if (n) out.push({ date: d, count: n });
+            }
+            return out;
+        }
+
+        function goToReview(date) {
+            plannerSelect(date);
+            const el = document.getElementById('admin-planner-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function goToRedemptions() {
+            const el = document.getElementById('admin-points-section');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function renderPendingAlert(isPapa) {
+            const box = document.getElementById('admin-pending-alert');
+            if (!box) return;
+            const days = daysAwaitingConfirmation();
+            const reds = appData.redemptions.filter(r => r.status !== 'entregado');
+            if (!days.length && !reds.length) {
+                box.innerHTML = '<div class="bg-slate-900/70 border border-emerald-800/60 rounded-3xl px-4 py-3 flex items-center gap-3 text-sm text-emerald-200"><i class="fa-solid fa-circle-check text-emerald-400"></i> Todo al día: no hay nada esperando revisión.</div>';
+                return;
+            }
+            const total = days.reduce((s, d) => s + d.count, 0);
+            const today = localDateStr();
+            let rows = days.map(d => {
+                const label = d.date === today ? 'Hoy' : (d.date === addDays(today, -1) ? 'Ayer' : longDate(d.date));
+                return '<button onclick="goToReview(\'' + d.date + '\')" class="w-full flex items-center gap-3 bg-slate-950/80 hover:bg-slate-950 border border-amber-500/40 rounded-2xl px-3 py-2.5 text-left transition-all">' +
+                    '<span class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm shrink-0">' + d.count + '</span>' +
+                    '<span class="flex-1 min-w-0 text-sm text-amber-50"><b>' + label + '</b>: ' + d.count + (d.count === 1 ? ' rutina marcada' : ' rutinas marcadas') + '</span>' +
+                    '<span class="text-xs font-extrabold text-amber-300 shrink-0">' + (isPapa ? 'Ver' : 'Revisar') + ' <i class="fa-solid fa-chevron-right ml-1"></i></span></button>';
+            }).join('');
+            if (reds.length) {
+                rows += '<button onclick="goToRedemptions()" class="w-full flex items-center gap-3 bg-slate-950/80 hover:bg-slate-950 border border-amber-500/40 rounded-2xl px-3 py-2.5 text-left transition-all">' +
+                    '<span class="w-9 h-9 rounded-xl bg-amber-950 border border-amber-500 text-amber-300 flex items-center justify-center shrink-0"><i class="fa-solid fa-gift"></i></span>' +
+                    '<span class="flex-1 min-w-0 text-sm text-amber-50"><b>' + reds.length + (reds.length === 1 ? ' canje' : ' canjes') + ' por entregar</b>: ' + esc(reds.map(r => r.name).join(', ')) + '</span>' +
+                    '<span class="text-xs font-extrabold text-amber-300 shrink-0">Ver <i class="fa-solid fa-chevron-right ml-1"></i></span></button>';
+            }
+            const title = total
+                ? (isPapa ? total + (total === 1 ? ' rutina espera' : ' rutinas esperan') + ' la confirmación de mamá' : total + (total === 1 ? ' rutina espera' : ' rutinas esperan') + ' tu confirmación')
+                : 'Pendientes de la tienda';
+            const sub = total
+                ? (isPapa ? 'Los puntos y la racha de Emilia se suman cuando mamá confirma.' : 'Al confirmarlas, Emilia recibe sus puntos y el día cuenta para su racha.')
+                : '';
+            box.innerHTML = '<div class="bg-gradient-to-r from-amber-900/50 to-slate-900 border-2 border-amber-500/70 rounded-3xl p-4 space-y-3 shadow-lg">' +
+                '<div class="flex items-start gap-3"><span class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-bell"></i></span>' +
+                '<div><h3 class="font-extrabold text-amber-100 text-base leading-tight">' + title + '</h3>' + (sub ? '<p class="text-xs text-amber-200/80 mt-0.5">' + sub + '</p>' : '') + '</div></div>' +
+                '<div class="space-y-2">' + rows + '</div></div>';
+        }
+
         function renderAdminView(role) {
             const isPapa = role === 'papa';
+            renderPendingAlert(isPapa);
             const badge = document.getElementById('admin-role-badge');
             badge.innerText = isPapa ? 'Panel de Papá ⚔️' : 'Panel de Mamá ⚔️';
             badge.className = isPapa ? 'bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider' : 'bg-teal-400 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider';
@@ -2394,6 +2475,13 @@
 
         checkDailyReset();
         render();
+
+        // Modo sin internet y actualizaciones automáticas (solo en el sitio publicado)
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.warn('Service worker:', err));
+            });
+        }
 
         // Si la app queda abierta pasada la medianoche, o vuelve a primer plano otro día
         setInterval(() => { if (checkDailyReset()) render(); }, 60000);
