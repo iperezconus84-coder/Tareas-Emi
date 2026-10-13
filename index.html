@@ -70,6 +70,11 @@
 
         @keyframes point-pop { 0% { transform: translateY(6px) scale(.8); opacity: 0; } 30% { transform: translateY(0) scale(1.1); opacity: 1; } 100% { transform: translateY(-14px) scale(1); opacity: 0; } }
         .point-pop { animation: point-pop 1.6s ease-out forwards; }
+        @keyframes mission-in-right { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes mission-in-left { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
+        .mission-slide-left { animation: mission-in-right .28s ease-out; }
+        .mission-slide-right { animation: mission-in-left .28s ease-out; }
+        #mission-card { touch-action: pan-y; }
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
     </style>
@@ -1730,7 +1735,8 @@
         }
 
         // ================= ENTRENAMIENTO: UNA MISIÓN A LA VEZ =================
-        let trainingSkipped = [];
+        let trainingFocusId = null;   // misión elegida al deslizar
+        let trainingSlide = '';       // dirección de la última animación
         let pointPopUntil = 0;
 
         function trainingStarted() {
@@ -1739,38 +1745,64 @@
 
         function startTraining() {
             try { localStorage.setItem('training_started', localDateStr()); } catch (e) {}
-            trainingSkipped = [];
+            trainingFocusId = null;
             const m = currentMission();
             if (m && m.status !== 'progress') setRutinaProgress(m.id); else render();
         }
 
+        function pendingMissions() {
+            return appData.rutinas.filter(r => !r.completed);
+        }
+
         function currentMission() {
-            const pending = appData.rutinas.filter(r => !r.completed);
+            const pending = pendingMissions();
             if (!pending.length) return null;
-            const inProgress = pending.find(r => r.status === 'progress');
-            if (inProgress) return inProgress;
-            const fresh = pending.filter(r => !trainingSkipped.includes(r.id));
-            if (fresh.length) return fresh[0];
-            trainingSkipped = trainingSkipped.filter(id => pending.some(r => r.id === id));
-            return pending.find(r => r.id === trainingSkipped[0]) || pending[0];
+            return pending.find(r => r.id === trainingFocusId)
+                || pending.find(r => r.status === 'progress')
+                || pending[0];
+        }
+
+        // Pasa a la misión pendiente anterior (-1) o siguiente (+1)
+        function swipeMission(dir) {
+            const pending = pendingMissions();
+            if (pending.length < 2) return;
+            const cur = currentMission();
+            const idx = pending.findIndex(r => r.id === cur.id);
+            const target = pending[(idx + dir + pending.length) % pending.length];
+            trainingFocusId = target.id;
+            trainingSlide = dir > 0 ? 'slide-left' : 'slide-right';
+            // Si estaba haciendo la anterior, queda en pausa
+            if (cur.status === 'progress') setRutinaProgress(cur.id); else render();
         }
 
         function startMission(id) {
+            trainingFocusId = id;
             const r = appData.rutinas.find(x => x.id === id);
             if (r && r.status !== 'progress') setRutinaProgress(id);
         }
 
         function completeMission(id) {
-            trainingSkipped = trainingSkipped.filter(x => x !== id);
+            const pending = pendingMissions();
+            const idx = pending.findIndex(r => r.id === id);
+            const rest = pending.filter(r => r.id !== id);
+            // Después de cumplir, sigue con la misión que venía a continuación
+            trainingFocusId = rest.length ? (pending[idx + 1] || rest[0]).id : null;
+            trainingSlide = 'slide-left';
             pointPopUntil = Date.now() + 1600;
             toggleRutinaCheck(id);
             setTimeout(() => { if (Date.now() >= pointPopUntil) render(); }, 1700);
         }
 
-        function skipMission(id) {
-            const r = appData.rutinas.find(x => x.id === id);
-            trainingSkipped = trainingSkipped.filter(x => x !== id).concat([id]);
-            if (r && r.status === 'progress') setRutinaProgress(id); else render();
+        // Gestos táctiles: deslizar a la izquierda = siguiente, a la derecha = anterior
+        function attachSwipe(el) {
+            let x0 = null, y0 = null;
+            el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+            el.addEventListener('touchend', e => {
+                if (x0 === null) return;
+                const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+                x0 = null;
+                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) swipeMission(dx < 0 ? 1 : -1);
+            });
         }
 
         function renderTraining() {
@@ -1820,31 +1852,43 @@
                 return;
             }
 
-            // Misión actual
+            // Misión actual (se puede deslizar entre las pendientes)
             const m = currentMission();
-            const idx = done + 1;
+            const pending = pendingMissions();
+            const pIdx = pending.findIndex(r => r.id === m.id);
             const active = m.status === 'progress';
-            const pending = appData.rutinas.filter(r => !r.completed && r.id !== m.id && !trainingSkipped.includes(r.id));
-            const next = pending[0] || appData.rutinas.find(r => !r.completed && r.id !== m.id);
+            const canSwipe = pending.length > 1;
+            const next = canSwipe ? pending[(pIdx + 1) % pending.length] : null;
+            const order = appData.rutinas.findIndex(r => r.id === m.id) + 1;
+            const segsCur = appData.rutinas.map(r => '<span class="h-1.5 flex-1 rounded-full ' +
+                (r.completed ? 'bg-emerald-400' : (r.id === m.id ? 'bg-white' : 'bg-slate-800')) + '"></span>').join('');
             const pop = Date.now() < pointPopUntil
-                ? '<div class="point-pop absolute top-16 left-0 right-0 text-center pointer-events-none"><span class="inline-block bg-amber-400 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' por confirmar</span></div>'
+                ? '<div class="point-pop absolute top-16 left-0 right-0 text-center pointer-events-none z-10"><span class="inline-block bg-amber-400 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' por confirmar</span></div>'
                 : '';
-            const skipped = trainingSkipped.includes(m.id) && !active;
+            const arrow = (dir, icon, side) => canSwipe
+                ? '<button onclick="swipeMission(' + dir + ')" aria-label="' + (dir > 0 ? 'Siguiente misión' : 'Misión anterior') + '" class="absolute ' + side + ' top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-900/80 border border-teal-800 text-teal-300 hover:text-white flex items-center justify-center"><i class="fa-solid ' + icon + '"></i></button>'
+                : '';
 
-            box.innerHTML = '<div class="' + card + '">' + pop +
-                '<div class="flex items-center justify-between text-[11px] font-bold"><span class="text-teal-300 uppercase tracking-widest">Misión ' + idx + ' de ' + total + '</span>' +
+            box.innerHTML = '<div id="mission-card" class="' + card + '">' + pop +
+                '<div class="flex items-center justify-between text-[11px] font-bold"><span class="text-teal-300 uppercase tracking-widest">Misión ' + order + ' de ' + total + '</span>' +
                 '<span class="text-amber-300"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' al cumplir</span></div>' +
-                segBar +
+                '<div class="flex gap-1">' + segsCur + '</div>' +
+                '<div class="relative">' + arrow(-1, 'fa-chevron-left', 'left-0') + arrow(1, 'fa-chevron-right', 'right-0') +
+                '<div class="' + (trainingSlide ? 'mission-' + trainingSlide : '') + ' px-10 space-y-3">' +
                 '<div class="w-28 h-28 mx-auto rounded-full flex items-center justify-center text-5xl shadow-xl ' + (active ? 'bg-teal-400 text-slate-950 shadow-[0_0_50px_rgba(45,212,191,0.45)]' : 'bg-teal-950 border-2 border-teal-500 text-teal-300') + '"><i class="fa-solid ' + esc(m.icon) + '"></i></div>' +
                 '<div><span class="inline-flex items-center gap-1 text-xs font-bold text-teal-200 bg-slate-950 border border-teal-800 px-3 py-1 rounded-full"><i class="fa-regular fa-clock"></i>' + esc(m.time) + '</span>' +
                 '<h3 class="text-2xl font-extrabold text-white mt-2 break-words">' + esc(m.title) + '</h3>' +
-                (active ? '<p class="text-xs text-teal-300 font-bold mt-1 animate-pulse">Concentración total... ¡tú puedes!</p>' : (skipped ? '<p class="text-xs text-slate-400 mt-1">La dejaste para más tarde. ¿Lista para hacerla ahora?</p>' : '')) + '</div>' +
+                (active ? '<p class="text-xs text-teal-300 font-bold mt-1 animate-pulse">Concentración total... ¡tú puedes!</p>' : '') + '</div>' +
+                '</div></div>' +
+                (canSwipe ? '<div class="flex justify-center gap-1.5">' + pending.map(r => '<span class="w-1.5 h-1.5 rounded-full ' + (r.id === m.id ? 'bg-teal-300 w-4' : 'bg-slate-700') + '"></span>').join('') + '</div>' : '') +
                 (active
                     ? '<button onclick="completeMission(' + Number(m.id) + ')" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black py-4 rounded-2xl text-base uppercase tracking-wider shadow-xl transition-all"><i class="fa-solid fa-check mr-2"></i>¡Misión cumplida!</button>'
                     : '<button onclick="startMission(' + Number(m.id) + ')" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black py-4 rounded-2xl text-base uppercase tracking-wider shadow-xl transition-all"><i class="fa-solid fa-play mr-2"></i>Comenzar misión</button>') +
-                (pending.length || trainingSkipped.length ? '<button onclick="skipMission(' + Number(m.id) + ')" class="text-xs font-bold text-slate-400 hover:text-slate-200 underline underline-offset-4">Más tarde</button>' : '') +
+                (canSwipe ? '<p class="text-[11px] text-slate-400"><i class="fa-solid fa-hand-pointer mr-1"></i>¿No puedes hacerla ahora? Desliza para elegir otra</p>' : '') +
                 (next ? '<p class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siguiente: <span class="text-slate-300">' + esc(next.time) + ' · ' + esc(next.title) + '</span></p>' : '') +
                 '</div>';
+            trainingSlide = '';
+            attachSwipe(document.getElementById('mission-card'));
         }
 
         // ================= TIENDA (Emilia) =================
