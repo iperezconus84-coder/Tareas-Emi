@@ -302,7 +302,7 @@
                     <i class="fa-solid fa-cloud-sun mr-2"></i> Rutinas y Horarios
                 </button>
                 <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
-                    <i class="fa-solid fa-scroll mr-2 text-teal-400"></i> Mi Agenda Escolar
+                    <i class="fa-solid fa-book-journal-whills mr-2 text-teal-400"></i> Mi Planner
                 </button>
                 <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
                     <i class="fa-solid fa-comments mr-2 text-cyan-400"></i> Muro & Chat
@@ -332,31 +332,40 @@
                 <div id="rutinas-list-container" class="grid gap-3"></div>
             </div>
 
-            <!-- Pestaña 2: Agenda Escolar -->
-            <div id="hija-tab-agenda" class="space-y-6 hidden">
-                <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-5 rounded-3xl shadow-md border border-teal-700/50 space-y-3 relative overflow-hidden">
-                    <h3 class="font-bold text-base flex items-center gap-2 text-teal-300">
-                        <i class="fa-solid fa-pen-nib"></i> Anotar una nueva prueba o tarea del colegio 📜
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <select id="hija-agenda-type" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
-                            <option value="evaluacion">Prueba / Evaluación 📝</option>
-                            <option value="tarea">Tarea Escolar 📖</option>
-                        </select>
-                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-slate-950 text-teal-100 placeholder-teal-600 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text">
-                        <input type="date" id="hija-agenda-date" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
+            <!-- Pestaña 2: Planner -->
+            <div id="hija-tab-agenda" class="space-y-4 hidden">
+                <!-- PLANNER SEMANAL (hija) -->
+                <div class="bg-slate-900 border border-teal-800/60 rounded-3xl p-4 md:p-5 space-y-4 shadow-md">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h3 class="font-bold text-base md:text-lg text-teal-200 flex items-center gap-2">
+                                <i class="fa-solid fa-book-journal-whills text-teal-400"></i> Mi Planner de Cazadora
+                            </h3>
+                            <p id="planner-hija-month" class="text-xs text-slate-400"></p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="plannerShiftWeek(-1)" title="Semana anterior" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-800/60"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="plannerGoToday()" class="px-3 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-200 text-xs font-bold border border-teal-800/60">Hoy</button>
+                            <button onclick="plannerShiftWeek(1)" title="Semana siguiente" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-800/60"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                     </div>
-                    <button onclick="addAgendaItemHija()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold py-2.5 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-plus-circle"></i> Guardar en mi Agenda ⚔️
-                    </button>
+                    <div id="planner-hija-week" class="grid grid-cols-7 gap-1.5"></div>
+                    <div id="planner-hija-day" class="space-y-4"></div>
+                    <div class="bg-slate-950/70 border border-teal-800/50 rounded-2xl p-3 space-y-2">
+                        <p class="text-xs font-bold text-teal-300 flex items-center gap-1.5"><i class="fa-solid fa-pen-nib"></i> <span id="planner-hija-formlabel">Anotar prueba o tarea</span></p>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <select id="planner-hija-type" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                                <option value="evaluacion">Prueba</option>
+                                <option value="tarea">Tarea</option>
+                            </select>
+                            <input type="text" id="planner-hija-title" placeholder="¿Qué hay que estudiar o entregar?" class="flex-1 bg-slate-950 text-teal-100 placeholder-teal-700 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text" onkeypress="if(event.key==='Enter') plannerAddItem('hija')">
+                            <button onclick="plannerAddItem('hija')" class="bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Anotar
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="space-y-3">
-                    <h3 class="font-bold text-lg text-teal-200 flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-teal-400"></i> Mis Pendientes Escolares
-                    </h3>
-                    <div id="agenda-list-container" class="space-y-3"></div>
-                </div>
+                <div id="planner-hija-upcoming"></div>
             </div>
 
             <!-- Pestaña 3: Muro & Chat -->
@@ -404,6 +413,41 @@
                         <div class="text-sm font-bold text-teal-200" id="admin-status-text">Conectada - Al día</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- PLANNER SEMANAL (admin) -->
+                <div class="bg-slate-900 border border-teal-800/60 rounded-3xl p-4 md:p-5 space-y-4 shadow-md">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h3 class="font-bold text-base md:text-lg text-teal-200 flex items-center gap-2">
+                                <i class="fa-solid fa-book-journal-whills text-teal-400"></i> Planner de Emilia
+                            </h3>
+                            <p id="planner-admin-month" class="text-xs text-slate-400"></p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="plannerShiftWeek(-1)" title="Semana anterior" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-800/60"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="plannerGoToday()" class="px-3 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-200 text-xs font-bold border border-teal-800/60">Hoy</button>
+                            <button onclick="plannerShiftWeek(1)" title="Semana siguiente" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-800/60"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div id="planner-admin-week" class="grid grid-cols-7 gap-1.5"></div>
+                    <div id="planner-admin-day" class="space-y-4"></div>
+                    <div class="bg-slate-950/70 border border-teal-800/50 rounded-2xl p-3 space-y-2">
+                        <p class="text-xs font-bold text-teal-300 flex items-center gap-1.5"><i class="fa-solid fa-pen-nib"></i> <span id="planner-admin-formlabel">Anotar prueba o tarea</span></p>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <select id="planner-admin-type" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                                <option value="evaluacion">Prueba</option>
+                                <option value="tarea">Tarea</option>
+                            </select>
+                            <input type="text" id="planner-admin-title" placeholder="¿Qué hay que estudiar o entregar?" class="flex-1 bg-slate-950 text-teal-100 placeholder-teal-700 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text" onkeypress="if(event.key==='Enter') plannerAddItem('admin')">
+                            <button onclick="plannerAddItem('admin')" class="bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold px-4 py-2 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Anotar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="planner-admin-upcoming"></div>
             </div>
 
             <!-- Configuración de Recompensa de Racha por Padres -->
@@ -520,14 +564,6 @@
                 </div>
             </div>
 
-            <!-- Agenda Escolar vista por Padres -->
-            <div class="bg-slate-900 p-6 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
-                <h3 class="font-bold text-teal-200 flex items-center gap-2">
-                    <i class="fa-solid fa-scroll text-teal-400"></i> Agenda Escolar Registrada por Emilia
-                </h3>
-                <p class="text-xs text-slate-400">A continuación se muestran las pruebas, trabajos y notas ingresadas por Emilia.</p>
-                <div id="admin-agenda-list" class="space-y-3"></div>
-            </div>
         </div>
 
     </main>
@@ -601,7 +637,9 @@
                 rewardTarget: typeof raw.rewardTarget === 'number' ? raw.rewardTarget : 21,
                 lastCompletedDate: raw.lastCompletedDate || '',
                 lastResetDate: raw.lastResetDate || '',
-                history: (raw.history && typeof raw.history === 'object' && !Array.isArray(raw.history)) ? raw.history : {}
+                history: (raw.history && typeof raw.history === 'object' && !Array.isArray(raw.history)) ? raw.history : {},
+                // log[fecha][k<idRutina>] = true cuando esa rutina se cumplió ese día
+                log: (raw.log && typeof raw.log === 'object' && !Array.isArray(raw.log)) ? raw.log : {}
             };
         }
 
@@ -829,7 +867,8 @@
                         rutinas: toMap(appData.rutinas),
                         agenda: toMap(appData.agenda),
                         muro: toMap(appData.muro),
-                        chat: toMap(appData.chat)
+                        chat: toMap(appData.chat),
+                        log: appData.log
                     }
                 );
                 appRef.set(full).catch(err => console.warn(err));
@@ -1062,21 +1101,6 @@
             document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md";
         }
 
-        function addAgendaItemHija() {
-            const type = document.getElementById('hija-agenda-type').value;
-            const title = document.getElementById('hija-agenda-title').value.trim();
-            const date = document.getElementById('hija-agenda-date').value;
-            if (!title || !date) return;
-
-            const item = { id: Date.now(), type, title, date, completed: false, nota: '' };
-            appData.agenda.push(item);
-
-            document.getElementById('hija-agenda-title').value = '';
-            document.getElementById('hija-agenda-date').value = '';
-            persist(itemPath('agenda', item));
-            render();
-        }
-
         function toggleRutinaCheck(id) {
             const rutina = appData.rutinas.find(r => r.id === id);
             if (rutina) {
@@ -1087,7 +1111,12 @@
                 const total = appData.rutinas.length;
                 const completedNow = appData.rutinas.filter(r => r.completed).length;
 
+                const today = localDateStr();
+                if (!appData.log[today]) appData.log[today] = {};
+                if (rutina.completed) appData.log[today][itemKey(rutina.id)] = true;
+                else delete appData.log[today][itemKey(rutina.id)];
                 const paths = Object.assign(itemPath('rutinas', rutina), refreshTodayStatus());
+                paths['log/' + today + '/' + itemKey(rutina.id)] = rutina.completed ? true : null;
                 if (!wasCompletedBefore && completedNow === total && total > 0) {
                     triggerCelebration();
                 }
@@ -1346,39 +1375,7 @@
                 msgElem.innerText = '¡Vamos por todas tus metas de hoy! ⚔️';
             }
 
-            // Agenda Escolar
-            const agendaContainer = document.getElementById('agenda-list-container');
-            agendaContainer.innerHTML = '';
-            if (appData.agenda.length === 0) {
-                agendaContainer.innerHTML = '<div class="text-center py-8 px-4 bg-slate-900/60 rounded-3xl border border-teal-900/50 space-y-3">' +
-                    '<div class="w-16 h-16 mx-auto rounded-2xl border border-teal-500 shadow-md overflow-hidden bg-slate-950 flex items-center justify-center text-3xl"><img src="' + currentAvatar.url + '" onerror="handleImgError(this, \'' + currentAvatar.emoji + '\')" class="w-full h-full object-cover" alt="Avatar"></div>' +
-                    '<p class="text-xs text-teal-200 font-bold">¡Tu agenda escolar está al día!</p>' +
-                    '<p class="text-[11px] text-slate-400">No tienes pruebas ni tareas anotadas por el momento. 📜</p></div>';
-            } else {
-                appData.agenda.forEach(item => {
-                    const isEval = item.type === 'evaluacion';
-                    const div = document.createElement('div');
-                    div.className = 'p-4 rounded-3xl border transition-all ' + (item.completed ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-900 border-teal-800/50 shadow-sm');
-                    
-                    let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + esc(item.type) + '</span>';
-                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + esc(item.nota || '') + '" onchange="updateNota(' + Number(item.id) + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400 select-text"></div>' : '';
-                    let checkBtnClass = item.completed ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
-                    let checkBtnText = item.completed ? 'Completada ⚔️' : 'Marcar lista';
-                    let checkBtnIcon = item.completed ? 'fa-check-double' : 'fa-check';
-
-                    div.innerHTML = '<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">' +
-                        '<div class="flex items-center space-x-3">' +
-                        '<div class="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-950 font-bold ' + (isEval ? 'bg-teal-400' : 'bg-cyan-400') + '"><i class="fa-solid ' + (isEval ? 'fa-scroll' : 'fa-book') + '"></i></div>' +
-                        '<div>' + typeBadge + '<h4 class="font-semibold text-slate-100 text-sm md:text-base mt-0.5">' + esc(item.title) + '</h4>' +
-                        '<p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ' + esc(item.date) + '</p></div></div>' +
-                        '<div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">' + notaInput +
-                        '<button onclick="toggleAgendaCheck(' + Number(item.id) + ')" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ' + checkBtnClass + '"><i class="fa-solid ' + checkBtnIcon + '"></i> ' + checkBtnText + '</button>' +
-                        '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>' +
-                        '</div></div>';
-
-                    agendaContainer.appendChild(div);
-                });
-            }
+            renderPlanner('hija');
 
             // Muro
             const muroContainer = document.getElementById('muro-container');
@@ -1494,22 +1491,222 @@
                 adminChatContainer.scrollTop = adminChatContainer.scrollHeight;
             }
 
-            // Agenda registrada por Emilia
-            const adminAgendaList = document.getElementById('admin-agenda-list');
-            adminAgendaList.innerHTML = '';
-            if (appData.agenda.length === 0) {
-                adminAgendaList.innerHTML = '<p class="text-xs text-slate-500 italic">Emilia aún no ha registrado tareas o evaluaciones.</p>';
+            renderPlanner('admin');
+        }
+
+        // ================= PLANNER SEMANAL =================
+        let plannerDate = localDateStr();
+
+        const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        const DIAS_CORTOS = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+        const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+        function parseLocalDate(str) {
+            const [y, m, d] = str.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function weekStart(dateStr) {
+            const d = parseLocalDate(dateStr);
+            const offset = (d.getDay() + 6) % 7; // lunes = 0
+            return addDays(dateStr, -offset);
+        }
+
+        function daysBetween(fromStr, toStr) {
+            return Math.round((parseLocalDate(toStr) - parseLocalDate(fromStr)) / 86400000);
+        }
+
+        function longDate(dateStr) {
+            const d = parseLocalDate(dateStr);
+            return DIAS[d.getDay()] + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()];
+        }
+
+        function shortDate(dateStr) {
+            const d = parseLocalDate(dateStr);
+            return DIAS_CORTOS[d.getDay()].toLowerCase() + ' ' + d.getDate() + ' ' + MESES[d.getMonth()].slice(0, 3);
+        }
+
+        function relativeLabel(dateStr) {
+            const diff = daysBetween(localDateStr(), dateStr);
+            if (diff === 0) return 'Hoy';
+            if (diff === 1) return 'Mañana';
+            if (diff === -1) return 'Ayer';
+            if (diff > 1 && diff <= 6) return 'En ' + diff + ' días';
+            return shortDate(dateStr);
+        }
+
+        function typeLabel(type) { return type === 'evaluacion' ? 'Prueba' : 'Tarea'; }
+
+        function plannerShiftWeek(n) { plannerDate = addDays(plannerDate, 7 * n); render(); }
+        function plannerGoToday() { plannerDate = localDateStr(); render(); }
+        function plannerSelect(dateStr) { plannerDate = dateStr; render(); }
+
+        function plannerAddItem(P) {
+            const type = document.getElementById('planner-' + P + '-type').value;
+            const titleEl = document.getElementById('planner-' + P + '-title');
+            const title = titleEl.value.trim();
+            if (!title) { titleEl.focus(); return; }
+
+            const addedBy = currentRole === 'hija' ? 'Emilia' : (currentRole === 'papa' ? 'Papá' : 'Mamá');
+            const item = { id: Date.now(), type, title, date: plannerDate, completed: false, nota: '', addedBy };
+            appData.agenda.push(item);
+            titleEl.value = '';
+            persist(itemPath('agenda', item));
+            render();
+        }
+
+        // Estado de una rutina en un día: done | progress | pending | missed | planned | unknown
+        function rutinaStateFor(rutina, dateStr) {
+            const today = localDateStr();
+            if (dateStr === today) {
+                if (rutina.completed) return 'done';
+                return rutina.status === 'progress' ? 'progress' : 'pending';
+            }
+            if (dateStr > today) return 'planned';
+            const dayLog = appData.log[dateStr];
+            if (dayLog) return dayLog[itemKey(rutina.id)] ? 'done' : 'missed';
+            if (appData.history[dateStr]) return 'done';
+            const logDates = Object.keys(appData.log).sort();
+            const firstTracked = logDates.length ? logDates[0] : today;
+            return dateStr < firstTracked ? 'unknown' : 'missed';
+        }
+
+        function renderPlanner(P) {
+            const weekEl = document.getElementById('planner-' + P + '-week');
+            const dayEl = document.getElementById('planner-' + P + '-day');
+            const upcomingEl = document.getElementById('planner-' + P + '-upcoming');
+            if (!weekEl || !dayEl) return;
+
+            const isHija = P === 'hija';
+            const today = localDateStr();
+            const start = weekStart(plannerDate);
+            const end = addDays(start, 6);
+            const sd = parseLocalDate(start), ed = parseLocalDate(end);
+            document.getElementById('planner-' + P + '-month').innerText = sd.getMonth() === ed.getMonth()
+                ? sd.getDate() + ' al ' + ed.getDate() + ' de ' + MESES[ed.getMonth()] + ' ' + ed.getFullYear()
+                : sd.getDate() + ' de ' + MESES[sd.getMonth()] + ' al ' + ed.getDate() + ' de ' + MESES[ed.getMonth()];
+            document.getElementById('planner-' + P + '-formlabel').innerText = 'Anotar prueba o tarea para el ' + shortDate(plannerDate);
+
+            // --- Tira semanal
+            let weekHtml = '';
+            for (let i = 0; i < 7; i++) {
+                const ds = addDays(start, i);
+                const d = parseLocalDate(ds);
+                const items = appData.agenda.filter(a => a.date === ds);
+                const hasEval = items.some(a => a.type === 'evaluacion');
+                const hasTarea = items.some(a => a.type !== 'evaluacion');
+                const isSel = ds === plannerDate, isToday = ds === today;
+                const cls = isSel
+                    ? 'bg-teal-500 text-slate-950 border-teal-400 shadow-md'
+                    : 'bg-slate-950 text-slate-300 border-teal-900/70 hover:border-teal-600' + (isToday ? ' ring-2 ring-teal-400/70' : '');
+                const dots =
+                    (hasEval ? '<span class="w-1.5 h-1.5 rounded-full ' + (isSel ? 'bg-slate-950' : 'bg-amber-400') + '"></span>' : '') +
+                    (hasTarea ? '<span class="w-1.5 h-1.5 rounded-full ' + (isSel ? 'bg-slate-950' : 'bg-cyan-400') + '"></span>' : '') +
+                    (appData.history[ds] ? '<i class="fa-solid fa-check text-[8px] ' + (isSel ? 'text-slate-950' : 'text-emerald-400') + '"></i>' : '');
+                weekHtml += '<button onclick="plannerSelect(\'' + ds + '\')" class="rounded-2xl border py-2 flex flex-col items-center gap-0.5 transition-all ' + cls + '">' +
+                    '<span class="text-[9px] font-bold tracking-wider ' + (isSel ? '' : 'text-slate-500') + '">' + DIAS_CORTOS[d.getDay()] + '</span>' +
+                    '<span class="text-base font-extrabold leading-none">' + d.getDate() + '</span>' +
+                    '<span class="flex items-center gap-0.5 h-2">' + dots + '</span></button>';
+            }
+            weekEl.innerHTML = weekHtml;
+
+            // --- Encabezado del día
+            const rel = daysBetween(today, plannerDate);
+            let badge = '';
+            if (rel === 0) badge = '<span class="text-[10px] font-extrabold bg-teal-400 text-slate-950 px-2 py-0.5 rounded-full uppercase">Hoy</span>';
+            if (appData.history[plannerDate]) badge += '<span class="text-[10px] font-extrabold bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full uppercase"><i class="fa-solid fa-check mr-1"></i>Día cumplido</span>';
+
+            // --- Misiones escolares del día
+            const dayItems = appData.agenda.filter(a => a.date === plannerDate)
+                .sort((a, b) => (a.type === b.type ? 0 : (a.type === 'evaluacion' ? -1 : 1)));
+            let itemsHtml = '';
+            if (dayItems.length === 0) {
+                itemsHtml = '<p class="text-xs text-slate-500 italic bg-slate-950/50 rounded-2xl px-3 py-3 border border-teal-900/40">Sin pruebas ni tareas este día.</p>';
             } else {
-                appData.agenda.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-3 rounded-2xl text-sm";
-                    let notaInfo = item.nota ? '| Nota de Emilia: <b class="text-teal-300">' + esc(item.nota) + '</b>' : '| (Sin nota registrada)';
-                    div.innerHTML = '<div><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ' + (item.type === 'evaluacion' ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + esc(item.type) + '</span>' +
-                        '<h4 class="font-semibold text-slate-100 text-sm mt-1">' + esc(item.title) + '</h4>' +
-                        '<span class="text-xs text-slate-400">Fecha: ' + esc(item.date) + ' ' + notaInfo + '</span></div>' +
-                        '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" class="bg-rose-950/80 border border-rose-800 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>';
-                    adminAgendaList.appendChild(div);
+                dayItems.forEach(item => {
+                    const isEval = item.type === 'evaluacion';
+                    const by = item.addedBy && item.addedBy !== 'Emilia' ? '<span class="text-[10px] text-amber-300 font-bold ml-1">· anotada por ' + esc(item.addedBy) + '</span>' : '';
+                    let right = '';
+                    if (isHija) {
+                        const nota = isEval ? '<input type="text" value="' + esc(item.nota || '') + '" onchange="updateNota(' + Number(item.id) + ', this.value)" placeholder="Nota" title="Mi nota" class="w-14 bg-slate-950 border border-teal-700/80 rounded-xl px-1.5 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400 select-text">' : '';
+                        right = nota +
+                            '<button onclick="toggleAgendaCheck(' + Number(item.id) + ')" title="Marcar lista" class="w-8 h-8 rounded-xl flex items-center justify-center border-2 transition-all ' + (item.completed ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'border-slate-600 hover:border-teal-400 bg-slate-950') + '">' + (item.completed ? '<i class="fa-solid fa-check text-sm"></i>' : '') + '</button>' +
+                            '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" title="Borrar" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>';
+                    } else {
+                        const nota = isEval ? '<span class="text-[11px] text-slate-400">Nota: <b class="text-teal-300">' + (item.nota ? esc(item.nota) : '—') + '</b></span>' : '';
+                        right = nota +
+                            '<span class="text-[10px] font-extrabold px-2 py-1 rounded-lg ' + (item.completed ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300') + '">' + (item.completed ? 'Lista' : 'Pendiente') + '</span>' +
+                            '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" title="Borrar" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>';
+                    }
+                    itemsHtml += '<div class="flex items-center justify-between gap-2 p-3 rounded-2xl border ' + (item.completed ? 'bg-slate-950/60 border-slate-800 opacity-80' : 'bg-slate-950 border-teal-800/60') + '">' +
+                        '<div class="flex items-center gap-2.5 min-w-0">' +
+                        '<div class="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-slate-950 ' + (isEval ? 'bg-amber-400' : 'bg-cyan-400') + '"><i class="fa-solid ' + (isEval ? 'fa-scroll' : 'fa-book') + '"></i></div>' +
+                        '<div class="min-w-0"><div class="text-[10px] font-extrabold uppercase tracking-wider ' + (isEval ? 'text-amber-300' : 'text-cyan-300') + '">' + typeLabel(item.type) + by + '</div>' +
+                        '<div class="text-sm font-semibold break-words ' + (item.completed ? 'line-through text-slate-500' : 'text-slate-100') + '">' + esc(item.title) + '</div></div></div>' +
+                        '<div class="flex items-center gap-1.5 shrink-0">' + right + '</div></div>';
                 });
+            }
+
+            // --- Rutinas del día
+            const stateStyle = {
+                done: ['bg-emerald-500 text-slate-950', 'fa-check', 'text-emerald-300', 'Cumplida'],
+                progress: ['bg-teal-400 text-slate-950', 'fa-bolt', 'text-teal-300', 'En progreso'],
+                pending: ['bg-slate-800 text-slate-400', 'fa-hourglass-half', 'text-slate-400', 'Pendiente'],
+                missed: ['bg-rose-950 text-rose-300 border border-rose-800', 'fa-xmark', 'text-rose-300', 'No cumplida'],
+                planned: ['bg-slate-800 text-slate-400', 'fa-calendar', 'text-slate-500', 'Programada'],
+                unknown: ['bg-slate-800 text-slate-500', 'fa-minus', 'text-slate-500', 'Sin registro']
+            };
+            let doneCount = 0, rutinasHtml = '';
+            appData.rutinas.forEach(r => {
+                const st = rutinaStateFor(r, plannerDate);
+                if (st === 'done') doneCount++;
+                const [chip, icon, txt, label] = stateStyle[st];
+                rutinasHtml += '<div class="flex items-center gap-3 py-2 border-b border-teal-950 last:border-0">' +
+                    '<span class="w-12 text-[11px] font-bold text-teal-300 shrink-0">' + esc(r.time) + '</span>' +
+                    '<i class="fa-solid ' + esc(r.icon) + ' text-teal-500 w-4 text-center shrink-0"></i>' +
+                    '<span class="flex-1 text-xs md:text-sm min-w-0 truncate ' + (st === 'done' ? 'text-slate-400' : 'text-slate-200') + '">' + esc(r.title) + '</span>' +
+                    '<span class="flex items-center gap-1 text-[10px] font-bold shrink-0 ' + txt + '"><span class="w-5 h-5 rounded-md flex items-center justify-center ' + chip + '"><i class="fa-solid ' + icon + ' text-[9px]"></i></span><span class="hidden sm:inline">' + label + '</span></span>' +
+                    '</div>';
+            });
+            const total = appData.rutinas.length;
+            const showCount = plannerDate <= today;
+            const pct = total ? Math.round(doneCount / total * 100) : 0;
+
+            dayEl.innerHTML =
+                '<div class="flex flex-wrap items-center gap-2"><h4 class="font-extrabold text-teal-100 text-base">' + longDate(plannerDate) + '</h4>' + badge + '</div>' +
+                '<div class="space-y-2"><p class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-scroll"></i> Misiones escolares</p>' + itemsHtml + '</div>' +
+                '<div class="space-y-1"><div class="flex items-center justify-between"><p class="text-xs font-bold text-teal-300 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-clock"></i> Rutinas del día</p>' +
+                (showCount ? '<span class="text-[11px] font-bold text-slate-400">' + doneCount + ' de ' + total + '</span>' : '') + '</div>' +
+                (showCount ? '<div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden"><div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-full rounded-full" style="width:' + pct + '%"></div></div>' : '') +
+                '<div class="bg-slate-950/60 rounded-2xl px-3 border border-teal-900/40">' + rutinasHtml + '</div></div>';
+
+            // --- Próximas misiones escolares (atrasadas + próximas, ordenadas)
+            if (upcomingEl) {
+                const pending = appData.agenda.filter(a => !a.completed)
+                    .sort((a, b) => (a.date > b.date ? 1 : (a.date < b.date ? -1 : Number(a.id) - Number(b.id))));
+                const overdue = pending.filter(a => a.date < today);
+                const next = pending.filter(a => a.date >= today).slice(0, 8);
+                const list = overdue.concat(next);
+                let html = '<div class="bg-slate-900 border border-amber-500/40 rounded-3xl p-4 md:p-5 space-y-3 shadow-md">' +
+                    '<h3 class="font-bold text-amber-300 flex items-center gap-2 text-base"><i class="fa-solid fa-flag"></i> Próximas misiones escolares</h3>';
+                if (list.length === 0) {
+                    html += '<p class="text-xs text-slate-400">No hay pruebas ni tareas pendientes. ¡Todo al día!</p>';
+                } else {
+                    list.forEach(item => {
+                        const diff = daysBetween(today, item.date);
+                        let tone, label;
+                        if (diff < 0) { tone = 'bg-rose-500 text-white'; label = 'Atrasada'; }
+                        else if (diff <= 1) { tone = 'bg-rose-400 text-slate-950'; label = relativeLabel(item.date); }
+                        else if (diff <= 3) { tone = 'bg-amber-400 text-slate-950'; label = relativeLabel(item.date); }
+                        else { tone = 'bg-slate-800 text-teal-200'; label = relativeLabel(item.date); }
+                        html += '<button onclick="plannerSelect(\'' + esc(item.date) + '\')" class="w-full flex items-center gap-3 p-2.5 rounded-2xl bg-slate-950 border border-teal-900/60 hover:border-teal-500 text-left transition-all">' +
+                            '<span class="text-[10px] font-extrabold px-2 py-1 rounded-lg w-20 text-center shrink-0 ' + tone + '">' + esc(label) + '</span>' +
+                            '<span class="flex-1 min-w-0"><span class="block text-sm font-semibold text-slate-100 break-words">' + esc(item.title) + '</span>' +
+                            '<span class="block text-[10px] text-slate-400">' + typeLabel(item.type) + ' · ' + shortDate(item.date) + '</span></span>' +
+                            '<i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i></button>';
+                    });
+                }
+                upcomingEl.innerHTML = html + '</div>';
             }
         }
 
