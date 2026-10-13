@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda y Rutinas - Mi Hija</title>
+    <title>Agenda y Rutinas - Emilia</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                        kids: ['Fredoka', 'cursive', 'sans-serif'],
-                    },
                     colors: {
                         brand: {
                             50: '#fdf4f8',
                             100: '#fbe8f2',
-                            400: '#f472b6',
                             500: '#ec4899',
                             600: '#db2777',
                             700: '#be185d',
@@ -28,453 +23,412 @@
             }
         }
     </script>
-    <!-- FontAwesome for robust icons -->
+    <!-- FontAwesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Poppins & Fredoka -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Canvas Confetti for rewards -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .kids-title {
-            font-family: 'Fredoka', cursive, sans-serif;
-        }
+        body { font-family: 'Poppins', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-        .focus-glow {
-            animation: pulse-ring 2s infinite ease-in-out;
-        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-700 min-h-screen flex flex-col antialiased">
+<body class="bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 min-h-screen text-slate-700 pb-12">
 
-    <!-- HEADER & ROLE SELECTOR -->
-    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-pink-100 shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+    <!-- HEADER / SELECTOR DE ROL -->
+    <header class="bg-white shadow-md sticky top-0 z-50 border-b border-pink-100">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-pink-500/20 text-xl">
-                    <i class="fa-solid fa-star"></i>
+                <div class="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-2.5 rounded-2xl shadow-md">
+                    <i class="fa-solid fa-child-reaching text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="kids-title text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Mi Rutina Estelar</h1>
-                    <p class="text-[11px] text-slate-500 font-medium" id="header-date">Cargando fecha...</p>
+                    <h1 class="font-bold text-lg text-slate-800 leading-tight">Agenda de Emilia</h1>
+                    <p class="text-xs text-slate-500" id="presence-subtitle">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1"></span> En línea
+                    </p>
                 </div>
             </div>
 
-            <!-- Role Switcher & System Recovery -->
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-semibold">
-                    <button onclick="setRole('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-child-reaching text-sm"></i>
-                        <span>Hija</span>
-                    </button>
-                    <button onclick="setRole('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-tie text-sm"></i>
-                        <span>Papá</span>
-                    </button>
-                    <button onclick="setRole('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-heart text-sm"></i>
-                        <span>Mamá</span>
-                    </button>
-                </div>
-
-                <!-- Factory Reset / Recovery button -->
-                <button onclick="openResetModal()" title="Restablecer datos de fábrica" class="p-2 text-slate-400 hover:text-rose-500 transition rounded-xl hover:bg-slate-100">
-                    <i class="fa-solid fa-rotate-right text-sm"></i>
+            <!-- Selector de Roles -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl shadow-inner text-sm font-medium">
+                <button onclick="switchRole('hija')" id="btn-role-hija" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
+                    <i class="fa-solid fa-star mr-1"></i> Emilia
+                </button>
+                <button onclick="switchRole('papa')" id="btn-role-papa" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
+                    <i class="fa-solid fa-user-tie mr-1"></i> Papá
+                </button>
+                <button onclick="switchRole('mama')" id="btn-role-mama" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600">
+                    <i class="fa-solid fa-heart mr-1"></i> Mamá
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="max-w-4xl mx-auto px-4 mt-6">
 
-        <!-- ================= DAUGHTER VIEW ================= -->
+        <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
-            
-            <!-- Streak & Motivational Banner -->
-            <div class="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-                <div class="absolute -right-8 -bottom-8 opacity-15 text-9xl pointer-events-none">
-                    <i class="fa-solid fa-rocket"></i>
+            <!-- Banner Gamificado -->
+            <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl">
+                    <i class="fa-solid fa-trophy"></i>
                 </div>
-                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider backdrop-blur-md inline-block mb-1">¡Súper Campeona! ✨</span>
-                        <h2 class="kids-title text-2xl md:text-3xl font-bold">¡Un paso a la vez, tú puedes!</h2>
-                        <p class="text-pink-100 text-xs md:text-sm mt-1">Presiona "⚡ En progreso" en la actividad que estás haciendo ahora.</p>
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider backdrop-blur-sm">¡Hola, Emilia! ✨</span>
+                        <h2 class="text-2xl md:text-3xl font-bold mt-1">Tu espacio personal</h2>
+                        <p class="text-pink-100 text-sm mt-1">Organiza tus tareas del colegio, cumple tus rutinas y mantén tu racha.</p>
                     </div>
-                    <div class="flex items-center gap-3 bg-white/15 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20 shadow-inner">
-                        <div class="text-3xl animate-bounce">🔥</div>
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/20">
+                        <div class="text-3xl text-amber-300 animate-bounce">🔥</div>
                         <div>
-                            <div class="text-[10px] text-pink-100 uppercase font-bold tracking-wider">Racha Estelar</div>
-                            <div class="kids-title text-2xl font-bold" id="streak-count-hija">0 días</div>
+                            <div class="text-xs text-pink-100 font-medium">Racha Actual</div>
+                            <div class="text-2xl font-extrabold" id="streak-count">5 días</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Daughter Navigation Tabs -->
+            <!-- Navegación de Pestañas -->
             <div class="flex space-x-2 border-b border-slate-200 pb-2 overflow-x-auto hide-scrollbar">
-                <button onclick="setHijaTab('rutinas')" id="tab-hija-rutinas" class="px-4 py-2 rounded-xl font-semibold text-xs md:text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-sm">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span>Mis Rutinas Diarias</span>
+                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-pink-500 text-white shadow-md">
+                    <i class="fa-solid fa-clock-rotate-left mr-2"></i> Rutinas y Horarios
                 </button>
-                <button onclick="setHijaTab('agenda')" id="tab-hija-agenda" class="px-4 py-2 rounded-xl font-semibold text-xs md:text-sm transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                    <span>Agenda Escolar</span>
+                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
+                    <i class="fa-solid fa-graduation-cap mr-2"></i> Mi Agenda Escolar
                 </button>
-                <button onclick="setHijaTab('muro')" id="tab-hija-muro" class="px-4 py-2 rounded-xl font-semibold text-xs md:text-sm transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Muro y Chat</span>
+                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm">
+                    <i class="fa-solid fa-comments mr-2"></i> Muro & Chat
                 </button>
             </div>
 
-            <!-- TAB 1: ROUTINES LIST (DAUGHTER) -->
-            <div id="content-hija-rutinas" class="space-y-4">
-                <!-- Progress bar -->
-                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2">
-                    <div class="flex justify-between items-center text-xs font-semibold">
-                        <span class="text-slate-700">Progreso del Día</span>
-                        <span id="rutinas-percent" class="text-pink-600 font-bold">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden p-0.5">
-                        <div id="rutinas-bar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
+            <!-- Pestaña 1: Rutinas y Deberes -->
+            <div id="hija-tab-rutinas" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-list-check text-pink-500 mr-2"></i> Mis Deberes Diarios</h3>
+                    <span id="rutinas-progress" class="text-xs font-bold bg-pink-100 text-pink-700 px-3 py-1 rounded-full">0/0 completados</span>
                 </div>
+                <div id="rutinas-list-container" class="grid gap-3">
+                    <!-- Tarjetas de rutinas -->
+                </div>
+            </div>
 
-                <!-- Active Focus Card Banner if an item is in progress -->
-                <div id="hija-focus-banner" class="hidden bg-amber-50 border-2 border-amber-400 p-4 rounded-2xl flex items-center justify-between shadow-md">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl animate-pulse">
-                            <i class="fa-solid fa-bolt"></i>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Enfoque único activo</span>
-                            <h4 class="font-bold text-slate-800 text-sm md:text-base" id="focus-banner-title">Nombre de rutina...</h4>
-                        </div>
+            <!-- Pestaña 2: Agenda Escolar (Administrada por Emilia) -->
+            <div id="hija-tab-agenda" class="space-y-6 hidden">
+                <!-- Formulario para que Emilia agregue sus pruebas/tareas -->
+                <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md space-y-3">
+                    <h3 class="font-bold text-base flex items-center"><i class="fa-solid fa-pen-to-square mr-2"></i> Anotar una nueva evaluación o tarea escolar</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <select id="hija-agenda-type" class="bg-white/10 text-white placeholder-purple-200 border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                            <option value="evaluacion" class="text-slate-800">Prueba / Evaluación</option>
+                            <option value="tarea" class="text-slate-800">Tarea Escolar</option>
+                        </select>
+                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar? (ej. Prueba de Historia)..." class="bg-white/10 text-white placeholder-purple-200 border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
+                        <input type="date" id="hija-agenda-date" class="bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-sm focus:outline-none focus:bg-purple-700">
                     </div>
-                    <button onclick="clearCurrentFocus()" class="text-xs bg-amber-200 text-amber-800 hover:bg-amber-300 font-semibold px-3 py-1.5 rounded-xl transition">
-                        Pausar / Soltar
+                    <button onclick="addAgendaItemHija()" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
+                        <i class="fa-solid fa-plus-circle mr-1"></i> Guardar en mi Agenda
                     </button>
                 </div>
 
-                <!-- Daily Routines Grid -->
-                <div id="rutinas-list-hija" class="grid grid-cols-1 gap-3">
-                    <!-- Cards dynamically populated by JS -->
-                </div>
-            </div>
-
-            <!-- TAB 2: SCHOOL AGENDA (DAUGHTER) -->
-            <div id="content-hija-agenda" class="space-y-4 hidden">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h3 class="kids-title text-lg font-bold text-slate-800">Pruebas, Tareas y Proyectos</h3>
-                            <p class="text-xs text-slate-500">Revisa tus compromisos escolares y tus notas obtenidas.</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2" id="agenda-list-hija">
-                        <!-- Populated by JS -->
+                <!-- Lista de Evaluaciones y Tareas de Emilia -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-calendar-days text-purple-500 mr-2"></i> Mis Pendientes Escolares</h3>
+                    <div id="agenda-list-container" class="space-y-3">
+                        <!-- Items cargados -->
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: WALL & CHAT (DAUGHTER) -->
-            <div id="content-hija-muro" class="space-y-6 hidden">
+            <!-- Pestaña 3: Muro & Chat -->
+            <div id="hija-tab-social" class="space-y-6 hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Wall of encouragement -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[420px]">
-                        <h3 class="kids-title text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Muro de Mensajes de Papá y Mamá
-                        </h3>
-                        <div id="muro-list-hija" class="flex-1 overflow-y-auto space-y-3 pr-1">
-                            <!-- Notes populated by JS -->
-                        </div>
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-96">
+                        <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-note-sticky text-amber-400 mr-2"></i> Muro de Papá y Mamá</h3>
+                        <div id="muro-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                     </div>
-
-                    <!-- Chat -->
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col h-[420px]">
-                        <h3 class="kids-title text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane text-pink-500"></i> Chat Familiar
-                        </h3>
-                        <div id="chat-list-hija" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-3">
-                            <!-- Messages -->
-                        </div>
-                        <div class="flex gap-2">
-                            <input type="text" id="chat-input-hija" placeholder="Escribe un mensaje a tus papás..." class="flex-1 border border-slate-200 rounded-xl px-4 py-2 text-xs md:text-sm focus:outline-none focus:border-pink-500" onkeypress="if(event.key==='Enter') sendChat('hija')">
-                            <button onclick="sendChat('hija')" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-md shadow-pink-500/20">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-96">
+                        <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-paper-plane text-pink-500 mr-2"></i> Chat Familiar</h3>
+                        <div id="chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                        <div class="mt-3 flex gap-2">
+                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-pink-500" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                            <button onclick="sendChatMessage()" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- ================= PARENT ADMIN VIEW ================= -->
+        <!-- ================= VISTA PAPÁ / MAMÁ (PANEL ADMIN) ================= -->
         <div id="view-admin" class="space-y-6 hidden">
-
-            <!-- Admin Banner & Live Presence Tracker -->
             <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <span id="admin-badge-role" class="bg-indigo-500 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Panel de Control</span>
-                    <h2 class="kids-title text-2xl md:text-3xl font-bold mt-1" id="admin-header-title">Supervisión de Rutinas</h2>
-                    <p class="text-slate-300 text-xs md:text-sm mt-1">Edita actividades, gestiona horarios, asigna tareas escolares y acompaña su progreso.</p>
+                    <span id="admin-role-badge" class="bg-pink-500 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Panel de Papá / Mamá</span>
+                    <h2 class="text-2xl md:text-3xl font-bold mt-1">Supervisión y Apoyo</h2>
+                    <p class="text-slate-300 text-sm mt-1">Gestiona las rutinas diarias de Emilia, revisa su agenda escolar y apóyala en tiempo real.</p>
                 </div>
-                <div class="bg-slate-700/70 border border-slate-600 px-4 py-3 rounded-2xl flex items-center gap-3">
-                    <div id="admin-status-dot" class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <div class="bg-slate-700/60 border border-slate-600 px-4 py-3 rounded-2xl flex items-center gap-3">
+                    <div id="admin-presence-indicator" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
                     <div>
-                        <div class="text-[10px] text-slate-400 font-semibold uppercase">Actividad en vivo de Hija</div>
-                        <div class="text-xs md:text-sm font-bold text-amber-300" id="admin-status-text">Sin actividad en curso</div>
+                        <div class="text-xs text-slate-400">Actividad actual de Emilia</div>
+                        <div class="text-sm font-bold text-white" id="admin-status-text">Conectada - Al día</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Admin Action Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                <!-- 1. Gestor de Rutinas y Horarios -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h3 class="kids-title text-base font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-clock text-pink-500"></i> Gestor de Rutinas
-                    </h3>
-
-                    <!-- Add routine form -->
-                    <div class="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-xs font-bold text-slate-600 block">Agregar nueva rutina:</span>
-                        <input type="text" id="add-rutina-title" placeholder="Ej: Leer 15 minutos" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-pink-500">
+            <!-- Controles Administrador -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Configurar Rutinas y Horarios -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                    <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-clock text-pink-500 mr-2"></i> Crear Rutina o Deber con Horario</h3>
+                    <div class="space-y-2">
+                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
                         <div class="flex gap-2">
-                            <input type="time" id="add-rutina-time" value="16:30" class="w-1/2 border border-slate-200 rounded-xl px-2 py-1 text-xs focus:outline-none focus:border-pink-500">
-                            <input type="text" id="add-rutina-icon" placeholder="Icono fa-book" value="fa-star" class="w-1/2 border border-slate-200 rounded-xl px-2 py-1 text-xs focus:outline-none focus:border-pink-500">
+                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
+                            <input type="text" id="new-rutina-icon" placeholder="Icono (ej. fa-star)" value="fa-star" class="w-1/2 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-pink-500">
                         </div>
-                        <button onclick="addNewRutina()" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-1.5 rounded-xl text-xs font-semibold transition shadow-sm">
-                            <i class="fa-solid fa-plus mr-1"></i> Agregar Rutina
+                        <button onclick="addRutina()" class="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-plus mr-1"></i> Agregar a Rutinas
                         </button>
                     </div>
+                    <div class="border-t pt-3">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Editar Horarios de Rutinas</h4>
+                        <div id="admin-rutinas-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
 
-                    <!-- Existing Routines list with inline time editor -->
+                <!-- Mensaje al Muro -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                    <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-note-sticky text-amber-400 mr-2"></i> Dejar Nota en el Muro de Emilia</h3>
                     <div class="space-y-2">
-                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Lista Actual (Ordenada por hora):</span>
-                        <div id="admin-rutinas-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                            <!-- Populated by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. Gestor de Agenda Escolar -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h3 class="kids-title text-base font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-purple-600"></i> Cargar Agenda Escolar
-                    </h3>
-
-                    <div class="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-xs font-bold text-slate-600 block">Nueva evaluación o tarea:</span>
-                        <select id="add-agenda-type" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-purple-500">
-                            <option value="Evaluación">Evaluación / Prueba</option>
-                            <option value="Tarea">Tarea Escolar</option>
-                            <option value="Proyecto">Proyecto Especial</option>
-                        </select>
-                        <input type="text" id="add-agenda-title" placeholder="Ej: Prueba de Ciencias Naturales" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-purple-500">
-                        <input type="date" id="add-agenda-date" class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-purple-500">
-                        <button onclick="addNewAgendaItem()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 rounded-xl text-xs font-semibold transition shadow-sm">
-                            <i class="fa-solid fa-calendar-plus mr-1"></i> Publicar en Agenda
+                        <textarea id="muro-input" placeholder="Escribe un mensaje de ánimo o recomendación..." rows="3" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500"></textarea>
+                        <button onclick="addMuroPost()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-sm font-semibold transition-all">
+                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar en Muro
                         </button>
                     </div>
-                </div>
-
-                <!-- 3. Muro de Ánimo & Chat Admin -->
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <h3 class="kids-title text-base font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-heart text-amber-500"></i> Publicar en el Muro
-                    </h3>
-
-                    <div class="space-y-2">
-                        <textarea id="add-muro-text" placeholder="Escribe una notita de ánimo..." rows="3" class="w-full border border-slate-200 rounded-xl p-3 text-xs focus:outline-none focus:border-amber-500"></textarea>
-                        <button onclick="postMuroNote()" class="w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-xl text-xs font-semibold transition shadow-sm">
-                            <i class="fa-solid fa-note-sticky mr-1"></i> Pegar Nota en el Muro
-                        </button>
-                    </div>
-
-                    <!-- Chat Admin -->
-                    <div class="border-t pt-3 flex flex-col h-48">
-                        <span class="text-xs font-bold text-slate-600 mb-2">Chat Directo con Hija:</span>
-                        <div id="chat-list-admin" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-2 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                            <!-- Messages -->
-                        </div>
-                        <div class="flex gap-1.5">
-                            <input type="text" id="chat-input-admin" placeholder="Responder..." class="flex-1 border border-slate-200 rounded-xl px-3 py-1 text-xs focus:outline-none focus:border-indigo-500" onkeypress="if(event.key==='Enter') sendChat('admin')">
-                            <button onclick="sendChat('admin')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1 rounded-xl text-xs font-semibold transition">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Detailed Agenda Management Table -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <h3 class="kids-title text-base font-bold text-slate-800">Evaluaciones Cargadas y Registro de Notas</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase">
-                                <th class="py-2 px-3">Tipo & Nombre</th>
-                                <th class="py-2 px-3">Fecha</th>
-                                <th class="py-2 px-3 text-center">Nota Obtenida</th>
-                                <th class="py-2 px-3 text-right">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-agenda-table" class="divide-y divide-slate-100 text-xs">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
+            <!-- Listado de Agenda registrado por Emilia -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                <h3 class="font-bold text-slate-800"><i class="fa-solid fa-graduation-cap text-purple-500 mr-2"></i> Agenda Escolar Anotada por Emilia</h3>
+                <p class="text-xs text-slate-500">Aquí puedes revisar las pruebas y tareas que Emilia ha registrado, junto con las notas que ha obtenido.</p>
+                <div id="admin-agenda-list" class="space-y-3"></div>
+            </div>
         </div>
 
     </main>
 
-    <!-- Custom Confirmation Modal (No alert/confirm used) -->
-    <div id="reset-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
-            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <h3 class="kids-title text-lg font-bold text-slate-800">Restablecer datos</h3>
-            <p class="text-xs text-slate-500">¿Deseas restaurar la lista de rutinas inicial y reiniciar el almacenamiento?</p>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeResetModal()" class="flex-1 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50">Cancelar</button>
-                <button onclick="executeFactoryReset()" class="flex-1 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 shadow-md">Restablecer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Notification Toast -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-medium transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-sm" id="toast-icon"></i>
-        <span id="toast-text">Notificación del sistema</span>
-    </div>
-
+    <!-- SCRIPT DE LÓGICA -->
     <script>
-        // Default Initial Data Set (Guaranteed 11 ADHD items with exact times and icons)
-        const DEFAULT_RUTINAS = [
-            { id: 'r1', time: '14:30', title: 'Ver el capítulo de una serie', icon: 'fa-tv', completed: false, inProgress: false },
-            { id: 'r2', time: '15:15', title: 'Cambiarme de ropa', icon: 'fa-shirt', completed: false, inProgress: false },
-            { id: 'r3', time: '15:30', title: 'Hacer mi cama', icon: 'fa-bed', completed: false, inProgress: false },
-            { id: 'r4', time: '16:00', title: 'Ordenar y limpiar mi habitación', icon: 'fa-broom', completed: false, inProgress: false },
-            { id: 'r5', time: '16:45', title: 'Ayudar en la casa', icon: 'fa-hands-holding-child', completed: false, inProgress: false },
-            { id: 'r6', time: '17:15', title: 'Revisar mis cuadernos para mañana', icon: 'fa-book-open', completed: false, inProgress: false },
-            { id: 'r7', time: '17:45', title: 'Hacer mis tareas', icon: 'fa-pencil', completed: false, inProgress: false },
-            { id: 'r8', time: '19:30', title: 'Cenar', icon: 'fa-utensils', completed: false, inProgress: false },
-            { id: 'r9', time: '20:15', title: 'Ducharme', icon: 'fa-shower', completed: false, inProgress: false },
-            { id: 'r10', time: '20:45', title: 'Lavar mis dientes', icon: 'fa-face-smile', completed: false, inProgress: false },
-            { id: 'r11', time: '21:00', title: 'Ir a la cama', icon: 'fa-moon', completed: false, inProgress: false }
+        const defaultRutinas = [
+            { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
+            { id: 2, time: "15:15", title: "Cambiarme de ropa", icon: "fa-shirt", completed: false, status: 'idle' },
+            { id: 3, time: "15:30", title: "Hacer mi cama", icon: "fa-bed", completed: false, status: 'idle' },
+            { id: 4, time: "16:00", title: "Ordenar y limpiar mi habitación", icon: "fa-broom", completed: false, status: 'idle' },
+            { id: 5, time: "16:45", title: "Ayudar en la casa", icon: "fa-hands-holding-child", completed: false, status: 'idle' },
+            { id: 6, time: "17:15", title: "Revisar mis cuadernos para mañana", icon: "fa-book-open", completed: false, status: 'idle' },
+            { id: 7, time: "17:45", title: "Hacer mis tareas", icon: "fa-pencil", completed: false, status: 'idle' },
+            { id: 8, time: "19:30", title: "Cenar", icon: "fa-utensils", completed: false, status: 'idle' },
+            { id: 9, time: "20:15", title: "Ducharme", icon: "fa-shower", completed: false, status: 'idle' },
+            { id: 10, time: "20:45", title: "Lavar mis dientes", icon: "fa-face-smile", completed: false, status: 'idle' },
+            { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
-        const DEFAULT_AGENDA = [
-            { id: 'a1', type: 'Evaluación', title: 'Prueba de Matemáticas (Fracciones)', date: '2026-10-20', grade: '6.8', completed: true },
-            { id: 'a2', type: 'Tarea', title: 'Investigación de Historia', date: '2026-10-24', grade: '', completed: false }
+        const defaultAgenda = [
+            { id: 1, type: 'evaluacion', title: 'Prueba de Matemáticas (Fracciones)', date: '2026-10-20', completed: true, nota: '6.8' },
+            { id: 2, type: 'tarea', title: 'Maqueta de Ciencias Naturales', date: '2026-10-25', completed: false, nota: '' }
         ];
 
-        const DEFAULT_MURO = [
-            { id: 'm1', author: 'Papá', text: '¡Mucho éxito hoy en el colegio! Recuerda tomar pausas de descanso.', date: 'Hoy' },
-            { id: 'm2', author: 'Mamá', text: '¡Tus avances de esta semana han sido fabulosos! Te queremos.', date: 'Ayer' }
+        const defaultMuro = [
+            { id: 1, author: 'Papá', text: '¡Mucho éxito organizando tus pruebas esta semana!', date: '12 Oct' },
+            { id: 2, author: 'Mamá', text: '¡Avisa si necesitas ayuda para estudiar!', date: '13 Oct' }
         ];
 
-        const DEFAULT_CHAT = [
-            { id: 'c1', sender: 'Papá', text: '¡Hola campeona! ¿Cómo te fue hoy?', time: '14:05' },
-            { id: 'c2', sender: 'Hija', text: '¡Hola Papá! Muy bien, ya estoy en casa.', time: '14:15' }
+        const defaultChat = [
+            { id: 1, sender: 'Papá', text: '¿Cómo te fue hoy en el colegio, Emilia?', time: '14:00' },
+            { id: 2, sender: 'Emilia', text: '¡Bien! Anoté una tarea nueva en mi agenda.', time: '14:05' }
         ];
 
-        const STORAGE_KEY = 'agenda_tdah_app_v2';
-
-        let state = {
-            role: 'hija', // 'hija', 'papa', or 'mama'
-            hijaTab: 'rutinas',
-            streak: 5,
-            rutinas: [],
-            agenda: [],
-            muro: [],
-            chat: []
+        let appData = JSON.parse(localStorage.getItem('agenda_app_data')) || {
+            role: 'hija',
+            rutinas: defaultRutinas,
+            agenda: defaultAgenda,
+            muro: defaultMuro,
+            chat: defaultChat,
+            streak: 5
         };
 
-        function loadState() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    state = { ...state, ...parsed };
-                } else {
-                    state.rutinas = [...DEFAULT_RUTINAS];
-                    state.agenda = [...DEFAULT_AGENDA];
-                    state.muro = [...DEFAULT_MURO];
-                    state.chat = [...DEFAULT_CHAT];
-                }
-            } catch (err) {
-                console.error("Error cargando estado local:", err);
-                state.rutinas = [...DEFAULT_RUTINAS];
-                state.agenda = [...DEFAULT_AGENDA];
-                state.muro = [...DEFAULT_MURO];
-                state.chat = [...DEFAULT_CHAT];
+        function saveData() {
+            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+        }
+
+        function switchRole(role) {
+            appData.role = role;
+            saveData();
+            render();
+        }
+
+        function switchHijaTab(tab) {
+            document.getElementById('hija-tab-rutinas').classList.add('hidden');
+            document.getElementById('hija-tab-agenda').classList.add('hidden');
+            document.getElementById('hija-tab-social').classList.add('hidden');
+
+            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
+            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
+            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-white text-slate-600 hover:bg-slate-100 shadow-sm";
+
+            document.getElementById(`hija-tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all bg-pink-500 text-white shadow-md";
+        }
+
+        // Función para que EMILIA registre sus propias tareas y pruebas
+        function addAgendaItemHija() {
+            const type = document.getElementById('hija-agenda-type').value;
+            const title = document.getElementById('hija-agenda-title').value.trim();
+            const date = document.getElementById('hija-agenda-date').value;
+            if (!title || !date) return;
+
+            appData.agenda.push({
+                id: Date.now(),
+                type,
+                title,
+                date,
+                completed: false,
+                nota: ''
+            });
+
+            document.getElementById('hija-agenda-title').value = '';
+            document.getElementById('hija-agenda-date').value = '';
+            saveData();
+            render();
+        }
+
+        function toggleRutinaCheck(id) {
+            const rutina = appData.rutinas.find(r => r.id === id);
+            if (rutina) {
+                rutina.completed = !rutina.completed;
+                if (rutina.completed) rutina.status = 'idle';
+                saveData();
+                render();
             }
-            saveState();
         }
 
-        function saveState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    role: state.role,
-                    streak: state.streak,
-                    rutinas: state.rutinas,
-                    agenda: state.agenda,
-                    muro: state.muro,
-                    chat: state.chat
-                }));
-            } catch (err) {
-                console.error("Error guardando estado:", err);
+        function setRutinaProgress(id) {
+            const rutina = appData.rutinas.find(r => r.id === id);
+            if (rutina) {
+                appData.rutinas.forEach(r => { if(r.id !== id) r.status = 'idle'; });
+                rutina.status = rutina.status === 'progress' ? 'idle' : 'progress';
+                saveData();
+                render();
             }
         }
 
-        window.onload = function() {
-            loadState();
-            updateDateHeader();
-            renderAll();
-        };
-
-        function updateDateHeader() {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const todayStr = new Date().toLocaleDateString('es-ES', options);
-            document.getElementById('header-date').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
-            
-            // Set default date input in admin forms
-            const dateInput = document.getElementById('add-agenda-date');
-            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+        function toggleAgendaCheck(id) {
+            const item = appData.agenda.find(a => a.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveData();
+                render();
+            }
         }
 
-        function setRole(role) {
-            state.role = role;
-            saveState();
+        function updateNota(id, nota) {
+            const item = appData.agenda.find(a => a.id === id);
+            if (item) {
+                item.nota = nota;
+                saveData();
+            }
+        }
 
-            // Update UI role buttons
-            const btnHija = document.getElementById('btn-role-hija');
-            const btnPapa = document.getElementById('btn-role-papa');
-            const btnMama = document.getElementById('btn-role-mama');
+        function deleteAgendaItem(id) {
+            appData.agenda = appData.agenda.filter(a => a.id !== id);
+            saveData();
+            render();
+        }
 
-            btnHija.className = "px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 " + (role === 'hija' ? "bg-pink-500 text-white shadow-sm" : "text-slate-600 hover:bg-slate-200");
-            btnPapa.className = "px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 " + (role === 'papa' ? "bg-slate-800 text-white shadow-sm" : "text-slate-600 hover:bg-slate-200");
-            btnMama.className = "px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 " + (role === 'mama' ? "bg-purple-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-200");
+        function addRutina() {
+            const title = document.getElementById('new-rutina-title').value.trim();
+            const time = document.getElementById('new-rutina-time').value || '12:00';
+            const icon = document.getElementById('new-rutina-icon').value.trim() || 'fa-star';
+            if (!title) return;
+
+            appData.rutinas.push({
+                id: Date.now(),
+                time,
+                title,
+                icon,
+                completed: false,
+                status: 'idle'
+            });
+
+            appData.rutinas.sort((a, b) => (a.time > b.time) ? 1 : -1);
+            document.getElementById('new-rutina-title').value = '';
+            saveData();
+            render();
+        }
+
+        function deleteRutina(id) {
+            appData.rutinas = appData.rutinas.filter(r => r.id !== id);
+            saveData();
+            render();
+        }
+
+        function updateRutinaTime(id, newTime) {
+            const rutina = appData.rutinas.find(r => r.id === id);
+            if (rutina) {
+                rutina.time = newTime;
+                appData.rutinas.sort((a, b) => (a.time > b.time) ? 1 : -1);
+                saveData();
+                render();
+            }
+        }
+
+        function addMuroPost() {
+            const text = document.getElementById('muro-input').value.trim();
+            if (!text) return;
+
+            const author = appData.role === 'papa' ? 'Papá' : 'Mamá';
+            appData.muro.unshift({
+                id: Date.now(),
+                author,
+                text,
+                date: new Date().toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })
+            });
+
+            document.getElementById('muro-input').value = '';
+            saveData();
+            render();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const sender = appData.role === 'hija' ? 'Emilia' : (appData.role === 'papa' ? 'Papá' : 'Mamá');
+            appData.chat.push({
+                id: Date.now(),
+                sender,
+                text,
+                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            input.value = '';
+            saveData();
+            render();
+        }
+
+        function render() {
+            const role = appData.role;
+
+            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-pink-500 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
+            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-lg transition-all duration-200 bg-pink-600 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-600";
 
             const viewHija = document.getElementById('view-hija');
             const viewAdmin = document.getElementById('view-admin');
@@ -482,461 +436,191 @@
             if (role === 'hija') {
                 viewHija.classList.remove('hidden');
                 viewAdmin.classList.add('hidden');
+                renderHijaView();
             } else {
                 viewHija.classList.add('hidden');
                 viewAdmin.classList.remove('hidden');
-
-                const title = document.getElementById('admin-header-title');
-                const badge = document.getElementById('admin-badge-role');
-                if (role === 'papa') {
-                    title.innerText = "Panel de Control de Papá";
-                    badge.innerText = "Modo Papá 👨‍👧";
-                    badge.className = "bg-slate-800 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider";
-                } else {
-                    title.innerText = "Panel de Control de Mamá";
-                    badge.innerText = "Modo Mamá 👩‍👧";
-                    badge.className = "bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider";
-                }
+                renderAdminView(role);
             }
-
-            renderAll();
-            showToast(`Modo activo: ${role.toUpperCase()}`);
         }
 
-        function setHijaTab(tab) {
-            state.hijaTab = tab;
-            ['rutinas', 'agenda', 'muro'].forEach(t => {
-                const btn = document.getElementById(`tab-hija-${t}`);
-                const content = document.getElementById(`content-hija-${t}`);
-                if (t === tab) {
-                    btn.className = "px-4 py-2 rounded-xl font-semibold text-xs md:text-sm transition flex items-center gap-2 bg-pink-500 text-white shadow-sm";
-                    content.classList.remove('hidden');
-                } else {
-                    btn.className = "px-4 py-2 rounded-xl font-semibold text-xs md:text-sm transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
-                    content.classList.add('hidden');
-                }
-            });
-        }
+        function renderHijaView() {
+            document.getElementById('streak-count').innerText = `${appData.streak} días`;
 
-        function renderHijaRutinas() {
-            const container = document.getElementById('rutinas-list-hija');
-            container.innerHTML = '';
-
+            const rutinasContainer = document.getElementById('rutinas-list-container');
+            rutinasContainer.innerHTML = '';
             let completedCount = 0;
-            let activeFocusItem = null;
 
-            // Sort rutinas by time
-            const sorted = [...state.rutinas].sort((a, b) => (a.time > b.time) ? 1 : -1);
+            appData.rutinas.forEach(rutina => {
+                if (rutina.completed) completedCount++;
+                const isProgress = rutina.status === 'progress';
 
-            sorted.forEach(item => {
-                if (item.completed) completedCount++;
-                if (item.inProgress) activeFocusItem = item;
-
-                const card = document.createElement('div');
-                const isFocused = item.inProgress;
-                const isDone = item.completed;
-
-                card.className = `p-4 rounded-2xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    isDone 
-                        ? 'bg-emerald-50/70 border-emerald-200 opacity-75' 
-                        : (isFocused 
-                            ? 'bg-amber-50 border-amber-400 ring-4 ring-amber-400/30 focus-glow shadow-lg' 
-                            : 'bg-white border-slate-100 shadow-sm hover:border-pink-200')
-                }`;
-
-                card.innerHTML = `
-                    <div class="flex items-center space-x-3.5">
-                        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${
-                            isDone 
-                                ? 'bg-emerald-500 text-white' 
-                                : (isFocused ? 'bg-amber-500 text-white animate-bounce' : 'bg-pink-100 text-pink-600')
-                        }">
-                            <i class="fa-solid ${item.icon}"></i>
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-4 rounded-2xl border transition-all ${rutina.completed ? 'bg-emerald-50/60 border-emerald-200 opacity-80' : (isProgress ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/40 shadow-md' : 'bg-white border-slate-100 shadow-sm')}`;
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ${rutina.completed ? 'bg-emerald-500 text-white' : (isProgress ? 'bg-amber-500 text-white animate-pulse' : 'bg-pink-100 text-pink-600')}">
+                            <i class="fa-solid ${rutina.icon}"></i>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-slate-200">
-                                    <i class="fa-regular fa-clock mr-1"></i>${item.time}
-                                </span>
-                                ${isFocused ? '<span class="text-[10px] font-bold text-amber-800 bg-amber-200 px-2 py-0.5 rounded-full"><i class="fa-solid fa-fire mr-1"></i>En progreso ahora</span>' : ''}
+                                <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2 py-0.5 rounded-md border border-slate-200"><i class="fa-regular fa-clock mr-1"></i>${rutina.time || '12:00'}</span>
+                                ${isProgress ? '<span class="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full"><i class="fa-solid fa-fire mr-1"></i>En progreso</span>' : ''}
                             </div>
-                            <h4 class="font-bold text-slate-800 text-sm md:text-base mt-1 ${isDone ? 'line-through text-slate-400' : ''}">${item.title}</h4>
+                            <h4 class="font-semibold text-slate-800 text-sm md:text-base mt-1 ${rutina.completed ? 'line-through text-slate-400' : ''}">${rutina.title}</h4>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-2 self-end sm:self-center">
-                        <button onclick="toggleInProgress('${item.id}')" title="Focalizar en esta actividad" class="px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                            isFocused 
-                                ? 'bg-amber-500 text-white shadow-md' 
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }">
+                    <div class="flex items-center gap-2">
+                        <button onclick="setRutinaProgress(${rutina.id})" title="Marcar como en progreso" class="p-2.5 rounded-xl text-xs font-semibold transition-all ${isProgress ? 'bg-amber-500 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                             <i class="fa-solid fa-bolt"></i>
-                            <span>${isFocused ? 'En progreso' : 'Haciendo'}</span>
                         </button>
-
-                        <button onclick="toggleCompleted('${item.id}')" class="px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
-                            isDone 
-                                ? 'bg-emerald-600 text-white shadow-md' 
-                                : 'bg-white border-2 border-slate-200 text-slate-600 hover:border-pink-500'
-                        }">
-                            <i class="fa-solid ${isDone ? 'fa-circle-check' : 'fa-check'}"></i>
-                            <span>${isDone ? 'Listo' : 'Completar'}</span>
+                        <button onclick="toggleRutinaCheck(${rutina.id})" class="w-9 h-9 rounded-xl flex items-center justify-center border-2 transition-all ${rutina.completed ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'border-slate-300 hover:border-pink-500 bg-white'}">
+                            ${rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : ''}
                         </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            // Update Progress bar
-            const total = state.rutinas.length;
-            const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-            document.getElementById('rutinas-percent').innerText = `${percent}%`;
-            document.getElementById('rutinas-bar').style.width = `${percent}%`;
-            document.getElementById('streak-count-hija').innerText = `${state.streak} días`;
-
-            // Active focus banner
-            const focusBanner = document.getElementById('hija-focus-banner');
-            if (activeFocusItem) {
-                focusBanner.classList.remove('hidden');
-                document.getElementById('focus-banner-title').innerText = `${activeFocusItem.title} (${activeFocusItem.time})`;
-            } else {
-                focusBanner.classList.add('hidden');
-            }
-
-            // Confetti reward on 100%
-            if (percent === 100 && total > 0 && !window.celebratedToday) {
-                window.celebratedToday = true;
-                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-            }
-        }
-
-        function toggleInProgress(id) {
-            state.rutinas = state.rutinas.map(item => {
-                if (item.id === id) {
-                    const nextState = !item.inProgress;
-                    return { ...item, inProgress: nextState, completed: nextState ? false : item.completed };
-                }
-                // Unset all other routines to keep single focus for ADHD
-                return { ...item, inProgress: false };
-            });
-            saveState();
-            renderAll();
-        }
-
-        function clearCurrentFocus() {
-            state.rutinas = state.rutinas.map(item => ({ ...item, inProgress: false }));
-            saveState();
-            renderAll();
-        }
-
-        function toggleCompleted(id) {
-            state.rutinas = state.rutinas.map(item => {
-                if (item.id === id) {
-                    const done = !item.completed;
-                    return { ...item, completed: done, inProgress: done ? false : item.inProgress };
-                }
-                return item;
-            });
-            saveState();
-            renderAll();
-        }
-
-        function renderHijaAgenda() {
-            const container = document.getElementById('agenda-list-hija');
-            container.innerHTML = '';
-
-            state.agenda.forEach(item => {
-                const isEval = item.type === 'Evaluación';
-                const card = document.createElement('div');
-                card.className = "p-4 rounded-2xl border border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-3";
-                card.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white ${isEval ? 'bg-purple-600' : 'bg-indigo-600'}">
-                            <i class="fa-solid ${isEval ? 'fa-file-lines' : 'fa-book'}"></i>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${isEval ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'}">${item.type}</span>
-                            <h4 class="font-bold text-slate-800 text-sm mt-0.5">${item.title}</h4>
-                            <p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>Fecha: ${item.date}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        ${isEval ? `<span class="px-3 py-1 bg-purple-50 text-purple-700 font-bold rounded-xl border border-purple-200 text-xs">Nota: ${item.grade || 'Pendiente'}</span>` : ''}
-                        <button onclick="toggleAgendaComplete('${item.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold ${item.completed ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">
-                            ${item.completed ? 'Completado ✓' : 'Marcar visto'}
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function toggleAgendaComplete(id) {
-            state.agenda = state.agenda.map(a => a.id === id ? { ...a, completed: !a.completed } : a);
-            saveState();
-            renderAll();
-        }
-
-        function renderMuroAndChat() {
-            // Muro Hija
-            const muroHija = document.getElementById('muro-list-hija');
-            muroHija.innerHTML = '';
-            state.muro.forEach(note => {
-                const div = document.createElement('div');
-                div.className = "p-3.5 bg-amber-50 border border-amber-200 rounded-2xl space-y-1";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center text-[10px] font-bold text-amber-800">
-                        <span><i class="fa-solid fa-heart mr-1"></i>Nota de ${note.author}</span>
-                        <span class="opacity-60">${note.date}</span>
-                    </div>
-                    <p class="text-xs text-slate-700 font-medium">${note.text}</p>
-                `;
-                muroHija.appendChild(div);
-            });
-
-            // Chat Hija
-            const chatHija = document.getElementById('chat-list-hija');
-            chatHija.innerHTML = '';
-            state.chat.forEach(msg => {
-                const isMe = msg.sender === 'Hija';
-                const div = document.createElement('div');
-                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-                div.innerHTML = `
-                    <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-pink-500 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}">
-                        <div class="font-bold text-[9px] opacity-75 mb-0.5">${msg.sender}</div>
-                        <div>${msg.text}</div>
-                    </div>
-                    <span class="text-[9px] text-slate-400 mt-0.5 px-1">${msg.time}</span>
-                `;
-                chatHija.appendChild(div);
-            });
-            chatHija.scrollTop = chatHija.scrollHeight;
-
-            // Chat Admin
-            const chatAdmin = document.getElementById('chat-list-admin');
-            chatAdmin.innerHTML = '';
-            state.chat.forEach(msg => {
-                const isMe = msg.sender !== 'Hija';
-                const div = document.createElement('div');
-                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
-                div.innerHTML = `
-                    <div class="max-w-[85%] rounded-2xl px-3 py-1.5 text-xs ${isMe ? 'bg-slate-800 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'}">
-                        <div class="font-bold text-[9px] opacity-75 mb-0.5">${msg.sender}</div>
-                        <div>${msg.text}</div>
-                    </div>
-                `;
-                chatAdmin.appendChild(div);
-            });
-            chatAdmin.scrollTop = chatAdmin.scrollHeight;
-        }
-
-        function sendChat(roleSource) {
-            const inputId = roleSource === 'hija' ? 'chat-input-hija' : 'chat-input-admin';
-            const input = document.getElementById(inputId);
-            const text = input.value.trim();
-            if (!text) return;
-
-            const sender = roleSource === 'hija' ? 'Hija' : (state.role === 'mama' ? 'Mamá' : 'Papá');
-            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            state.chat.push({ id: 'c_' + Date.now(), sender, text, time: timeNow });
-            input.value = '';
-            saveState();
-            renderAll();
-        }
-
-        function renderAdminPanel() {
-            // Live Status Tracker
-            const activeItem = state.rutinas.find(r => r.inProgress);
-            const statusDot = document.getElementById('admin-status-dot');
-            const statusText = document.getElementById('admin-status-text');
-
-            if (activeItem) {
-                statusDot.className = "w-3.5 h-3.5 rounded-full bg-amber-400 animate-ping";
-                statusText.innerText = `🔥 En progreso ahora: ${activeItem.title} (${activeItem.time})`;
-            } else {
-                statusDot.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse";
-                statusText.innerText = "Conectada - Al día sin actividad focalizada";
-            }
-
-            // Admin Routines List with Inline Time Editor
-            const rutinasContainer = document.getElementById('admin-rutinas-list');
-            rutinasContainer.innerHTML = '';
-
-            const sorted = [...state.rutinas].sort((a, b) => (a.time > b.time) ? 1 : -1);
-
-            sorted.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-slate-50 border border-slate-200/80 p-2.5 rounded-xl text-xs gap-2";
-                div.innerHTML = `
-                    <div class="flex items-center space-x-2 truncate">
-                        <i class="fa-solid ${item.icon} text-pink-500"></i>
-                        <span class="font-medium text-slate-800 truncate">${item.title}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <input type="time" value="${item.time}" onchange="updateRutinaTime('${item.id}', this.value)" class="text-xs border border-slate-200 rounded-lg px-2 py-0.5 text-slate-700 focus:outline-none focus:border-pink-500">
-                        <button onclick="deleteRutina('${item.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 rutinasContainer.appendChild(div);
             });
 
-            // Admin Agenda Table
-            const agendaTable = document.getElementById('admin-agenda-table');
-            agendaTable.innerHTML = '';
+            document.getElementById('rutinas-progress').innerText = `${completedCount}/${appData.rutinas.length} completados`;
 
-            state.agenda.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3">
-                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600">${item.type}</span>
-                        <div class="font-semibold text-slate-800 text-xs mt-0.5">${item.title}</div>
-                    </td>
-                    <td class="py-2.5 px-3 text-slate-500 text-xs">${item.date}</td>
-                    <td class="py-2.5 px-3 text-center">
-                        <input type="text" value="${item.grade || ''}" onchange="updateAgendaGrade('${item.id}', this.value)" placeholder="Ej: 6.8" class="w-16 border border-slate-200 rounded-lg px-2 py-1 text-xs text-center font-bold text-purple-600 focus:outline-none focus:border-purple-500">
-                    </td>
-                    <td class="py-2.5 px-3 text-right">
-                        <button onclick="deleteAgenda('${item.id}')" class="text-rose-500 hover:text-rose-700 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </td>
+            // Agenda
+            const agendaContainer = document.getElementById('agenda-list-container');
+            agendaContainer.innerHTML = '';
+            appData.agenda.forEach(item => {
+                const isEval = item.type === 'evaluacion';
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-2xl border transition-all ${item.completed ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-100 shadow-sm'}`;
+                div.innerHTML = `
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white ${isEval ? 'bg-purple-500' : 'bg-indigo-500'}">
+                                <i class="fa-solid ${isEval ? 'fa-file-lines' : 'fa-book'}"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${isEval ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'}">${item.type}</span>
+                                <h4 class="font-semibold text-slate-800 text-sm md:text-base mt-0.5">${item.title}</h4>
+                                <p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ${item.date}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                            ${isEval ? `
+                                <div class="flex items-center gap-1">
+                                    <span class="text-xs font-bold text-slate-500">Mi Nota:</span>
+                                    <input type="text" value="${item.nota \vert{}\vert{} ''}" onchange="updateNota(${item.id}, this.value)" placeholder="Ej. 6.5" class="w-16 border border-slate-200 rounded-lg px-2 py-1 text-xs text-center font-bold text-purple-600 focus:outline-none focus:border-purple-500">
+                                </div>
+                            ` : ''}
+                            <button onclick="toggleAgendaCheck(${item.id})" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all ${item.completed ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                <i class="fa-solid ${item.completed ? 'fa-check-double' : 'fa-check'}"></i> ${item.completed ? 'Completada' : 'Marcar lista'}
+                            </button>
+                            <button onclick="deleteAgendaItem(${item.id})" class="text-slate-400 hover:text-rose-500 p-1 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 `;
-                agendaTable.appendChild(tr);
-            });
-        }
-
-        function addNewRutina() {
-            const titleInput = document.getElementById('add-rutina-title');
-            const timeInput = document.getElementById('add-rutina-time');
-            const iconInput = document.getElementById('add-rutina-icon');
-
-            const title = titleInput.value.trim();
-            const time = timeInput.value || '12:00';
-            const icon = iconInput.value.trim() || 'fa-star';
-
-            if (!title) return;
-
-            state.rutinas.push({
-                id: 'r_' + Date.now(),
-                time,
-                title,
-                icon,
-                completed: false,
-                inProgress: false
+                agendaContainer.appendChild(div);
             });
 
-            titleInput.value = '';
-            saveState();
-            renderAll();
-            showToast("Nueva rutina agregada");
-        }
-
-        function updateRutinaTime(id, newTime) {
-            state.rutinas = state.rutinas.map(r => r.id === id ? { ...r, time: newTime } : r);
-            saveState();
-            renderAll();
-        }
-
-        function deleteRutina(id) {
-            state.rutinas = state.rutinas.filter(r => r.id !== id);
-            saveState();
-            renderAll();
-            showToast("Rutina eliminada");
-        }
-
-        function addNewAgendaItem() {
-            const type = document.getElementById('add-agenda-type').value;
-            const titleInput = document.getElementById('add-agenda-title');
-            const dateInput = document.getElementById('add-agenda-date');
-
-            const title = titleInput.value.trim();
-            const date = dateInput.value;
-
-            if (!title || !date) return;
-
-            state.agenda.push({
-                id: 'a_' + Date.now(),
-                type,
-                title,
-                date,
-                grade: '',
-                completed: false
+            // Muro
+            const muroContainer = document.getElementById('muro-container');
+            muroContainer.innerHTML = '';
+            appData.muro.forEach(post => {
+                const div = document.createElement('div');
+                div.className = "bg-amber-50/70 border border-amber-200/60 p-3.5 rounded-2xl";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-xs text-amber-800"><i class="fa-solid fa-user-shield mr-1"></i> ${post.author}</span>
+                        <span class="text-[10px] text-slate-400">${post.date}</span>
+                    </div>
+                    <p class="text-xs text-slate-700 leading-relaxed">${post.text}</p>
+                `;
+                muroContainer.appendChild(div);
             });
 
-            titleInput.value = '';
-            saveState();
-            renderAll();
-            showToast("Prueba / Tarea publicada en la agenda");
+            // Chat
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.innerHTML = '';
+            appData.chat.forEach(msg => {
+                const isMe = msg.sender === 'Emilia';
+                const div = document.createElement('div');
+                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+                div.innerHTML = `
+                    <div class="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs ${isMe ? 'bg-pink-500 text-white rounded-br-none' : 'bg-slate-100 text-slate-700 rounded-bl-none'}">
+                        <div class="font-bold text-[10px] opacity-75 mb-0.5">${msg.sender}</div>
+                        <div>${msg.text}</div>
+                    </div>
+                    <span class="text-[9px] text-slate-400 mt-1 px-1">${msg.time}</span>
+                `;
+                chatContainer.appendChild(div);
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function updateAgendaGrade(id, grade) {
-            state.agenda = state.agenda.map(a => a.id === id ? { ...a, grade } : a);
-            saveState();
-            renderAll();
-            showToast("Nota actualizada");
-        }
+        function renderAdminView(role) {
+            const isPapa = role === 'papa';
+            const badge = document.getElementById('admin-role-badge');
+            badge.innerText = isPapa ? 'Panel de Papá' : 'Panel de Mamá';
+            badge.className = isPapa ? 'bg-slate-900 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider' : 'bg-pink-600 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider';
 
-        function deleteAgenda(id) {
-            state.agenda = state.agenda.filter(a => a.id !== id);
-            saveState();
-            renderAll();
-        }
+            const inProgressRutina = appData.rutinas.find(r => r.status === 'progress');
+            const statusIndicator = document.getElementById('admin-presence-indicator');
+            const statusText = document.getElementById('admin-status-text');
 
-        function postMuroNote() {
-            const input = document.getElementById('add-muro-text');
-            const text = input.value.trim();
-            if (!text) return;
+            if (inProgressRutina) {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-amber-400 animate-ping";
+                statusText.innerText = `Haciendo: ${inProgressRutina.title} (${inProgressRutina.time})`;
+            } else {
+                statusIndicator.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
+                statusText.innerText = "Conectada - Al día";
+            }
 
-            const author = state.role === 'mama' ? 'Mamá' : 'Papá';
-            state.muro.unshift({
-                id: 'm_' + Date.now(),
-                author,
-                text,
-                date: 'Hoy'
+            // Rutinas Admin List
+            const adminRutinasList = document.getElementById('admin-rutinas-list');
+            adminRutinasList.innerHTML = '';
+            appData.rutinas.forEach(rutina => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-sm gap-2";
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate">
+                        <i class="fa-solid ${rutina.icon} text-pink-500"></i>
+                        <span class="truncate text-slate-700 text-xs font-medium">${rutina.title}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <input type="time" value="${rutina.time || '12:00'}" onchange="updateRutinaTime(${rutina.id}, this.value)" class="text-xs border border-slate-200 rounded px-1 py-0.5 text-slate-600 focus:outline-none focus:border-pink-500">
+                        <button onclick="deleteRutina(${rutina.id})" class="text-rose-500 hover:text-rose-700 p-1 text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                adminRutinasList.appendChild(div);
             });
 
-            input.value = '';
-            saveState();
-            renderAll();
-            showToast("Nota pegada en el muro");
+            // Agenda registrada por Emilia
+            const adminAgendaList = document.getElementById('admin-agenda-list');
+            adminAgendaList.innerHTML = '';
+            if (appData.agenda.length === 0) {
+                adminAgendaList.innerHTML = '<p class="text-xs text-slate-400 italic">Emilia aún no ha registrado tareas o evaluaciones.</p>';
+            } else {
+                appData.agenda.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-50 border border-slate-100 p-3 rounded-2xl text-sm";
+                    div.innerHTML = `
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${item.type === 'evaluacion' ? 'bg-purple-100 text-purple-700' : 'bg-indigo-100 text-indigo-700'}">${item.type}</span>
+                            <h4 class="font-semibold text-slate-800 text-sm mt-1">${item.title}</h4>
+                            <span class="text-xs text-slate-400">Fecha: ${item.date} ${item.nota ? `| Nota ingresada por Emilia: <b class="text-purple-600">${item.nota}</b>` : '| (Sin nota)'}</span>
+                        </div>
+                        <button onclick="deleteAgendaItem(${item.id})" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all">
+                            <i class="fa-solid fa-trash mr-1"></i> Eliminar
+                        </button>
+                    `;
+                    adminAgendaList.appendChild(div);
+                });
+            }
         }
 
-        function openResetModal() {
-            document.getElementById('reset-modal').classList.remove('hidden');
-        }
-
-        function closeResetModal() {
-            document.getElementById('reset-modal').classList.add('hidden');
-        }
-
-        function executeFactoryReset() {
-            localStorage.removeItem(STORAGE_KEY);
-            state.rutinas = [...DEFAULT_RUTINAS];
-            state.agenda = [...DEFAULT_AGENDA];
-            state.muro = [...DEFAULT_MURO];
-            state.chat = [...DEFAULT_CHAT];
-            state.streak = 5;
-            saveState();
-            closeResetModal();
-            renderAll();
-            showToast("¡Datos restaurados con éxito!");
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast-notification');
-            document.getElementById('toast-text').innerText = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-            }, 2500);
-        }
-
-        function renderAll() {
-            renderHijaRutinas();
-            renderHijaAgenda();
-            renderMuroAndChat();
-            renderAdminPanel();
-        }
+        render();
     </script>
 </body>
 </html>
