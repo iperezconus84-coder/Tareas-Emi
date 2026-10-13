@@ -525,9 +525,6 @@
                     <button onclick="changeAdminPin()" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
                         Guardar PIN
                     </button>
-                    <button onclick="resetDataToDefault()" title="Restablecer datos por defecto" class="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ml-2">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
-                    </button>
                     <button onclick="logoutFamily()" title="Cerrar la sesión familiar en este celular" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
                         <i class="fa-solid fa-right-from-bracket mr-1"></i> Salir
                     </button>
@@ -566,8 +563,9 @@
                         </button>
                     </div>
                     <div class="border-t border-teal-900 pt-3">
-                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Editar Horarios</h4>
-                        <div id="admin-rutinas-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Editar horarios y días</h4>
+                        <p class="text-[11px] text-slate-500 mb-2">Toca las letras para elegir qué días aplica cada rutina. Un día sin rutinas es día libre: no corta la racha.</p>
+                        <div id="admin-rutinas-list" class="space-y-2 max-h-[28rem] overflow-y-auto pr-1"></div>
                     </div>
                 </div>
 
@@ -707,6 +705,20 @@
             return localDateStr(new Date(y, m - 1, d + n));
         }
 
+        // ===== Días de la semana de cada rutina =====
+        // rutina.days = [0..6] (0 = domingo). Sin "days" la rutina aplica todos los días.
+        function dayOfWeek(dateStr) { return parseLocalDate(dateStr).getDay(); }
+
+        function rutinasFor(dateStr) {
+            const dow = dayOfWeek(dateStr);
+            return appData.rutinas.filter(r => !Array.isArray(r.days) || r.days.includes(dow));
+        }
+
+        function todayRutinas() { return rutinasFor(localDateStr()); }
+
+        // Día libre: no tiene rutinas; no suma a la racha pero tampoco la corta
+        function isFreeDay(dateStr) { return rutinasFor(dateStr).length === 0; }
+
         // La racha son los días seguidos con todo cumplido, contando hasta hoy
         // (si hoy ya está completo) o hasta ayer (si hoy aún está en curso).
         function computeStreak() {
@@ -714,7 +726,11 @@
             const today = localDateStr();
             let day = h[today] ? today : addDays(today, -1);
             let count = 0;
-            while (h[day]) { count++; day = addDays(day, -1); }
+            for (let guard = 0; guard < 800; guard++) {
+                if (h[day]) count++;
+                else if (!isFreeDay(day)) break;
+                day = addDays(day, -1);
+            }
             return count;
         }
 
@@ -732,12 +748,14 @@
         // Marca o desmarca el día de hoy como cumplido según el estado de las rutinas
         function dayAllDone(date) {
             const l = appData.log[date] || {};
-            return appData.rutinas.length > 0 && appData.rutinas.every(r => l[itemKey(r.id)]);
+            const list = rutinasFor(date);
+            return list.length > 0 && list.every(r => l[itemKey(r.id)]);
         }
 
         function dayAllConfirmed(date) {
             const c = appData.confirm[date] || {};
-            return appData.rutinas.length > 0 && appData.rutinas.every(r => c[itemKey(r.id)] === 'ok');
+            const list = rutinasFor(date);
+            return list.length > 0 && list.every(r => c[itemKey(r.id)] === 'ok');
         }
 
         // Un día cuenta para la racha cuando todas las rutinas están marcadas
@@ -794,7 +812,7 @@
             if (currentRole !== 'mama') return;
             if (!appData.confirm[date]) appData.confirm[date] = {};
             const paths = {};
-            appData.rutinas.forEach(r => {
+            rutinasFor(date).forEach(r => {
                 const k = itemKey(r.id);
                 if (rutinaStateFor(r, date) === 'done' && appData.confirm[date][k] !== 'ok') {
                     appData.confirm[date][k] = 'ok';
@@ -1029,17 +1047,6 @@
             }
         }
 
-        function resetDataToDefault() {
-            if (confirm("¿Quieres restablecer las rutinas al nuevo horario (17:00 a 21:30) y reiniciar datos?")) {
-                const keepPin = { adminPin: appData.adminPin, adminPinHash: appData.adminPinHash };
-                appData = sanitizeData(keepPin);
-                appData.rutinas = JSON.parse(JSON.stringify(defaultRutinas));
-                appData.streak = 0;
-                saveData();
-                render();
-            }
-        }
-
         function triggerCelebration() {
             if (typeof confetti === 'function') {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
@@ -1221,8 +1228,9 @@
                 rutina.completed = !rutina.completed;
                 if (rutina.completed) rutina.status = 'idle';
 
-                const total = appData.rutinas.length;
-                const completedNow = appData.rutinas.filter(r => r.completed).length;
+                const todays = todayRutinas();
+                const total = todays.length;
+                const completedNow = todays.filter(r => r.completed).length;
 
                 const today = localDateStr();
                 if (!appData.log[today]) appData.log[today] = {};
@@ -1299,6 +1307,27 @@
             appData.rutinas = sortRutinas(appData.rutinas);
             document.getElementById('new-rutina-title').value = '';
             persist(Object.assign(itemPath('rutinas', rutina), refreshTodayStatus()));
+            render();
+        }
+
+        const WEEK_ORDER = [[1, 'L', 'Lunes'], [2, 'M', 'Martes'], [3, 'X', 'Miércoles'], [4, 'J', 'Jueves'], [5, 'V', 'Viernes'], [6, 'S', 'Sábado'], [0, 'D', 'Domingo']];
+
+        // Activa o desactiva un día de la semana para una rutina
+        function toggleRutinaDay(id, dow) {
+            const r = appData.rutinas.find(x => x.id === id);
+            if (!r) return;
+            let days = Array.isArray(r.days) ? r.days.slice() : [0, 1, 2, 3, 4, 5, 6];
+            if (days.includes(dow)) {
+                if (days.length === 1) { alert('La rutina debe aplicar al menos un día. Para quitarla, usa el basurero.'); return; }
+                days = days.filter(d => d !== dow);
+            } else {
+                days.push(dow);
+            }
+            days.sort();
+            r.days = days.length === 7 ? null : days;
+            if (r.days === null) delete r.days;
+            const paths = { ['rutinas/' + itemKey(r.id) + '/days']: r.days || null };
+            persist(Object.assign(paths, refreshTodayStatus()));
             render();
         }
 
@@ -1434,9 +1463,10 @@
             const rutinasContainer = document.getElementById('rutinas-list-container');
             rutinasContainer.innerHTML = '';
             let completedCount = 0;
-            const totalCount = appData.rutinas.length;
+            const todays = todayRutinas();
+            const totalCount = todays.length;
 
-            appData.rutinas.forEach(rutina => {
+            todays.forEach(rutina => {
                 if (rutina.completed) completedCount++;
                 const isProgress = rutina.status === 'progress';
 
@@ -1548,10 +1578,17 @@
             adminRutinasList.innerHTML = '';
             appData.rutinas.forEach(rutina => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-2.5 rounded-2xl text-sm gap-2";
-                div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + esc(rutina.icon) + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + esc(rutina.title) + '</span></div>' +
+                div.className = "bg-slate-950 border border-teal-800/60 p-2.5 rounded-2xl text-sm space-y-2";
+                const days = Array.isArray(rutina.days) ? rutina.days : [0, 1, 2, 3, 4, 5, 6];
+                const chips = WEEK_ORDER.map(([dow, letter, name]) => {
+                    const on = days.includes(dow);
+                    return '<button onclick="toggleRutinaDay(' + Number(rutina.id) + ', ' + dow + ')" title="' + name + '" class="w-7 h-7 rounded-lg text-[11px] font-extrabold transition-all ' +
+                        (on ? 'bg-teal-500 text-slate-950' : 'bg-slate-900 text-slate-600 border border-slate-800') + '">' + letter + '</button>';
+                }).join('');
+                div.innerHTML = '<div class="flex items-center justify-between gap-2"><div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + esc(rutina.icon) + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + esc(rutina.title) + '</span></div>' +
                     '<div class="flex items-center gap-1"><input type="time" value="' + esc(rutina.time || '17:00') + '" onchange="updateRutinaTime(' + Number(rutina.id) + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
-                    '<button onclick="deleteRutina(' + Number(rutina.id) + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
+                    '<button onclick="deleteRutina(' + Number(rutina.id) + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div></div>' +
+                    '<div class="flex items-center gap-1">' + chips + '</div>';
                 adminRutinasList.appendChild(div);
             });
 
@@ -1657,7 +1694,7 @@
             Object.keys(appData.log).forEach(date => {
                 if (date > today || daysBetween(date, today) > 14) return;
                 const l = appData.log[date] || {}, c = appData.confirm[date] || {};
-                appData.rutinas.forEach(r => {
+                rutinasFor(date).forEach(r => {
                     const k = itemKey(r.id);
                     if (l[k] && c[k] !== 'ok') total += Number(cfg.rutina) || 0;
                 });
@@ -1671,8 +1708,12 @@
             const dates = Object.keys(appData.history).sort();
             const wanted = {};
             let run = 0, prev = null;
+            const onlyFreeBetween = (a, b) => {
+                for (let x = addDays(a, 1); x < b; x = addDays(x, 1)) if (!isFreeDay(x)) return false;
+                return true;
+            };
             dates.forEach(d => {
-                run = (prev && addDays(prev, 1) === d) ? run + 1 : 1;
+                run = (prev && onlyFreeBetween(prev, d)) ? run + 1 : 1;
                 prev = d;
                 if (run % 7 === 0 && appData.log[d]) wanted['w_' + d] = run;
             });
@@ -1751,7 +1792,7 @@
         }
 
         function pendingMissions() {
-            return appData.rutinas.filter(r => !r.completed);
+            return todayRutinas().filter(r => !r.completed);
         }
 
         function currentMission() {
@@ -1808,18 +1849,22 @@
         function renderTraining() {
             const box = document.getElementById('training-container');
             if (!box) return;
-            const total = appData.rutinas.length;
-            const done = appData.rutinas.filter(r => r.completed).length;
+            const todays = todayRutinas();
+            const total = todays.length;
+            const done = todays.filter(r => r.completed).length;
             const today = localDateStr();
             const cfg = ptsCfg();
             const card = 'bg-gradient-to-b from-slate-900 to-slate-950 border border-teal-700/60 rounded-3xl p-5 shadow-xl text-center space-y-4 relative overflow-hidden';
 
             if (total === 0) {
-                box.innerHTML = '<div class="' + card + '"><p class="text-sm text-slate-300">No hay misiones para hoy.</p></div>';
+                box.innerHTML = '<div class="' + card + '">' +
+                    '<div class="w-20 h-20 mx-auto rounded-full bg-indigo-950 border-2 border-indigo-400 text-indigo-200 flex items-center justify-center text-4xl"><i class="fa-solid fa-moon"></i></div>' +
+                    '<div><h3 class="text-2xl font-extrabold text-white">Día libre de entrenamiento</h3>' +
+                    '<p class="text-sm text-slate-300 mt-1">Hoy no tienes misiones. Descansa y recupera energía, cazadora. Tu racha está a salvo.</p></div></div>';
                 return;
             }
 
-            const segs = appData.rutinas.map(r => '<span class="h-1.5 flex-1 rounded-full ' + (r.completed ? 'bg-emerald-400' : (r.status === 'progress' ? 'bg-teal-300 animate-pulse' : 'bg-slate-800')) + '"></span>').join('');
+            const segs = todays.map(r => '<span class="h-1.5 flex-1 rounded-full ' + (r.completed ? 'bg-emerald-400' : (r.status === 'progress' ? 'bg-teal-300 animate-pulse' : 'bg-slate-800')) + '"></span>').join('');
             const segBar = '<div class="flex gap-1">' + segs + '</div>';
 
             // Todo cumplido
@@ -1838,8 +1883,8 @@
             }
 
             // Aún no empieza
-            if (!trainingStarted() && done === 0 && !appData.rutinas.some(r => r.status === 'progress')) {
-                const first = appData.rutinas[0];
+            if (!trainingStarted() && done === 0 && !todays.some(r => r.status === 'progress')) {
+                const first = todays[0];
                 const maxPts = total * (Number(cfg.rutina) || 0) + (Number(cfg.dia) || 0);
                 box.innerHTML = '<div class="' + card + '">' +
                     '<p class="text-[11px] font-extrabold text-teal-300 uppercase tracking-[0.2em]">Entrenamiento de hoy</p>' +
@@ -1859,8 +1904,8 @@
             const active = m.status === 'progress';
             const canSwipe = pending.length > 1;
             const next = canSwipe ? pending[(pIdx + 1) % pending.length] : null;
-            const order = appData.rutinas.findIndex(r => r.id === m.id) + 1;
-            const segsCur = appData.rutinas.map(r => '<span class="h-1.5 flex-1 rounded-full ' +
+            const order = todays.findIndex(r => r.id === m.id) + 1;
+            const segsCur = todays.map(r => '<span class="h-1.5 flex-1 rounded-full ' +
                 (r.completed ? 'bg-emerald-400' : (r.id === m.id ? 'bg-white' : 'bg-slate-800')) + '"></span>').join('');
             const pop = Date.now() < pointPopUntil
                 ? '<div class="point-pop absolute top-16 left-0 right-0 text-center pointer-events-none z-10"><span class="inline-block bg-amber-400 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' por confirmar</span></div>'
@@ -2273,7 +2318,8 @@
             const dayConfirm = appData.confirm[plannerDate] || {};
             // Solo se revisan días con registro detallado (desde que existe la confirmación)
             const reviewable = plannerDate <= today && (plannerDate === today || !!appData.log[plannerDate]);
-            appData.rutinas.forEach(r => {
+            const dayRutinas = rutinasFor(plannerDate);
+            dayRutinas.forEach(r => {
                 const st = rutinaStateFor(r, plannerDate);
                 const verdict = dayConfirm[itemKey(r.id)];
                 if (st === 'done') doneCount++;
@@ -2303,7 +2349,7 @@
                     (review ? '<span class="flex items-center gap-1 shrink-0">' + review + '</span>' : '') +
                     '</div>';
             });
-            const total = appData.rutinas.length;
+            const total = dayRutinas.length;
             const showCount = plannerDate <= today;
             const pct = total ? Math.round(doneCount / total * 100) : 0;
 
@@ -2314,7 +2360,7 @@
                 (showCount ? '<span class="text-[11px] font-bold text-slate-400">' + doneCount + ' de ' + total + (reviewable && doneCount ? ' · ' + confirmedCount + ' confirmadas' : '') + '</span>' : '') + '</div>' +
                 (isMama && reviewable && toConfirm > 0 ? '<button onclick="confirmAllDay(\'' + plannerDate + '\')" class="w-full mt-1 mb-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2 rounded-2xl text-xs transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-stamp"></i> Confirmar las ' + toConfirm + ' rutinas marcadas</button>' : '') +
                 (showCount ? '<div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden"><div class="bg-gradient-to-r from-teal-500 to-emerald-400 h-full rounded-full" style="width:' + pct + '%"></div></div>' : '') +
-                '<div class="bg-slate-950/60 rounded-2xl px-3 border border-teal-900/40">' + rutinasHtml + '</div></div>';
+                '<div class="bg-slate-950/60 rounded-2xl px-3 border border-teal-900/40">' + (rutinasHtml || '<p class="text-xs text-indigo-200 py-3"><i class="fa-solid fa-moon mr-1"></i> Día libre: sin misiones de rutina.</p>') + '</div></div>';
 
             // --- Próximas misiones escolares (atrasadas + próximas, ordenadas)
             if (upcomingEl) {
