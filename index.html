@@ -560,8 +560,88 @@
                 theme: raw.theme || 'tokito',
                 rewardTitle: raw.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬',
                 rewardTarget: typeof raw.rewardTarget === 'number' ? raw.rewardTarget : 21,
-                lastCompletedDate: raw.lastCompletedDate || ''
+                lastCompletedDate: raw.lastCompletedDate || '',
+                lastResetDate: raw.lastResetDate || '',
+                history: (raw.history && typeof raw.history === 'object' && !Array.isArray(raw.history)) ? raw.history : {}
             };
+        }
+
+        // ===== Fechas en hora local (Chile) y cálculo de la racha =====
+        function pad2(n) { return String(n).padStart(2, '0'); }
+
+        // Fecha local en formato AAAA-MM-DD (no UTC)
+        function localDateStr(d) {
+            d = d || new Date();
+            return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+        }
+
+        function addDays(dateStr, n) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return localDateStr(new Date(y, m - 1, d + n));
+        }
+
+        // La racha son los días seguidos con todo cumplido, contando hasta hoy
+        // (si hoy ya está completo) o hasta ayer (si hoy aún está en curso).
+        function computeStreak() {
+            const h = appData.history || {};
+            const today = localDateStr();
+            let day = h[today] ? today : addDays(today, -1);
+            let count = 0;
+            while (h[day]) { count++; day = addDays(day, -1); }
+            return count;
+        }
+
+        // Datos antiguos sin historial: se reconstruye a partir de la racha guardada
+        function migrateHistory() {
+            if (Object.keys(appData.history).length === 0 && appData.streak > 0 && appData.lastCompletedDate) {
+                let day = appData.lastCompletedDate;
+                for (let i = 0; i < appData.streak; i++) {
+                    appData.history[day] = true;
+                    day = addDays(day, -1);
+                }
+            }
+        }
+
+        // Marca o desmarca el día de hoy como cumplido según el estado de las rutinas
+        function refreshTodayStatus() {
+            const today = localDateStr();
+            const total = appData.rutinas.length;
+            const allDone = total > 0 && appData.rutinas.every(r => r.completed);
+            if (allDone) {
+                appData.history[today] = true;
+                appData.lastCompletedDate = today;
+            } else {
+                delete appData.history[today];
+            }
+            appData.streak = computeStreak();
+        }
+
+        // Al cambiar de día: desmarca las rutinas y recalcula la racha.
+        // Devuelve true si cambió algo.
+        function checkDailyReset() {
+            const today = localDateStr();
+            migrateHistory();
+            let changed = false;
+
+            if (appData.lastResetDate !== today) {
+                const firstRun = appData.lastResetDate === '';
+                const allDone = appData.rutinas.length > 0 && appData.rutinas.every(r => r.completed);
+                // En la primera ejecución se respeta lo marcado si hoy ya estaba todo listo
+                if (!(firstRun && allDone && appData.lastCompletedDate === today)) {
+                    appData.rutinas.forEach(r => { r.completed = false; r.status = 'idle'; });
+                }
+                appData.lastResetDate = today;
+                changed = true;
+            }
+
+            const streak = computeStreak();
+            if (streak !== appData.streak) {
+                appData.streak = streak;
+                changed = true;
+            }
+
+            if (changed) saveData();
+            return changed;
         }
 
         let currentRole = localStorage.getItem('agenda_current_role') || 'hija';
@@ -593,6 +673,7 @@
                     const cloudData = snapshot.val();
                     if (cloudData) {
                         appData = sanitizeData(cloudData);
+                        checkDailyReset();
                         localStorage.setItem('agenda_app_data', JSON.stringify(appData));
                         updateStatus(true, 'Sincronizado en la Nube ☁️');
                         render();
@@ -636,7 +717,9 @@
                     theme: appData.theme,
                     rewardTitle: appData.rewardTitle,
                     rewardTarget: appData.rewardTarget,
-                    lastCompletedDate: appData.lastCompletedDate
+                    lastCompletedDate: appData.lastCompletedDate,
+                    lastResetDate: appData.lastResetDate,
+                    history: appData.history
                 }).catch(err => console.warn(err));
             }
         }
@@ -835,12 +918,8 @@
                 const total = appData.rutinas.length;
                 const completedNow = appData.rutinas.filter(r => r.completed).length;
 
+                refreshTodayStatus();
                 if (!wasCompletedBefore && completedNow === total && total > 0) {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    if (appData.lastCompletedDate !== todayStr) {
-                        appData.streak = (appData.streak || 0) + 1;
-                        appData.lastCompletedDate = todayStr;
-                    }
                     triggerCelebration();
                 }
 
@@ -899,12 +978,14 @@
 
             appData.rutinas.sort((a, b) => (a.time > b.time) ? 1 : -1);
             document.getElementById('new-rutina-title').value = '';
+            refreshTodayStatus();
             saveData();
             render();
         }
 
         function deleteRutina(id) {
             appData.rutinas = appData.rutinas.filter(r => r.id !== id);
+            refreshTodayStatus();
             saveData();
             render();
         }
@@ -1014,7 +1095,7 @@
 
             const streak = appData.streak || 0;
             const target = appData.rewardTarget || 21;
-            document.getElementById('streak-count').innerText = streak + ' días';
+            document.getElementById('streak-count').innerText = streak + (streak === 1 ? ' día' : ' días');
 
             // Actualizar Banner de Recompensa
             const rewardTitleText = document.getElementById('reward-title-text');
@@ -1036,7 +1117,7 @@
                 if (rewardIcon) rewardIcon.innerHTML = '🔒';
                 if (rewardProgressText) rewardProgressText.innerText = 'Completa ' + target + ' días de racha seguidos para desbloquearlo.';
                 if (rewardBadgeStatus) {
-                    rewardBadgeStatus.innerText = 'Faltan ' + diff + ' días';
+                    rewardBadgeStatus.innerText = (diff === 1 ? 'Falta 1 día' : 'Faltan ' + diff + ' días');
                     rewardBadgeStatus.className = 'bg-amber-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block';
                 }
             }
@@ -1256,7 +1337,14 @@
             }
         }
 
+        checkDailyReset();
         render();
+
+        // Si la app queda abierta pasada la medianoche, o vuelve a primer plano otro día
+        setInterval(() => { if (checkDailyReset()) render(); }, 60000);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && checkDailyReset()) render();
+        });
     </script>
 </body>
 </html>
