@@ -29,6 +29,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Quicksand -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- JS Confetti para celebraciones -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -96,6 +98,24 @@
             </div>
         </div>
     </header>
+
+    <!-- MODAL CELEBRACIÓN 100% -->
+    <div id="win-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gradient-to-b from-teal-900 to-slate-900 rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-2 border-teal-400 relative text-slate-100 space-y-4 animate-bounce">
+            <div class="w-20 h-20 bg-teal-400 text-slate-950 rounded-full flex items-center justify-center mx-auto text-4xl shadow-lg font-bold">
+                ⚔️
+            </div>
+            <div>
+                <h3 class="font-extrabold text-2xl text-teal-200">¡Misión Cumplida! 🎉</h3>
+                <p class="text-xs text-teal-100 mt-2 leading-relaxed">
+                    ¡Impresionante Emilia! Has completado todas tus tareas de hoy. ¡Sumaste +1 día a tu racha de cazadora! 🌫️
+                </p>
+            </div>
+            <button onclick="closeWinModal()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black py-3 rounded-2xl text-sm transition-all shadow-xl uppercase tracking-wider">
+                ¡Continuar la Racha! ⚡
+            </button>
+        </div>
+    </div>
 
     <!-- MODAL DE PERSONALIZACIÓN DE PERFIL Y TEMAS -->
     <div id="profile-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -235,6 +255,25 @@
                 </div>
             </div>
 
+            <!-- BANNER DE RECOMPENSA DE RACHA (GAME GOAL) -->
+            <div id="reward-banner" class="bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+                <div class="flex items-center gap-3 z-10">
+                    <div id="reward-icon" class="w-12 h-12 bg-amber-950 border border-amber-500 text-amber-300 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                        🔒
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-950 px-2 py-0.5 rounded-full border border-amber-800">Premio Familiar 🎁</span>
+                        <h4 id="reward-title-text" class="font-extrabold text-amber-100 text-sm sm:text-base mt-0.5">Desbloqueo de cuenta de YouTube 🎬</h4>
+                        <p id="reward-progress-text" class="text-xs text-slate-400">Completa 21 días de racha seguidos para desbloquearlo.</p>
+                    </div>
+                </div>
+                <div class="z-10 w-full sm:w-auto text-right">
+                    <span id="reward-badge-status" class="bg-amber-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block">
+                        Faltan 21 días
+                    </span>
+                </div>
+            </div>
+
             <!-- Navegación de Pestañas -->
             <div class="flex space-x-2 border-b border-teal-800/60 pb-2 overflow-x-auto hide-scrollbar">
                 <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md">
@@ -250,14 +289,24 @@
 
             <!-- Pestaña 1: Rutinas -->
             <div id="hija-tab-rutinas" class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-lg text-teal-200 flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-teal-400"></i> Mis Deberes Diarios
-                    </h3>
-                    <span id="rutinas-progress" class="text-xs font-bold bg-teal-950 text-teal-300 px-3 py-1 rounded-full border border-teal-700">
-                        0/0 completados 🌫️
-                    </span>
+                
+                <!-- BARRA DE PROGRESO DIARIO GAMIFICADA -->
+                <div class="bg-slate-900 border border-teal-800/60 p-4 rounded-3xl space-y-2 shadow-md">
+                    <div class="flex justify-between items-center text-xs font-bold">
+                        <span class="text-teal-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt text-amber-400"></i> Progreso de Deberes Diarios
+                        </span>
+                        <span id="rutinas-percent" class="text-teal-400 font-extrabold text-sm">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-3.5 border border-teal-900 overflow-hidden p-0.5">
+                        <div id="progress-bar-fill" class="bg-gradient-to-r from-teal-500 via-cyan-400 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-md" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1">
+                        <span id="rutinas-progress">0/0 completados</span>
+                        <span id="rutinas-status-msg" class="text-teal-300 font-medium">¡Vamos por todas tus metas de hoy! ⚔️</span>
+                    </div>
                 </div>
+
                 <div id="rutinas-list-container" class="grid gap-3"></div>
             </div>
 
@@ -323,7 +372,7 @@
                     <div>
                         <span id="admin-role-badge" class="bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider">Panel de Papá / Mamá</span>
                         <h2 class="text-2xl md:text-3xl font-bold mt-1 text-teal-100">Supervisión Familiar ⚔️</h2>
-                        <p class="text-slate-300 text-sm mt-0.5">Gestiona las rutinas de Emilia, ajusta sus horarios y revisa sus notas.</p>
+                        <p class="text-slate-300 text-sm mt-0.5">Gestiona las rutinas de Emilia, ajusta sus horarios y configura sus premios.</p>
                     </div>
                 </div>
                 <div class="bg-slate-950/80 border border-teal-800 px-4 py-3 rounded-2xl flex items-center gap-3">
@@ -331,6 +380,23 @@
                     <div>
                         <div class="text-xs text-slate-400">Estado de Emilia</div>
                         <div class="text-sm font-bold text-teal-200" id="admin-status-text">Conectada - Al día</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración de Recompensa de Racha por Padres -->
+            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-amber-500/40 space-y-3">
+                <h3 class="font-bold text-amber-300 flex items-center gap-2 text-base">
+                    <i class="fa-solid fa-gift text-amber-400"></i> Configurar Premio por Racha de Días
+                </h3>
+                <p class="text-xs text-slate-400">Define el premio acuerdado por cumplir cierta cantidad de días en racha (ej. 21 días = 3 semanas).</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" id="admin-reward-title" placeholder="Ej. Desbloqueo de YouTube 🎬" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                    <div class="flex gap-2">
+                        <input type="number" id="admin-reward-target" placeholder="21" title="Días necesarios" class="w-20 text-center font-bold bg-slate-950 border border-teal-800 text-teal-300 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                        <button onclick="saveRewardConfig()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-3 py-2 rounded-2xl text-xs transition-all">
+                            Guardar Premio
+                        </button>
                     </div>
                 </div>
             </div>
@@ -441,7 +507,7 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT BLINDADA -->
+    <!-- LÓGICA JAVASCRIPT GAMIFICADA -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -457,7 +523,6 @@
             { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
-        // Avatares Estables con respaldos visuales
         const availableAvatars = [
             { id: 'tokito', name: 'Muichiro Tokito', tag: 'Tokito 🌫️', role: 'Pilar de la Niebla', emoji: '🌫️', color: 'bg-teal-950 text-teal-300 border-teal-500', url: 'https://cdn.myanimelist.net/images/characters/6/410292.jpg' },
             { id: 'tanjiro', name: 'Tanjiro Kamado', tag: 'Tanjiro ⚔️', role: 'Cazador de Demonios', emoji: '⚔️', color: 'bg-emerald-950 text-emerald-300 border-emerald-500', url: 'https://cdn.myanimelist.net/images/characters/13/386016.jpg' },
@@ -492,7 +557,10 @@
                 chat: ensureArray(raw.chat, []),
                 streak: typeof raw.streak === 'number' ? raw.streak : 0,
                 selectedAvatar: raw.selectedAvatar || availableAvatars[0],
-                theme: raw.theme || 'tokito'
+                theme: raw.theme || 'tokito',
+                rewardTitle: raw.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬',
+                rewardTarget: typeof raw.rewardTarget === 'number' ? raw.rewardTarget : 21,
+                lastCompletedDate: raw.lastCompletedDate || ''
             };
         }
 
@@ -565,7 +633,10 @@
                     chat: appData.chat,
                     streak: appData.streak,
                     selectedAvatar: appData.selectedAvatar,
-                    theme: appData.theme
+                    theme: appData.theme,
+                    rewardTitle: appData.rewardTitle,
+                    rewardTarget: appData.rewardTarget,
+                    lastCompletedDate: appData.lastCompletedDate
                 }).catch(err => console.warn(err));
             }
         }
@@ -577,6 +648,31 @@
                 saveData();
                 render();
             }
+        }
+
+        function triggerCelebration() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } }), 250);
+                setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } }), 400);
+            }
+            document.getElementById('win-modal').classList.remove('hidden');
+        }
+
+        function closeWinModal() {
+            document.getElementById('win-modal').classList.add('hidden');
+        }
+
+        function saveRewardConfig() {
+            const title = document.getElementById('admin-reward-title').value.trim();
+            const target = parseInt(document.getElementById('admin-reward-target').value);
+
+            if (title) appData.rewardTitle = title;
+            if (!isNaN(target) && target > 0) appData.rewardTarget = target;
+
+            saveData();
+            alert('¡Configuración del Premio guardada exitosamente!');
+            render();
         }
 
         function openProfileModal() {
@@ -731,8 +827,23 @@
         function toggleRutinaCheck(id) {
             const rutina = appData.rutinas.find(r => r.id === id);
             if (rutina) {
+                const wasCompletedBefore = rutina.completed;
                 rutina.completed = !rutina.completed;
                 if (rutina.completed) rutina.status = 'idle';
+
+                // Comprobar si completó el 100%
+                const total = appData.rutinas.length;
+                const completedNow = appData.rutinas.filter(r => r.completed).length;
+
+                if (!wasCompletedBefore && completedNow === total && total > 0) {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    if (appData.lastCompletedDate !== todayStr) {
+                        appData.streak = (appData.streak || 0) + 1;
+                        appData.lastCompletedDate = todayStr;
+                    }
+                    triggerCelebration();
+                }
+
                 saveData();
                 render();
             }
@@ -901,11 +1012,40 @@
                 'Mamá': 'https://cdn.myanimelist.net/images/characters/3/410287.jpg'
             };
 
-            document.getElementById('streak-count').innerText = (appData.streak || 0) + ' días';
+            const streak = appData.streak || 0;
+            const target = appData.rewardTarget || 21;
+            document.getElementById('streak-count').innerText = streak + ' días';
 
+            // Actualizar Banner de Recompensa
+            const rewardTitleText = document.getElementById('reward-title-text');
+            const rewardProgressText = document.getElementById('reward-progress-text');
+            const rewardBadgeStatus = document.getElementById('reward-badge-status');
+            const rewardIcon = document.getElementById('reward-icon');
+
+            if (rewardTitleText) rewardTitleText.innerText = appData.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬';
+            
+            if (streak >= target) {
+                if (rewardIcon) rewardIcon.innerHTML = '🔓';
+                if (rewardProgressText) rewardProgressText.innerText = '¡Felicidades! Has cumplido la meta de racha.';
+                if (rewardBadgeStatus) {
+                    rewardBadgeStatus.innerText = '¡PREMIO DESBLOQUEADO!';
+                    rewardBadgeStatus.className = 'bg-emerald-400 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block animate-pulse';
+                }
+            } else {
+                const diff = target - streak;
+                if (rewardIcon) rewardIcon.innerHTML = '🔒';
+                if (rewardProgressText) rewardProgressText.innerText = 'Completa ' + target + ' días de racha seguidos para desbloquearlo.';
+                if (rewardBadgeStatus) {
+                    rewardBadgeStatus.innerText = 'Faltan ' + diff + ' días';
+                    rewardBadgeStatus.className = 'bg-amber-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block';
+                }
+            }
+
+            // Renderizar Rutinas y Barra de Progreso
             const rutinasContainer = document.getElementById('rutinas-list-container');
             rutinasContainer.innerHTML = '';
             let completedCount = 0;
+            const totalCount = appData.rutinas.length;
 
             appData.rutinas.forEach(rutina => {
                 if (rutina.completed) completedCount++;
@@ -934,7 +1074,20 @@
                 rutinasContainer.appendChild(div);
             });
 
-            document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🌫️';
+            // Actualizar la Barra de Progreso
+            const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+            document.getElementById('rutinas-percent').innerText = percentage + '%';
+            document.getElementById('progress-bar-fill').style.width = percentage + '%';
+            document.getElementById('rutinas-progress').innerText = completedCount + '/' + totalCount + ' completados';
+            
+            const msgElem = document.getElementById('rutinas-status-msg');
+            if (percentage === 100) {
+                msgElem.innerText = '¡Misión cumplida! Todo listo por hoy ⚔️✨';
+            } else if (percentage >= 50) {
+                msgElem.innerText = '¡Vas por más de la mitad! Sigue así 🌫️';
+            } else {
+                msgElem.innerText = '¡Vamos por todas tus metas de hoy! ⚔️';
+            }
 
             // Agenda Escolar
             const agendaContainer = document.getElementById('agenda-list-container');
@@ -1012,6 +1165,12 @@
             const badge = document.getElementById('admin-role-badge');
             badge.innerText = isPapa ? 'Panel de Papá ⚔️' : 'Panel de Mamá ⚔️';
             badge.className = isPapa ? 'bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider' : 'bg-teal-400 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider';
+
+            // Cargar datos actuales de recompensa en los inputs del admin
+            const rewardTitleInput = document.getElementById('admin-reward-title');
+            const rewardTargetInput = document.getElementById('admin-reward-target');
+            if (rewardTitleInput && !rewardTitleInput.value) rewardTitleInput.value = appData.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬';
+            if (rewardTargetInput && !rewardTargetInput.value) rewardTargetInput.value = appData.rewardTarget || 21;
 
             const inProgressRutina = appData.rutinas.find(r => r.status === 'progress');
             const statusIndicator = document.getElementById('admin-presence-indicator');
