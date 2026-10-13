@@ -54,13 +54,13 @@
         }
     </style>
 </head>
-<body id="app-body" class="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 min-h-screen text-slate-100 pb-12 transition-all duration-300">
+<body id="app-body" class="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 min-h-screen text-slate-100 pb-12 transition-all duration-300 select-none">
 
     <!-- HEADER / SELECTOR DE ROL -->
     <header class="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-teal-800/50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <button onclick="openProfileModal()" title="Cambiar mi avatar y tema" class="relative group">
+                <button onclick="openProfileModal()" title="Cambiar mi avatar y tema" class="relative group focus:outline-none">
                     <img id="header-avatar" src="https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3408/3408506.png';" alt="Avatar Emilia" class="w-10 h-10 rounded-2xl object-cover border-2 border-teal-400 shadow-md group-hover:scale-105 transition-all">
                     <span class="absolute -bottom-1 -right-1 bg-amber-400 text-slate-950 text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold shadow"><i class="fa-solid fa-paintbrush"></i></span>
                 </button>
@@ -160,7 +160,7 @@
             </div>
             
             <div class="space-y-3">
-                <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest border-2 border-teal-800 focus:border-teal-400 rounded-2xl py-2 focus:outline-none bg-slate-950 text-teal-300" onkeypress="if(event.key==='Enter') verifyPin()">
+                <input type="password" id="pin-input" maxlength="4" placeholder="••••" class="w-full text-center text-2xl font-bold tracking-widest border-2 border-teal-800 focus:border-teal-400 rounded-2xl py-2 focus:outline-none bg-slate-950 text-teal-300 select-text" onkeypress="if(event.key==='Enter') verifyPin()">
                 <p id="pin-error" class="text-xs text-rose-400 font-bold hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> PIN incorrecto</p>
                 <button onclick="verifyPin()" class="w-full bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold py-2.5 rounded-2xl text-sm transition-all shadow-md">
                     Ingresar
@@ -212,7 +212,7 @@
                     <div class="flex items-center gap-4">
                         <div class="relative shrink-0">
                             <img id="banner-avatar" src="https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3408/3408506.png';" alt="Emilia Avatar" class="w-20 h-20 md:w-24 md:h-24 rounded-3xl object-cover border-2 border-teal-400 shadow-xl">
-                            <button onclick="openProfileModal()" class="absolute -bottom-2 -right-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                            <button onclick="openProfileModal()" class="absolute -bottom-2 -right-1 bg-amber-400 hover:bg-amber-300 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow flex items-center gap-1 focus:outline-none">
                                 <i class="fa-solid fa-pen"></i> <span id="banner-tag">Tokito 🌫️</span>
                             </button>
                         </div>
@@ -272,7 +272,7 @@
                             <option value="evaluacion">Prueba / Evaluación 📝</option>
                             <option value="tarea">Tarea Escolar 📖</option>
                         </select>
-                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-slate-950 text-teal-100 placeholder-teal-600 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="text" id="hija-agenda-title" placeholder="¿Qué tienes que hacer o estudiar?..." class="bg-slate-950 text-teal-100 placeholder-teal-600 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text">
                         <input type="date" id="hija-agenda-date" class="bg-slate-950 text-teal-200 border border-teal-700/60 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
                     </div>
                     <button onclick="addAgendaItemHija()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold py-2.5 rounded-2xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
@@ -303,7 +303,7 @@
                         </h3>
                         <div id="chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                         <div class="mt-3 flex gap-2">
-                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-4 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage('chat-input')">
+                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-4 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400 select-text" onkeypress="if(event.key==='Enter') sendChatMessage('chat-input')">
                             <button onclick="sendChatMessage('chat-input')" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
@@ -347,7 +347,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <input type="password" id="new-pin-input" maxlength="4" placeholder="1234" class="w-20 text-center font-bold bg-slate-950 text-teal-300 border border-teal-800 rounded-xl px-2 py-1.5 text-sm focus:outline-none focus:border-teal-400">
+                    <input type="password" id="new-pin-input" maxlength="4" placeholder="1234" class="w-20 text-center font-bold bg-slate-950 text-teal-300 border border-teal-800 rounded-xl px-2 py-1.5 text-sm focus:outline-none focus:border-teal-400 select-text">
                     <button onclick="changeAdminPin()" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
                         Guardar PIN
                     </button>
@@ -364,7 +364,7 @@
                         <i class="fa-solid fa-clock text-teal-400"></i> Agregar Rutina con Horario
                     </h3>
                     <div class="space-y-2">
-                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400">
+                        <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text">
                         <div class="flex gap-2">
                             <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
                             <select id="new-rutina-icon" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-teal-400">
@@ -402,7 +402,7 @@
                             <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
                         </h3>
                         <div class="space-y-2">
-                            <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="2" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                            <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="2" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></textarea>
                             <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">
                                 <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 📜
                             </button>
@@ -420,7 +420,7 @@
                         </h3>
                         <div id="admin-chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                         <div class="mt-3 flex gap-2">
-                            <input type="text" id="admin-chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-3.5 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage('admin-chat-input')">
+                            <input type="text" id="admin-chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-3.5 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400 select-text" onkeypress="if(event.key==='Enter') sendChatMessage('admin-chat-input')">
                             <button onclick="sendChatMessage('admin-chat-input')" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
@@ -441,7 +441,7 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT -->
+    <!-- LÓGICA JAVASCRIPT PROTEGIDA -->
     <script>
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
@@ -457,7 +457,6 @@
             { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
-        // Galería de Avatares disponibles para Emilia
         const availableAvatars = [
             { id: 'tokito', name: 'Muichiro Tokito', tag: 'Tokito 🌫️', role: 'Pilar de la Niebla', url: 'https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg' },
             { id: 'tanjiro', name: 'Tanjiro Kamado', tag: 'Tanjiro ⚔️', role: 'Cazador de Demonios', url: 'https://i.pinimg.com/564x/c1/4e/6b/c14e6b7785d122a7407aa4b79eb5ea72.jpg' },
@@ -467,18 +466,22 @@
             { id: 'kanao', name: 'Kanao Tsuyuri', tag: 'Kanao 🌿', role: 'Cazadora Talentosa', url: 'https://i.pinimg.com/564x/1a/0b/43/1a0b435649a3cf34b41a3880b2a8d54c.jpg' }
         ];
 
-        const defaultAgenda = [];
-        const defaultMuro = [];
-        const defaultChat = [];
+        // Función de conversión segura anti-bloqueo contra Firebase
+        function ensureArray(val, defaultVal = []) {
+            if (!val) return defaultVal;
+            if (Array.isArray(val)) return val;
+            if (typeof val === 'object') return Object.values(val);
+            return defaultVal;
+        }
 
         function sanitizeData(raw) {
             if (!raw || typeof raw !== 'object') raw = {};
             return {
                 adminPin: raw.adminPin || '1234',
-                rutinas: Array.isArray(raw.rutinas) && raw.rutinas.length > 0 ? raw.rutinas : defaultRutinas,
-                agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
-                muro: Array.isArray(raw.muro) ? raw.muro : [],
-                chat: Array.isArray(raw.chat) ? raw.chat : [],
+                rutinas: ensureArray(raw.rutinas, defaultRutinas),
+                agenda: ensureArray(raw.agenda, []),
+                muro: ensureArray(raw.muro, []),
+                chat: ensureArray(raw.chat, []),
                 streak: typeof raw.streak === 'number' ? raw.streak : 0,
                 selectedAvatar: raw.selectedAvatar || availableAvatars[0],
                 theme: raw.theme || 'tokito'
@@ -539,6 +542,12 @@
         }
 
         function saveData() {
+            // Asegurar siempre listas limpias antes de guardar
+            appData.rutinas = ensureArray(appData.rutinas, defaultRutinas);
+            appData.agenda = ensureArray(appData.agenda, []);
+            appData.muro = ensureArray(appData.muro, []);
+            appData.chat = ensureArray(appData.chat, []);
+
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
             if (appRef) {
                 appRef.set({
@@ -563,7 +572,6 @@
             }
         }
 
-        /* Modal Perfil y Temas */
         function openProfileModal() {
             renderAvatarGallery();
             document.getElementById('profile-modal').classList.remove('hidden');
@@ -590,6 +598,7 @@
 
         function renderAvatarGallery() {
             const container = document.getElementById('avatar-gallery');
+            if (!container) return;
             container.innerHTML = '';
             availableAvatars.forEach(avatar => {
                 const isSelected = appData.selectedAvatar && appData.selectedAvatar.id === avatar.id;
@@ -835,36 +844,47 @@
         }
 
         function render() {
-            const role = currentRole;
-            const currentAvatar = appData.selectedAvatar || availableAvatars[0];
+            try {
+                // Garantizar listas en render
+                appData.rutinas = ensureArray(appData.rutinas, defaultRutinas);
+                appData.agenda = ensureArray(appData.agenda, []);
+                appData.muro = ensureArray(appData.muro, []);
+                appData.chat = ensureArray(appData.chat, []);
 
-            // Aplicar Tema de Color
-            const banner = document.getElementById('main-banner');
-            banner.className = "rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden transition-all duration-300 " + 
-                (appData.theme === 'mitsuri' ? 'theme-mitsuri' : (appData.theme === 'shinobu' ? 'theme-shinobu' : (appData.theme === 'tanjiro' ? 'theme-tanjiro' : 'tokito-card')));
+                const role = currentRole;
+                const currentAvatar = appData.selectedAvatar || availableAvatars[0];
 
-            // Actualizar datos del perfil de Emilia en la UI
-            document.getElementById('header-avatar').src = currentAvatar.url;
-            document.getElementById('banner-avatar').src = currentAvatar.url;
-            document.getElementById('header-subtitle').innerText = currentAvatar.role + ' 🌫️';
-            document.getElementById('banner-title-role').innerText = currentAvatar.role;
-            document.getElementById('banner-tag').innerText = currentAvatar.tag;
+                // Aplicar Tema
+                const banner = document.getElementById('main-banner');
+                if (banner) {
+                    banner.className = "rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden transition-all duration-300 " + 
+                        (appData.theme === 'mitsuri' ? 'theme-mitsuri' : (appData.theme === 'shinobu' ? 'theme-shinobu' : (appData.theme === 'tanjiro' ? 'theme-tanjiro' : 'tokito-card')));
+                }
 
-            document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-500 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
-            document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
-            document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+                document.getElementById('header-avatar').src = currentAvatar.url;
+                document.getElementById('banner-avatar').src = currentAvatar.url;
+                document.getElementById('header-subtitle').innerText = currentAvatar.role + ' 🌫️';
+                document.getElementById('banner-title-role').innerText = currentAvatar.role;
+                document.getElementById('banner-tag').innerText = currentAvatar.tag;
 
-            const viewHija = document.getElementById('view-hija');
-            const viewAdmin = document.getElementById('view-admin');
+                document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-500 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+                document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
+                document.getElementById('btn-role-mama').className = role === 'mama' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-teal-400 text-slate-950 font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-300";
 
-            if (role === 'hija') {
-                viewHija.classList.remove('hidden');
-                viewAdmin.classList.add('hidden');
-                renderHijaView();
-            } else {
-                viewHija.classList.add('hidden');
-                viewAdmin.classList.remove('hidden');
-                renderAdminView(role);
+                const viewHija = document.getElementById('view-hija');
+                const viewAdmin = document.getElementById('view-admin');
+
+                if (role === 'hija') {
+                    viewHija.classList.remove('hidden');
+                    viewAdmin.classList.add('hidden');
+                    renderHijaView();
+                } else {
+                    viewHija.classList.add('hidden');
+                    viewAdmin.classList.remove('hidden');
+                    renderAdminView(role);
+                }
+            } catch(e) {
+                console.error("Error en render:", e);
             }
         }
 
@@ -926,7 +946,7 @@
                     div.className = 'p-4 rounded-3xl border transition-all ' + (item.completed ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-900 border-teal-800/50 shadow-sm');
                     
                     let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + item.type + '</span>';
-                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + (item.nota || '') + '" onchange="updateNota(' + item.id + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400"></div>' : '';
+                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + (item.nota || '') + '" onchange="updateNota(' + item.id + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400 select-text"></div>' : '';
                     let checkBtnClass = item.completed ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
                     let checkBtnText = item.completed ? 'Completada ⚔️' : 'Marcar lista';
                     let checkBtnIcon = item.completed ? 'fa-check-double' : 'fa-check';
