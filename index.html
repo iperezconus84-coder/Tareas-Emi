@@ -64,7 +64,7 @@
 <body class="bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100 min-h-screen text-slate-700 pb-12">
 
     <!-- HEADER / SELECTOR DE ROL -->
-    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-pink-200">
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-pink-200">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
                 <div class="bg-gradient-to-r from-pink-400 to-rose-500 text-white p-2.5 rounded-2xl shadow-md flex items-center justify-center">
@@ -75,16 +75,17 @@
                         Agenda de Emilia <span class="text-rose-500 text-lg">🐾</span>
                     </h1>
                     <p class="text-xs text-slate-500" id="presence-subtitle">
-                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span> Sincronizado en la Nube
+                        <span id="status-dot" class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1"></span>
+                        <span id="status-text">Cargando datos...</span>
                     </p>
                 </div>
             </div>
 
-            <!-- Botón de Instalación y Selector de Roles protegidos -->
+            <!-- Botón de Instalación y Selector de Roles -->
             <div class="flex items-center gap-2">
                 <button id="btn-install-app" onclick="installPWA()" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 animate-bounce">
                     <i class="fa-solid fa-mobile-screen-button text-sm"></i>
-                    <span>Instalar en el teléfono</span>
+                    <span>Instalar app</span>
                 </button>
 
                 <div class="flex items-center bg-pink-50 p-1 rounded-2xl border border-pink-200 text-sm font-semibold">
@@ -113,7 +114,7 @@
             </div>
             <div>
                 <h3 class="font-bold text-lg text-slate-800">Acceso de Padres 🔒</h3>
-                <p class="text-xs text-slate-500 mt-1">Ingresa el PIN de 4 dígitos para continuar.</p>
+                <p class="text-xs text-slate-500 mt-1">Ingresa el PIN de 4 dígitos (Inicial: 1234).</p>
             </div>
             
             <div class="space-y-3">
@@ -296,6 +297,9 @@
                     <button onclick="changeAdminPin()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
                         Guardar PIN
                     </button>
+                    <button onclick="resetDataToDefault()" title="Restablecer datos por defecto" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ml-2">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
+                    </button>
                 </div>
             </div>
 
@@ -358,25 +362,9 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT & FIREBASE -->
+    <!-- LÓGICA JAVASCRIPT ROBUSTA -->
     <script>
-        // Configuración de tu proyecto en Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBErTj5Oldva3Z9Ubr0uC0tvWNeAjBdrjo",
-            authDomain: "agenda-emi.firebaseapp.com",
-            databaseURL: "https://agenda-emi-default-rtdb.firebaseio.com",
-            projectId: "agenda-emi",
-            storageBucket: "agenda-emi.firebasestorage.app",
-            messagingSenderId: "886433027334",
-            appId: "1:886433027334:web:674673e5ca6b3995b3fa87"
-        };
-
-        // Inicialización de Firebase Realtime Database
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const appRef = db.ref('agenda_emilia');
-
-        // Datos Iniciales por Defecto
+        // Datos por defecto de respaldo
         const defaultRutinas = [
             { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
             { id: 2, time: "15:15", title: "Cambiarme de ropa", icon: "fa-shirt", completed: false, status: 'idle' },
@@ -406,54 +394,104 @@
             { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🐾.', time: '14:05' }
         ];
 
-        let appData = JSON.parse(localStorage.getItem('agenda_app_data')) || {
-            role: 'hija',
-            adminPin: '1234',
-            rutinas: defaultRutinas,
-            agenda: defaultAgenda,
-            muro: defaultMuro,
-            chat: defaultChat,
-            streak: 5
-        };
+        // Función purificadora de datos
+        function sanitizeData(raw) {
+            if (!raw || typeof raw !== 'object') raw = {};
+            return {
+                adminPin: raw.adminPin || '1234',
+                rutinas: Array.isArray(raw.rutinas) && raw.rutinas.length > 0 ? raw.rutinas : defaultRutinas,
+                agenda: Array.isArray(raw.agenda) ? raw.agenda : defaultAgenda,
+                muro: Array.isArray(raw.muro) ? raw.muro : defaultMuro,
+                chat: Array.isArray(raw.chat) ? raw.chat : defaultChat,
+                streak: typeof raw.streak === 'number' ? raw.streak : 5
+            };
+        }
+
+        // Cargar estado inicial desde localStorage
+        let currentRole = localStorage.getItem('agenda_current_role') || 'hija';
+        let rawStored = null;
+        try { rawStored = JSON.parse(localStorage.getItem('agenda_app_data')); } catch(e){}
+        let appData = sanitizeData(rawStored);
 
         let pendingRole = null;
+        let db = null;
+        let appRef = null;
 
-        // Escuchar cambios en Firebase
-        appRef.on('value', (snapshot) => {
-            const cloudData = snapshot.val();
-            if (cloudData) {
-                appData.adminPin = cloudData.adminPin || '1234';
-                appData.rutinas = cloudData.rutinas || defaultRutinas;
-                appData.agenda = cloudData.agenda || defaultAgenda;
-                appData.muro = cloudData.muro || defaultMuro;
-                appData.chat = cloudData.chat || defaultChat;
-                appData.streak = cloudData.streak || 5;
-                
-                localStorage.setItem('agenda_app_data', JSON.stringify(appData));
-                render();
+        // Intentar conectar a Firebase
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBErTj5Oldva3Z9Ubr0uC0tvWNeAjBdrjo",
+                authDomain: "agenda-emi.firebaseapp.com",
+                databaseURL: "https://agenda-emi-default-rtdb.firebaseio.com",
+                projectId: "agenda-emi",
+                storageBucket: "agenda-emi.firebasestorage.app",
+                messagingSenderId: "886433027334",
+                appId: "1:886433027334:web:674673e5ca6b3995b3fa87"
+            };
+
+            if (typeof firebase !== 'undefined') {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                appRef = db.ref('agenda_emilia');
+
+                appRef.on('value', (snapshot) => {
+                    const cloudData = snapshot.val();
+                    if (cloudData) {
+                        appData = sanitizeData(cloudData);
+                        localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+                        updateStatus(true, 'Sincronizado en la Nube ☁️');
+                        render();
+                    } else {
+                        saveData();
+                        updateStatus(true, 'Nube Activada ☁️');
+                    }
+                }, (error) => {
+                    console.warn("Firebase offline/rules locked:", error);
+                    updateStatus(false, 'Modo Local Activo');
+                });
             } else {
-                saveData();
+                updateStatus(false, 'Modo Local Activo');
             }
-        });
+        } catch (e) {
+            console.warn("Error init Firebase:", e);
+            updateStatus(false, 'Modo Local Activo');
+        }
+
+        function updateStatus(online, message) {
+            const dot = document.getElementById('status-dot');
+            const txt = document.getElementById('status-text');
+            if (dot) dot.className = online ? "inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1" : "inline-block w-2 h-2 rounded-full bg-amber-400 mr-1";
+            if (txt) txt.innerText = message;
+        }
 
         function saveData() {
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
-            appRef.set({
-                adminPin: appData.adminPin || '1234',
-                rutinas: appData.rutinas,
-                agenda: appData.agenda,
-                muro: appData.muro,
-                chat: appData.chat,
-                streak: appData.streak
-            });
+            if (appRef) {
+                appRef.set({
+                    adminPin: appData.adminPin || '1234',
+                    rutinas: appData.rutinas,
+                    agenda: appData.agenda,
+                    muro: appData.muro,
+                    chat: appData.chat,
+                    streak: appData.streak
+                }).catch(err => console.warn("Cloud save warn:", err));
+            }
         }
 
-        // LÓGICA DE CONTROL DE ROLES Y PIN DE SEGURIDAD
+        function resetDataToDefault() {
+            if (confirm("¿Quieres restablecer las rutinas y la agenda al estado inicial?")) {
+                appData = sanitizeData({});
+                saveData();
+                render();
+            }
+        }
+
+        // LÓGICA DE ROLES Y PIN
         function requestRoleSwitch(role) {
             if (role === 'hija') {
                 switchRole('hija');
             } else {
-                if (appData.role === role) return; // Ya está en ese rol
+                if (currentRole === role) return;
                 pendingRole = role;
                 document.getElementById('pin-input').value = '';
                 document.getElementById('pin-error').classList.add('hidden');
@@ -493,12 +531,12 @@
         }
 
         function switchRole(role) {
-            appData.role = role;
-            localStorage.setItem('agenda_app_data', JSON.stringify(appData));
+            currentRole = role;
+            localStorage.setItem('agenda_current_role', role);
             render();
         }
 
-        // Lógica PWA
+        // INSTALACIÓN PWA
         let deferredPrompt;
         const installBtn = document.getElementById('btn-install-app');
 
@@ -511,9 +549,6 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('App instalada');
-                    }
                     deferredPrompt = null;
                 });
             } else {
@@ -647,7 +682,7 @@
             const text = document.getElementById('muro-input').value.trim();
             if (!text) return;
 
-            const author = appData.role === 'papa' ? 'Papá' : 'Mamá';
+            const author = currentRole === 'papa' ? 'Papá' : 'Mamá';
             appData.muro.unshift({
                 id: Date.now(),
                 author,
@@ -665,7 +700,7 @@
             const text = input.value.trim();
             if (!text) return;
 
-            const sender = appData.role === 'hija' ? 'Emilia' : (appData.role === 'papa' ? 'Papá' : 'Mamá');
+            const sender = currentRole === 'hija' ? 'Emilia' : (currentRole === 'papa' ? 'Papá' : 'Mamá');
             appData.chat.push({
                 id: Date.now(),
                 sender,
@@ -679,7 +714,7 @@
         }
 
         function render() {
-            const role = appData.role;
+            const role = currentRole;
 
             document.getElementById('btn-role-hija').className = role === 'hija' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-rose-500 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
             document.getElementById('btn-role-papa').className = role === 'papa' ? "px-3 py-1.5 rounded-xl transition-all duration-200 bg-slate-800 text-white font-bold shadow-sm" : "px-3 py-1.5 rounded-xl transition-all duration-200 text-slate-600";
@@ -875,6 +910,7 @@
             }
         }
 
+        // Renderizado inicial garantizado
         render();
     </script>
 </body>
