@@ -55,6 +55,23 @@
         .theme-tanjiro {
             background: linear-gradient(135deg, #0f172a 0%, #064e3b 50%, #059669 100%) !important;
         }
+        /* Temas que se desbloquean en la tienda */
+        .theme-zenitsu { background: linear-gradient(135deg, #0f172a 0%, #713f12 50%, #eab308 100%) !important; }
+        .theme-rengoku { background: linear-gradient(135deg, #0f172a 0%, #7c2d12 50%, #ea580c 100%) !important; }
+        .theme-giyu    { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%) !important; }
+        .theme-inosuke { background: linear-gradient(135deg, #0f172a 0%, #334155 50%, #64748b 100%) !important; }
+        body.bg-theme-mitsuri { background: linear-gradient(135deg, #0f172a, #3b0a24, #0f172a) !important; }
+        body.bg-theme-shinobu { background: linear-gradient(135deg, #0f172a, #2e1065, #0f172a) !important; }
+        body.bg-theme-tanjiro { background: linear-gradient(135deg, #0f172a, #022c22, #0f172a) !important; }
+        body.bg-theme-zenitsu { background: linear-gradient(135deg, #0f172a, #3a2a05, #0f172a) !important; }
+        body.bg-theme-rengoku { background: linear-gradient(135deg, #0f172a, #431407, #0f172a) !important; }
+        body.bg-theme-giyu    { background: linear-gradient(135deg, #0f172a, #172554, #0f172a) !important; }
+        body.bg-theme-inosuke { background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a) !important; }
+
+        @keyframes point-pop { 0% { transform: translateY(6px) scale(.8); opacity: 0; } 30% { transform: translateY(0) scale(1.1); opacity: 1; } 100% { transform: translateY(-14px) scale(1); opacity: 0; } }
+        .point-pop { animation: point-pop 1.6s ease-out forwards; }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body id="app-body" class="bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 min-h-screen text-slate-100 pb-12 transition-all duration-300 select-none">
@@ -161,24 +178,7 @@
             <!-- Temas de Colores -->
             <div class="space-y-2">
                 <h4 class="text-xs font-bold text-teal-300 uppercase tracking-wider">2. Elige el Color de la App:</h4>
-                <div class="grid grid-cols-2 gap-2" id="theme-selector">
-                    <button onclick="selectTheme('tokito')" class="p-3 rounded-2xl border border-teal-500 bg-slate-950 flex items-center gap-2 hover:border-teal-300 transition-all">
-                        <span class="w-5 h-5 rounded-full bg-teal-400 inline-block border"></span>
-                        <span class="text-xs font-bold text-teal-200">Tokito (Menta)</span>
-                    </button>
-                    <button onclick="selectTheme('mitsuri')" class="p-3 rounded-2xl border border-pink-500 bg-slate-950 flex items-center gap-2 hover:border-pink-300 transition-all">
-                        <span class="w-5 h-5 rounded-full bg-pink-500 inline-block border"></span>
-                        <span class="text-xs font-bold text-pink-200">Mitsuri (Rosa)</span>
-                    </button>
-                    <button onclick="selectTheme('shinobu')" class="p-3 rounded-2xl border border-purple-500 bg-slate-950 flex items-center gap-2 hover:border-purple-300 transition-all">
-                        <span class="w-5 h-5 rounded-full bg-purple-500 inline-block border"></span>
-                        <span class="text-xs font-bold text-purple-200">Shinobu (Púrpura)</span>
-                    </button>
-                    <button onclick="selectTheme('tanjiro')" class="p-3 rounded-2xl border border-emerald-500 bg-slate-950 flex items-center gap-2 hover:border-emerald-300 transition-all">
-                        <span class="w-5 h-5 rounded-full bg-emerald-500 inline-block border"></span>
-                        <span class="text-xs font-bold text-emerald-200">Tanjiro (Esmeralda)</span>
-                    </button>
-                </div>
+                <div class="grid grid-cols-2 gap-2" id="theme-selector"></div>
             </div>
 
             <button onclick="closeProfileModal()" class="w-full bg-teal-500 hover:bg-teal-600 text-slate-950 font-extrabold py-2.5 rounded-2xl text-sm transition-all shadow-md">
@@ -277,41 +277,34 @@
                 </div>
             </div>
 
-            <!-- BANNER DE RECOMPENSA DE RACHA (GAME GOAL) -->
-            <div id="reward-banner" class="bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-4 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
-                <div class="flex items-center gap-3 z-10">
-                    <div id="reward-icon" class="w-12 h-12 bg-amber-950 border border-amber-500 text-amber-300 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner">
-                        🔒
-                    </div>
-                    <div>
-                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-950 px-2 py-0.5 rounded-full border border-amber-800">Premio Familiar 🎁</span>
-                        <h4 id="reward-title-text" class="font-extrabold text-amber-100 text-sm sm:text-base mt-0.5">Desbloqueo de cuenta de YouTube 🎬</h4>
-                        <p id="reward-progress-text" class="text-xs text-slate-400">Completa 21 días de racha seguidos para desbloquearlo.</p>
-                    </div>
-                </div>
-                <div class="z-10 w-full sm:w-auto text-right">
-                    <span id="reward-badge-status" class="bg-amber-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block">
-                        Faltan 21 días
-                    </span>
-                </div>
-            </div>
+            <!-- TESORO DE LA CAZADORA (PUNTOS) -->
+            <div id="points-card"></div>
 
             <!-- Navegación de Pestañas -->
-            <div class="flex space-x-2 border-b border-teal-800/60 pb-2 overflow-x-auto hide-scrollbar">
-                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md">
-                    <i class="fa-solid fa-cloud-sun mr-2"></i> Rutinas y Horarios
+            <div class="grid grid-cols-4 gap-1.5 border-b border-teal-800/60 pb-2">
+                <button onclick="switchHijaTab('rutinas')" id="tab-btn-rutinas" class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-teal-500 text-slate-950 shadow-md">
+                    <i class="fa-solid fa-wind text-base "></i><span>Entrenar</span>
                 </button>
-                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
-                    <i class="fa-solid fa-book-journal-whills mr-2 text-teal-400"></i> Mi Planner
+                <button onclick="switchHijaTab('agenda')" id="tab-btn-agenda" class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
+                    <i class="fa-solid fa-book-journal-whills text-base text-teal-400"></i><span>Planner</span>
                 </button>
-                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
-                    <i class="fa-solid fa-comments mr-2 text-cyan-400"></i> Muro & Chat
+                <button onclick="switchHijaTab('tienda')" id="tab-btn-tienda" class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
+                    <i class="fa-solid fa-gem text-base text-amber-400"></i><span>Tienda</span>
+                </button>
+                <button onclick="switchHijaTab('social')" id="tab-btn-social" class="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40">
+                    <i class="fa-solid fa-comments text-base text-cyan-400"></i><span>Chat</span>
                 </button>
             </div>
 
-            <!-- Pestaña 1: Rutinas -->
+            <!-- Pestaña 1: Entrenamiento (una misión a la vez) -->
             <div id="hija-tab-rutinas" class="space-y-4">
-                
+                <div id="training-container"></div>
+
+                <details id="all-missions" class="group">
+                    <summary class="cursor-pointer select-none flex items-center justify-center gap-2 text-xs font-bold text-teal-300 bg-slate-900/80 border border-teal-800/50 rounded-2xl py-2.5 hover:border-teal-500">
+                        <i class="fa-solid fa-list-check"></i> <span class="group-open:hidden">Ver todas las misiones de hoy</span><span class="hidden group-open:inline">Ocultar la lista</span>
+                    </summary>
+                <div class="space-y-4 mt-4">
                 <!-- BARRA DE PROGRESO DIARIO GAMIFICADA -->
                 <div class="bg-slate-900 border border-teal-800/60 p-4 rounded-3xl space-y-2 shadow-md">
                     <div class="flex justify-between items-center text-xs font-bold">
@@ -330,6 +323,13 @@
                 </div>
 
                 <div id="rutinas-list-container" class="grid gap-3"></div>
+                </div>
+                </details>
+            </div>
+
+            <!-- Pestaña Tienda -->
+            <div id="hija-tab-tienda" class="space-y-4 hidden">
+                <div id="shop-hija"></div>
             </div>
 
             <!-- Pestaña 2: Planner -->
@@ -450,21 +450,58 @@
                 <div id="planner-admin-upcoming"></div>
             </div>
 
-            <!-- Configuración de Recompensa de Racha por Padres -->
-            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-amber-500/40 space-y-3">
-                <h3 class="font-bold text-amber-300 flex items-center gap-2 text-base">
-                    <i class="fa-solid fa-gift text-amber-400"></i> Configurar Premio por Racha de Días
-                </h3>
-                <p class="text-xs text-slate-400">Define el premio acordado por cumplir cierta cantidad de días en racha (ej. 21 días = 3 semanas).</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <input type="text" id="admin-reward-title" placeholder="Ej. Desbloqueo de YouTube 🎬" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
-                    <div class="flex gap-2">
-                        <input type="number" id="admin-reward-target" placeholder="21" title="Días necesarios" class="w-20 text-center font-bold bg-slate-950 border border-teal-800 text-teal-300 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
-                        <button onclick="saveRewardConfig()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-3 py-2 rounded-2xl text-xs transition-all">
-                            Guardar Premio
-                        </button>
+            <!-- PUNTOS Y TIENDA (PADRES) -->
+            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-amber-500/40 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h3 class="font-bold text-amber-300 flex items-center gap-2 text-base">
+                        <i class="fa-solid fa-coins text-amber-400"></i> Puntos de Emilia
+                    </h3>
+                    <div id="admin-points-summary" class="text-right"></div>
+                </div>
+                <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-3 space-y-2">
+                    <p class="text-xs font-bold text-amber-300"><i class="fa-solid fa-hand-sparkles mr-1"></i> Dar puntos extra</p>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="number" id="extra-amount" min="1" placeholder="Puntos" class="sm:w-24 text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                        <input type="text" id="extra-reason" placeholder="Motivo (ej. ayudó a la abuela)" class="flex-1 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                        <button onclick="giveExtraPoints()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-2 rounded-2xl text-sm transition-all">Dar puntos</button>
                     </div>
                 </div>
+                <div id="admin-redemptions"></div>
+                <details class="group">
+                    <summary class="cursor-pointer text-xs font-bold text-slate-300 flex items-center gap-2"><i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform"></i> Historial de puntos</summary>
+                    <div id="admin-points-history" class="mt-3 space-y-1.5 max-h-72 overflow-y-auto pr-1"></div>
+                </details>
+                <details class="group">
+                    <summary class="cursor-pointer text-xs font-bold text-slate-300 flex items-center gap-2"><i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform"></i> Cuántos puntos vale cada cosa</summary>
+                    <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <label class="space-y-1"><span class="text-slate-400">Rutina confirmada</span><input type="number" min="0" id="cfg-rutina" class="w-full text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></label>
+                        <label class="space-y-1"><span class="text-slate-400">Día completo</span><input type="number" min="0" id="cfg-dia" class="w-full text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></label>
+                        <label class="space-y-1"><span class="text-slate-400">Tarea o prueba lista</span><input type="number" min="0" id="cfg-agenda" class="w-full text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></label>
+                        <label class="space-y-1"><span class="text-slate-400">Semana de racha</span><input type="number" min="0" id="cfg-semana" class="w-full text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></label>
+                    </div>
+                    <button onclick="savePointsConfig()" class="mt-2 w-full bg-slate-800 hover:bg-slate-700 text-amber-200 border border-amber-500/40 font-bold py-2 rounded-2xl text-xs">Guardar valores</button>
+                </details>
+            </div>
+
+            <!-- CATÁLOGO DE LA TIENDA (PADRES) -->
+            <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
+                <h3 class="font-bold text-teal-200 flex items-center gap-2 text-base">
+                    <i class="fa-solid fa-gem text-amber-400"></i> Tienda de canje
+                </h3>
+                <div class="bg-slate-950/70 border border-teal-800/50 rounded-2xl p-3 space-y-2">
+                    <p class="text-xs font-bold text-teal-300"><i class="fa-solid fa-plus mr-1"></i> Agregar premio</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-6 gap-2">
+                        <select id="cat-kind" onchange="document.getElementById('cat-theme').classList.toggle('hidden', this.value !== 'tema'); document.getElementById('cat-name').classList.toggle('hidden', this.value === 'tema');" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                            <option value="real">Premio real</option>
+                            <option value="tema">Tema de la app</option>
+                        </select>
+                        <input type="text" id="cat-name" placeholder="Ej. Un helado" class="sm:col-span-3 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                        <select id="cat-theme" class="sm:col-span-3 hidden bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text"></select>
+                        <input type="number" id="cat-cost" min="1" placeholder="Puntos" class="text-center font-bold bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
+                    </div>
+                    <button onclick="addCatalogItem()" class="w-full bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">Agregar a la tienda</button>
+                </div>
+                <div id="admin-catalog" class="space-y-2"></div>
             </div>
 
             <!-- Configurar PIN y Ajustes -->
@@ -641,7 +678,13 @@
                 // log[fecha][k<idRutina>] = true cuando esa rutina se cumplió ese día
                 log: (raw.log && typeof raw.log === 'object' && !Array.isArray(raw.log)) ? raw.log : {},
                 // confirm[fecha][k<idRutina>] = 'ok' (confirmada por mamá) | 'rejected' (rechazada)
-                confirm: (raw.confirm && typeof raw.confirm === 'object' && !Array.isArray(raw.confirm)) ? raw.confirm : {}
+                confirm: (raw.confirm && typeof raw.confirm === 'object' && !Array.isArray(raw.confirm)) ? raw.confirm : {},
+                // Puntos: libro de movimientos { clave: { amount, reason, type, date, ts } }
+                points: (raw.points && typeof raw.points === 'object' && !Array.isArray(raw.points)) ? raw.points : {},
+                pointsConfig: Object.assign({ rutina: 1, dia: 5, agenda: 3, semana: 20 }, raw.pointsConfig || {}),
+                catalog: ensureArray(raw.catalog, []).sort((a, b) => Number(a.cost) - Number(b.cost)),
+                redemptions: ensureArray(raw.redemptions, []).sort((a, b) => Number(b.id) - Number(a.id)),
+                unlockedThemes: (raw.unlockedThemes && typeof raw.unlockedThemes === 'object') ? raw.unlockedThemes : {}
             };
         }
 
@@ -700,7 +743,14 @@
             if (ok) appData.history[date] = true; else delete appData.history[date];
             if (done && date === localDateStr()) appData.lastCompletedDate = date;
             appData.streak = computeStreak();
-            return Object.assign({ ['history/' + date]: ok ? true : null }, metaPaths('streak', 'lastCompletedDate'));
+            const paths = Object.assign({ ['history/' + date]: ok ? true : null }, metaPaths('streak', 'lastCompletedDate'));
+            if (ok) {
+                if (!appData.points['d_' + date]) setLedger(paths, 'd_' + date, ptsCfg().dia, 'Día completo confirmado', 'dia', date);
+            } else {
+                setLedger(paths, 'd_' + date, null);
+            }
+            syncWeekBonuses(paths);
+            return paths;
         }
 
         function refreshTodayStatus() {
@@ -715,6 +765,9 @@
             const paths = {};
             if (verdict) appData.confirm[date][k] = verdict; else delete appData.confirm[date][k];
             paths['confirm/' + date + '/' + k] = verdict || null;
+            const rut = appData.rutinas.find(x => x.id === id);
+            if (verdict === 'ok') setLedger(paths, 'r_' + date + '_' + k, ptsCfg().rutina, 'Rutina: ' + (rut ? rut.title : ''), 'rutina', date);
+            else setLedger(paths, 'r_' + date + '_' + k, null);
 
             if (verdict === 'rejected') {
                 if (appData.log[date]) delete appData.log[date][k];
@@ -741,6 +794,7 @@
                 if (rutinaStateFor(r, date) === 'done' && appData.confirm[date][k] !== 'ok') {
                     appData.confirm[date][k] = 'ok';
                     paths['confirm/' + date + '/' + k] = 'ok';
+                    setLedger(paths, 'r_' + date + '_' + k, ptsCfg().rutina, 'Rutina: ' + r.title, 'rutina', date);
                 }
             });
             persist(Object.assign(paths, recomputeDay(date)));
@@ -919,7 +973,10 @@
                         muro: toMap(appData.muro),
                         chat: toMap(appData.chat),
                         log: appData.log,
-                        confirm: appData.confirm
+                        confirm: appData.confirm,
+                        points: appData.points,
+                        catalog: toMap(appData.catalog),
+                        redemptions: toMap(appData.redemptions)
                     }
                 );
                 appRef.set(full).catch(err => console.warn(err));
@@ -930,7 +987,7 @@
         // Cada lista se guarda en la nube como un mapa { k<id>: elemento }, así cada
         // cambio toca solo su elemento y dos celulares no se pisan entre sí.
         const META_FIELDS = ['adminPin', 'adminPinHash', 'streak', 'selectedAvatar', 'theme', 'rewardTitle',
-            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history'];
+            'rewardTarget', 'lastCompletedDate', 'lastResetDate', 'history', 'pointsConfig', 'unlockedThemes'];
 
         function itemKey(id) { return 'k' + id; }
 
@@ -1005,6 +1062,7 @@
 
         function openProfileModal() {
             renderAvatarGallery();
+            renderThemeSelector();
             document.getElementById('profile-modal').classList.remove('hidden');
         }
 
@@ -1022,6 +1080,7 @@
         }
 
         function selectTheme(themeName) {
+            if (!themeUnlocked(themeName)) return;
             appData.theme = themeName;
             persist(metaPaths('theme'));
             render();
@@ -1139,17 +1198,15 @@
             if (installBtn) installBtn.classList.add('hidden');
         }
 
+        let currentHijaTab = 'rutinas';
         function switchHijaTab(tab) {
-            document.getElementById('hija-tab-rutinas').classList.add('hidden');
-            document.getElementById('hija-tab-agenda').classList.add('hidden');
-            document.getElementById('hija-tab-social').classList.add('hidden');
-
-            document.getElementById('tab-btn-rutinas').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
-            document.getElementById('tab-btn-agenda').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
-            document.getElementById('tab-btn-social').className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
-
-            document.getElementById(`hija-tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).className = "px-4 py-2 rounded-2xl font-bold text-sm transition-all bg-teal-500 text-slate-950 shadow-md";
+            currentHijaTab = tab;
+            ['rutinas', 'agenda', 'tienda', 'social'].forEach(t => {
+                document.getElementById('hija-tab-' + t).classList.toggle('hidden', t !== tab);
+                document.getElementById('tab-btn-' + t).className = t === tab
+                    ? "flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-teal-500 text-slate-950 shadow-md"
+                    : "flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-2xl font-bold text-xs transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 shadow-sm border border-teal-800/40";
+            });
         }
 
         function toggleRutinaCheck(id) {
@@ -1170,6 +1227,7 @@
                 paths['log/' + today + '/' + itemKey(rutina.id)] = rutina.completed ? true : null;
                 if (appData.confirm[today]) delete appData.confirm[today][itemKey(rutina.id)];
                 paths['confirm/' + today + '/' + itemKey(rutina.id)] = null;
+                setLedger(paths, 'r_' + today + '_' + itemKey(rutina.id), null);
                 Object.assign(paths, refreshTodayStatus());
                 if (!wasCompletedBefore && completedNow === total && total > 0) {
                     triggerCelebration();
@@ -1201,7 +1259,10 @@
             const item = appData.agenda.find(a => a.id === id);
             if (item) {
                 item.completed = !item.completed;
-                persist({ ['agenda/' + itemKey(item.id) + '/completed']: item.completed });
+                const paths = { ['agenda/' + itemKey(item.id) + '/completed']: item.completed };
+                if (item.completed) setLedger(paths, 'a_' + item.id, ptsCfg().agenda, typeLabel(item.type) + ': ' + item.title, 'agenda', localDateStr());
+                else setLedger(paths, 'a_' + item.id, null);
+                persist(paths);
                 render();
             }
         }
@@ -1216,7 +1277,9 @@
 
         function deleteAgendaItem(id) {
             appData.agenda = appData.agenda.filter(a => a.id !== id);
-            persist(removePath('agenda', id));
+            const paths = removePath('agenda', id);
+            setLedger(paths, 'a_' + id, null);
+            persist(paths);
             render();
         }
 
@@ -1313,8 +1376,10 @@
 
                 const banner = document.getElementById('main-banner');
                 if (banner) {
-                    banner.className = "rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden transition-all duration-300 " + 
-                        (appData.theme === 'mitsuri' ? 'theme-mitsuri' : (appData.theme === 'shinobu' ? 'theme-shinobu' : (appData.theme === 'tanjiro' ? 'theme-tanjiro' : 'tokito-card')));
+                    const th = THEMES[appData.theme] && themeUnlocked(appData.theme) ? appData.theme : 'tokito';
+                    banner.className = "rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden transition-all duration-300 " +
+                        (th === 'tokito' ? 'tokito-card' : 'theme-' + th);
+                    Object.keys(THEMES).forEach(t => document.body.classList.toggle('bg-theme-' + t, t === th && t !== 'tokito'));
                 }
 
                 document.getElementById('header-avatar').src = currentAvatar.url;
@@ -1356,30 +1421,9 @@
             const target = appData.rewardTarget || 21;
             document.getElementById('streak-count').innerText = streak + (streak === 1 ? ' día' : ' días');
 
-            // Actualizar Banner de Recompensa
-            const rewardTitleText = document.getElementById('reward-title-text');
-            const rewardProgressText = document.getElementById('reward-progress-text');
-            const rewardBadgeStatus = document.getElementById('reward-badge-status');
-            const rewardIcon = document.getElementById('reward-icon');
-
-            if (rewardTitleText) rewardTitleText.innerText = appData.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬';
-            
-            if (streak >= target) {
-                if (rewardIcon) rewardIcon.innerHTML = '🔓';
-                if (rewardProgressText) rewardProgressText.innerText = '¡Felicidades! Has cumplido la meta de racha.';
-                if (rewardBadgeStatus) {
-                    rewardBadgeStatus.innerText = '¡PREMIO DESBLOQUEADO!';
-                    rewardBadgeStatus.className = 'bg-emerald-400 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block animate-pulse';
-                }
-            } else {
-                const diff = target - streak;
-                if (rewardIcon) rewardIcon.innerHTML = '🔒';
-                if (rewardProgressText) rewardProgressText.innerText = 'Completa ' + target + ' días de racha seguidos para desbloquearlo.';
-                if (rewardBadgeStatus) {
-                    rewardBadgeStatus.innerText = (diff === 1 ? 'Falta 1 día' : 'Faltan ' + diff + ' días');
-                    rewardBadgeStatus.className = 'bg-amber-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-xl shadow inline-block';
-                }
-            }
+            renderPointsCard();
+            renderTraining();
+            renderShop();
 
             // Renderizar Rutinas y Barra de Progreso
             const rutinasContainer = document.getElementById('rutinas-list-container');
@@ -1480,10 +1524,7 @@
             badge.innerText = isPapa ? 'Panel de Papá ⚔️' : 'Panel de Mamá ⚔️';
             badge.className = isPapa ? 'bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider' : 'bg-teal-400 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider';
 
-            const rewardTitleInput = document.getElementById('admin-reward-title');
-            const rewardTargetInput = document.getElementById('admin-reward-target');
-            if (rewardTitleInput && !rewardTitleInput.value) rewardTitleInput.value = appData.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬';
-            if (rewardTargetInput && !rewardTargetInput.value) rewardTargetInput.value = appData.rewardTarget || 21;
+            renderAdminPoints();
 
             const inProgressRutina = appData.rutinas.find(r => r.status === 'progress');
             const statusIndicator = document.getElementById('admin-presence-indicator');
@@ -1552,6 +1593,471 @@
             }
 
             renderPlanner('admin');
+        }
+
+        // ================= TEMAS =================
+        const THEMES = {
+            tokito:  { name: 'Tokito',  label: 'Niebla',   swatch: '#2dd4bf', free: true },
+            mitsuri: { name: 'Mitsuri', label: 'Amor',     swatch: '#ec4899', free: true },
+            shinobu: { name: 'Shinobu', label: 'Insecto',  swatch: '#a855f7', free: true },
+            tanjiro: { name: 'Tanjiro', label: 'Agua y sol', swatch: '#10b981', free: true },
+            zenitsu: { name: 'Zenitsu', label: 'Trueno',   swatch: '#eab308' },
+            giyu:    { name: 'Giyu',    label: 'Agua',     swatch: '#2563eb' },
+            rengoku: { name: 'Rengoku', label: 'Llamas',   swatch: '#ea580c' },
+            inosuke: { name: 'Inosuke', label: 'Bestia',   swatch: '#64748b' }
+        };
+
+        function themeUnlocked(id) {
+            return !!(THEMES[id] && (THEMES[id].free || appData.unlockedThemes[id]));
+        }
+
+        function renderThemeSelector() {
+            const box = document.getElementById('theme-selector');
+            if (!box) return;
+            box.innerHTML = Object.keys(THEMES).map(id => {
+                const t = THEMES[id], open = themeUnlocked(id), sel = appData.theme === id;
+                return '<button ' + (open ? 'onclick="selectTheme(\'' + id + '\')"' : 'disabled title="Canjéalo en la Tienda"') +
+                    ' class="p-3 rounded-2xl border bg-slate-950 flex items-center gap-2 transition-all text-left ' +
+                    (sel ? 'border-teal-300 ring-2 ring-teal-400' : (open ? 'border-slate-700 hover:border-slate-500' : 'border-slate-800 opacity-60')) + '">' +
+                    '<span class="w-5 h-5 rounded-full inline-block border border-white/30 shrink-0" style="background:' + t.swatch + '"></span>' +
+                    '<span class="text-xs font-bold text-slate-200 flex-1">' + t.name + ' <span class="text-slate-400 font-medium">(' + t.label + ')</span></span>' +
+                    (open ? '' : '<i class="fa-solid fa-lock text-[10px] text-amber-400"></i>') + '</button>';
+            }).join('');
+        }
+
+        // ================= PUNTOS =================
+        function ptsCfg() { return appData.pointsConfig; }
+
+        // Crea (amount numérico) o borra (amount null) un movimiento con clave fija.
+        // La clave fija evita sumar dos veces lo mismo (ej. confirmar, quitar y volver a confirmar).
+        function setLedger(paths, key, amount, reason, type, date) {
+            if (amount === null || amount === undefined) {
+                if (appData.points[key]) delete appData.points[key];
+                paths['points/' + key] = null;
+                return;
+            }
+            const entry = { amount: Number(amount), reason: reason || '', type: type || 'extra', date: date || localDateStr(), ts: Date.now() };
+            appData.points[key] = entry;
+            paths['points/' + key] = entry;
+        }
+
+        function pointsBalance() {
+            return Object.values(appData.points).reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+        }
+
+        // Puntos que Emilia ya ganó pero mamá aún no confirma (solo se muestran)
+        function pendingPoints() {
+            const cfg = ptsCfg(), today = localDateStr();
+            let total = 0;
+            Object.keys(appData.log).forEach(date => {
+                if (date > today || daysBetween(date, today) > 14) return;
+                const l = appData.log[date] || {}, c = appData.confirm[date] || {};
+                appData.rutinas.forEach(r => {
+                    const k = itemKey(r.id);
+                    if (l[k] && c[k] !== 'ok') total += Number(cfg.rutina) || 0;
+                });
+                if (dayAllDone(date) && !appData.history[date]) total += Number(cfg.dia) || 0;
+            });
+            return total;
+        }
+
+        // +bono cada 7 días seguidos de racha (solo días con registro, desde que existen los puntos)
+        function syncWeekBonuses(paths) {
+            const dates = Object.keys(appData.history).sort();
+            const wanted = {};
+            let run = 0, prev = null;
+            dates.forEach(d => {
+                run = (prev && addDays(prev, 1) === d) ? run + 1 : 1;
+                prev = d;
+                if (run % 7 === 0 && appData.log[d]) wanted['w_' + d] = run;
+            });
+            Object.keys(appData.points).filter(k => k.startsWith('w_') && !wanted[k]).forEach(k => setLedger(paths, k, null));
+            Object.keys(wanted).filter(k => !appData.points[k]).forEach(k => {
+                const n = wanted[k];
+                setLedger(paths, k, ptsCfg().semana, 'Racha de ' + (n / 7 === 1 ? '1 semana' : (n / 7) + ' semanas'), 'semana', k.slice(2));
+            });
+        }
+
+        function ledgerList() {
+            return Object.entries(appData.points).map(([key, e]) => Object.assign({ key }, e))
+                .sort((a, b) => (b.ts || 0) - (a.ts || 0));
+        }
+
+        const LEDGER_ICON = { rutina: 'fa-check', dia: 'fa-star', agenda: 'fa-scroll', semana: 'fa-fire', extra: 'fa-hand-sparkles', canje: 'fa-gem' };
+
+        function ledgerRowsHtml(limit) {
+            const list = ledgerList().slice(0, limit);
+            if (!list.length) return '<p class="text-xs text-slate-500 italic">Todavía no hay movimientos de puntos.</p>';
+            return list.map(e => {
+                const pos = e.amount >= 0;
+                return '<div class="flex items-center gap-2.5 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">' +
+                    '<i class="fa-solid ' + (LEDGER_ICON[e.type] || 'fa-circle') + ' text-xs w-4 text-center ' + (pos ? 'text-amber-300' : 'text-rose-300') + '"></i>' +
+                    '<span class="flex-1 min-w-0 text-xs text-slate-200 break-words">' + esc(e.reason) + '<span class="block text-[10px] text-slate-500">' + shortDate(e.date || localDateStr()) + '</span></span>' +
+                    '<span class="text-sm font-extrabold ' + (pos ? 'text-amber-300' : 'text-rose-300') + '">' + (pos ? '+' : '') + e.amount + '</span></div>';
+            }).join('');
+        }
+
+        // ================= TARJETA DE PUNTOS (inicio de Emilia) =================
+        function nextGoal(balance) {
+            const items = appData.catalog.filter(c => !(c.kind === 'tema' && themeUnlocked(c.themeId)));
+            const affordable = items.filter(c => c.cost <= balance);
+            if (affordable.length) return { item: affordable[affordable.length - 1], ready: true };
+            const next = items.find(c => c.cost > balance);
+            return next ? { item: next, ready: false } : null;
+        }
+
+        function renderPointsCard() {
+            const box = document.getElementById('points-card');
+            if (!box) return;
+            const bal = pointsBalance(), pend = pendingPoints(), goal = nextGoal(bal);
+            let goalHtml = '<p class="text-xs text-slate-400">Pídele a papá o mamá que agreguen premios a la tienda.</p>';
+            if (goal && goal.ready) {
+                goalHtml = '<p class="text-xs text-emerald-300 font-bold"><i class="fa-solid fa-unlock mr-1"></i>¡Ya puedes canjear: ' + esc(goal.item.name) + '!</p>';
+            } else if (goal) {
+                const pct = Math.min(100, Math.round(bal / goal.item.cost * 100));
+                goalHtml = '<div class="space-y-1"><div class="flex justify-between text-[11px]"><span class="text-slate-300 truncate pr-2">Próximo: <b class="text-amber-200">' + esc(goal.item.name) + '</b></span><span class="text-slate-400 shrink-0">' + bal + '/' + goal.item.cost + '</span></div>' +
+                    '<div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-amber-900/60"><div class="bg-gradient-to-r from-amber-500 to-yellow-300 h-full rounded-full" style="width:' + pct + '%"></div></div></div>';
+            }
+            box.innerHTML = '<div class="bg-slate-900 border-2 border-amber-500/60 rounded-3xl p-4 shadow-lg flex items-center gap-4">' +
+                '<div class="w-14 h-14 bg-amber-950 border border-amber-500 text-amber-300 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-inner"><i class="fa-solid fa-coins"></i></div>' +
+                '<div class="flex-1 min-w-0 space-y-1.5">' +
+                '<div class="flex items-baseline gap-2 flex-wrap"><span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Tesoro de cazadora</span></div>' +
+                '<div class="flex items-baseline gap-2 flex-wrap"><span class="text-2xl font-extrabold text-amber-100">' + bal + '</span><span class="text-xs text-amber-200 font-bold">puntos</span>' +
+                (pend ? '<span class="text-[10px] font-bold text-amber-300 bg-amber-950 border border-amber-800 px-2 py-0.5 rounded-full"><i class="fa-solid fa-hourglass-half mr-1"></i>+' + pend + ' por confirmar</span>' : '') + '</div>' +
+                goalHtml + '</div>' +
+                '<button onclick="switchHijaTab(\'tienda\')" class="shrink-0 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-xl shadow"><i class="fa-solid fa-gem mr-1"></i>Tienda</button>' +
+                '</div>';
+        }
+
+        // ================= ENTRENAMIENTO: UNA MISIÓN A LA VEZ =================
+        let trainingSkipped = [];
+        let pointPopUntil = 0;
+
+        function trainingStarted() {
+            try { return localStorage.getItem('training_started') === localDateStr(); } catch (e) { return false; }
+        }
+
+        function startTraining() {
+            try { localStorage.setItem('training_started', localDateStr()); } catch (e) {}
+            trainingSkipped = [];
+            const m = currentMission();
+            if (m && m.status !== 'progress') setRutinaProgress(m.id); else render();
+        }
+
+        function currentMission() {
+            const pending = appData.rutinas.filter(r => !r.completed);
+            if (!pending.length) return null;
+            const inProgress = pending.find(r => r.status === 'progress');
+            if (inProgress) return inProgress;
+            const fresh = pending.filter(r => !trainingSkipped.includes(r.id));
+            if (fresh.length) return fresh[0];
+            trainingSkipped = trainingSkipped.filter(id => pending.some(r => r.id === id));
+            return pending.find(r => r.id === trainingSkipped[0]) || pending[0];
+        }
+
+        function startMission(id) {
+            const r = appData.rutinas.find(x => x.id === id);
+            if (r && r.status !== 'progress') setRutinaProgress(id);
+        }
+
+        function completeMission(id) {
+            trainingSkipped = trainingSkipped.filter(x => x !== id);
+            pointPopUntil = Date.now() + 1600;
+            toggleRutinaCheck(id);
+            setTimeout(() => { if (Date.now() >= pointPopUntil) render(); }, 1700);
+        }
+
+        function skipMission(id) {
+            const r = appData.rutinas.find(x => x.id === id);
+            trainingSkipped = trainingSkipped.filter(x => x !== id).concat([id]);
+            if (r && r.status === 'progress') setRutinaProgress(id); else render();
+        }
+
+        function renderTraining() {
+            const box = document.getElementById('training-container');
+            if (!box) return;
+            const total = appData.rutinas.length;
+            const done = appData.rutinas.filter(r => r.completed).length;
+            const today = localDateStr();
+            const cfg = ptsCfg();
+            const card = 'bg-gradient-to-b from-slate-900 to-slate-950 border border-teal-700/60 rounded-3xl p-5 shadow-xl text-center space-y-4 relative overflow-hidden';
+
+            if (total === 0) {
+                box.innerHTML = '<div class="' + card + '"><p class="text-sm text-slate-300">No hay misiones para hoy.</p></div>';
+                return;
+            }
+
+            const segs = appData.rutinas.map(r => '<span class="h-1.5 flex-1 rounded-full ' + (r.completed ? 'bg-emerald-400' : (r.status === 'progress' ? 'bg-teal-300 animate-pulse' : 'bg-slate-800')) + '"></span>').join('');
+            const segBar = '<div class="flex gap-1">' + segs + '</div>';
+
+            // Todo cumplido
+            if (done === total) {
+                const confirmed = !!appData.history[today];
+                const earned = Object.values(appData.points).filter(e => e.date === today && e.amount > 0).reduce((s, e) => s + e.amount, 0);
+                box.innerHTML = '<div class="' + card + '">' + segBar +
+                    '<div class="w-20 h-20 mx-auto rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center text-4xl shadow-lg"><i class="fa-solid fa-trophy"></i></div>' +
+                    '<div><h3 class="text-2xl font-extrabold text-emerald-200">¡Entrenamiento completado!</h3>' +
+                    '<p class="text-sm text-slate-300 mt-1">Cumpliste las ' + total + ' misiones de hoy. Tu respiración está cada vez más fuerte.</p></div>' +
+                    (confirmed
+                        ? '<p class="inline-flex items-center gap-2 text-xs font-bold text-emerald-300 bg-emerald-950 border border-emerald-700 px-3 py-1.5 rounded-full"><i class="fa-solid fa-stamp"></i> Confirmado por mamá · +' + earned + ' puntos hoy</p>'
+                        : '<p class="inline-flex items-center gap-2 text-xs font-bold text-amber-300 bg-amber-950 border border-amber-800 px-3 py-1.5 rounded-full"><i class="fa-solid fa-hourglass-half"></i> Esperando que mamá confirme tus puntos</p>') +
+                    '</div>';
+                return;
+            }
+
+            // Aún no empieza
+            if (!trainingStarted() && done === 0 && !appData.rutinas.some(r => r.status === 'progress')) {
+                const first = appData.rutinas[0];
+                const maxPts = total * (Number(cfg.rutina) || 0) + (Number(cfg.dia) || 0);
+                box.innerHTML = '<div class="' + card + '">' +
+                    '<p class="text-[11px] font-extrabold text-teal-300 uppercase tracking-[0.2em]">Entrenamiento de hoy</p>' +
+                    '<div class="w-24 h-24 mx-auto rounded-full bg-teal-950 border-2 border-teal-400 text-teal-300 flex items-center justify-center text-5xl shadow-[0_0_40px_rgba(45,212,191,0.25)]"><i class="fa-solid fa-wind"></i></div>' +
+                    '<div><h3 class="text-2xl font-extrabold text-white">Desenvaina tu espada, cazadora</h3>' +
+                    '<p class="text-sm text-slate-300 mt-1">Hoy tienes <b class="text-teal-200">' + total + ' misiones</b>. La primera empieza a las <b class="text-teal-200">' + esc(first.time) + '</b>.</p>' +
+                    '<p class="text-xs text-amber-300 font-bold mt-2"><i class="fa-solid fa-coins mr-1"></i>Puedes ganar hasta ' + maxPts + ' puntos</p></div>' +
+                    '<button onclick="startTraining()" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black py-4 rounded-2xl text-base uppercase tracking-wider shadow-xl transition-all"><i class="fa-solid fa-bolt mr-2"></i>¡Comenzar entrenamiento!</button>' +
+                    '</div>';
+                return;
+            }
+
+            // Misión actual
+            const m = currentMission();
+            const idx = done + 1;
+            const active = m.status === 'progress';
+            const pending = appData.rutinas.filter(r => !r.completed && r.id !== m.id && !trainingSkipped.includes(r.id));
+            const next = pending[0] || appData.rutinas.find(r => !r.completed && r.id !== m.id);
+            const pop = Date.now() < pointPopUntil
+                ? '<div class="point-pop absolute top-16 left-0 right-0 text-center pointer-events-none"><span class="inline-block bg-amber-400 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' por confirmar</span></div>'
+                : '';
+            const skipped = trainingSkipped.includes(m.id) && !active;
+
+            box.innerHTML = '<div class="' + card + '">' + pop +
+                '<div class="flex items-center justify-between text-[11px] font-bold"><span class="text-teal-300 uppercase tracking-widest">Misión ' + idx + ' de ' + total + '</span>' +
+                '<span class="text-amber-300"><i class="fa-solid fa-coins mr-1"></i>+' + (Number(cfg.rutina) || 0) + ' al cumplir</span></div>' +
+                segBar +
+                '<div class="w-28 h-28 mx-auto rounded-full flex items-center justify-center text-5xl shadow-xl ' + (active ? 'bg-teal-400 text-slate-950 shadow-[0_0_50px_rgba(45,212,191,0.45)]' : 'bg-teal-950 border-2 border-teal-500 text-teal-300') + '"><i class="fa-solid ' + esc(m.icon) + '"></i></div>' +
+                '<div><span class="inline-flex items-center gap-1 text-xs font-bold text-teal-200 bg-slate-950 border border-teal-800 px-3 py-1 rounded-full"><i class="fa-regular fa-clock"></i>' + esc(m.time) + '</span>' +
+                '<h3 class="text-2xl font-extrabold text-white mt-2 break-words">' + esc(m.title) + '</h3>' +
+                (active ? '<p class="text-xs text-teal-300 font-bold mt-1 animate-pulse">Concentración total... ¡tú puedes!</p>' : (skipped ? '<p class="text-xs text-slate-400 mt-1">La dejaste para más tarde. ¿Lista para hacerla ahora?</p>' : '')) + '</div>' +
+                (active
+                    ? '<button onclick="completeMission(' + Number(m.id) + ')" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black py-4 rounded-2xl text-base uppercase tracking-wider shadow-xl transition-all"><i class="fa-solid fa-check mr-2"></i>¡Misión cumplida!</button>'
+                    : '<button onclick="startMission(' + Number(m.id) + ')" class="w-full bg-teal-400 hover:bg-teal-300 text-slate-950 font-black py-4 rounded-2xl text-base uppercase tracking-wider shadow-xl transition-all"><i class="fa-solid fa-play mr-2"></i>Comenzar misión</button>') +
+                (pending.length || trainingSkipped.length ? '<button onclick="skipMission(' + Number(m.id) + ')" class="text-xs font-bold text-slate-400 hover:text-slate-200 underline underline-offset-4">Más tarde</button>' : '') +
+                (next ? '<p class="text-[11px] text-slate-500 border-t border-slate-800 pt-3">Siguiente: <span class="text-slate-300">' + esc(next.time) + ' · ' + esc(next.title) + '</span></p>' : '') +
+                '</div>';
+        }
+
+        // ================= TIENDA (Emilia) =================
+        function redeemItem(id) {
+            if (currentRole !== 'hija') return;
+            const item = appData.catalog.find(c => c.id === id);
+            if (!item) return;
+            const bal = pointsBalance();
+            if (bal < item.cost) return;
+            if (item.kind === 'tema' && themeUnlocked(item.themeId)) return;
+            if (!confirm('¿Canjear "' + item.name + '" por ' + item.cost + ' puntos?')) return;
+
+            const isTheme = item.kind === 'tema';
+            const red = { id: Date.now(), itemId: item.id, name: item.name, cost: item.cost, kind: item.kind || 'real', themeId: item.themeId || '',
+                date: localDateStr(), status: isTheme ? 'entregado' : 'pendiente', deliveredBy: isTheme ? 'Automático' : '', deliveredDate: isTheme ? localDateStr() : '' };
+            appData.redemptions.unshift(red);
+            const paths = itemPath('redemptions', red);
+            setLedger(paths, 'c_' + red.id, -item.cost, 'Canje: ' + item.name, 'canje', red.date);
+            if (isTheme) {
+                appData.unlockedThemes[item.themeId] = true;
+                paths['unlockedThemes/' + item.themeId] = true;
+            }
+            persist(paths);
+            if (typeof confetti === 'function') confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+            render();
+            alert(isTheme ? '¡Tema desbloqueado! Elígelo tocando tu avatar.' : '¡Canje listo! Papá o mamá te lo entregarán.');
+        }
+
+        function renderShop() {
+            const box = document.getElementById('shop-hija');
+            if (!box) return;
+            const bal = pointsBalance(), pend = pendingPoints();
+            let html = '<div class="bg-gradient-to-r from-amber-900/60 to-slate-900 border border-amber-500/50 rounded-3xl p-5 flex items-center gap-4 shadow-md">' +
+                '<div class="w-14 h-14 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-2xl shadow"><i class="fa-solid fa-gem"></i></div>' +
+                '<div><p class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Tienda de la cazadora</p>' +
+                '<p class="text-2xl font-extrabold text-amber-100">' + bal + ' <span class="text-sm font-bold text-amber-200">puntos</span></p>' +
+                (pend ? '<p class="text-[11px] text-amber-300">+' + pend + ' esperando confirmación de mamá</p>' : '') + '</div></div>';
+
+            if (!appData.catalog.length) {
+                html += '<p class="text-sm text-slate-400 bg-slate-900 rounded-3xl p-5 border border-teal-900/50 text-center">La tienda aún no tiene premios. Papá o mamá pueden agregarlos desde su panel.</p>';
+            } else {
+                html += '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' + appData.catalog.map(item => {
+                    const isTheme = item.kind === 'tema';
+                    const owned = isTheme && themeUnlocked(item.themeId);
+                    const can = !owned && bal >= item.cost;
+                    const pct = Math.min(100, Math.round(bal / item.cost * 100));
+                    const icon = isTheme
+                        ? '<span class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl text-white shadow" style="background:' + ((THEMES[item.themeId] || {}).swatch || '#334155') + '"><i class="fa-solid fa-palette"></i></span>'
+                        : '<span class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl bg-amber-950 border border-amber-600 text-amber-300"><i class="fa-solid fa-gift"></i></span>';
+                    let action;
+                    if (owned) action = '<span class="text-xs font-bold text-emerald-300"><i class="fa-solid fa-check mr-1"></i>Ya es tuyo</span>';
+                    else if (can) action = '<button onclick="redeemItem(' + Number(item.id) + ')" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold py-2 rounded-xl text-sm shadow">Canjear</button>';
+                    else action = '<div class="space-y-1"><div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden"><div class="bg-amber-500 h-full rounded-full" style="width:' + pct + '%"></div></div><p class="text-[11px] text-slate-400">Te faltan <b class="text-amber-200">' + (item.cost - bal) + '</b> puntos</p></div>';
+                    return '<div class="bg-slate-900 border ' + (can ? 'border-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.15)]' : 'border-teal-900/60') + ' rounded-3xl p-4 space-y-3">' +
+                        '<div class="flex items-center gap-3">' + icon + '<div class="flex-1 min-w-0"><p class="text-sm font-bold text-slate-100 break-words">' + esc(item.name) + '</p>' +
+                        '<p class="text-xs font-extrabold text-amber-300"><i class="fa-solid fa-coins mr-1"></i>' + Number(item.cost) + ' puntos</p></div></div>' + action + '</div>';
+                }).join('') + '</div>';
+            }
+
+            const reds = appData.redemptions;
+            if (reds.length) {
+                html += '<div class="bg-slate-900 border border-teal-900/60 rounded-3xl p-4 space-y-2"><h4 class="text-sm font-bold text-teal-200"><i class="fa-solid fa-box-open mr-1"></i> Mis canjes</h4>' +
+                    reds.slice(0, 10).map(r => '<div class="flex items-center justify-between gap-2 bg-slate-950 rounded-xl px-3 py-2 border border-slate-800"><span class="text-xs text-slate-200 break-words">' + esc(r.name) + '<span class="block text-[10px] text-slate-500">' + shortDate(r.date) + '</span></span>' +
+                        (r.status === 'entregado' ? '<span class="text-[10px] font-extrabold bg-emerald-500 text-slate-950 px-2 py-1 rounded-lg shrink-0">Entregado</span>' : '<span class="text-[10px] font-extrabold bg-amber-400 text-slate-950 px-2 py-1 rounded-lg shrink-0">Por entregar</span>') + '</div>').join('') + '</div>';
+            }
+            html += '<details class="group bg-slate-900 border border-teal-900/60 rounded-3xl p-4"><summary class="cursor-pointer text-sm font-bold text-teal-200 flex items-center gap-2"><i class="fa-solid fa-chevron-right text-xs group-open:rotate-90 transition-transform"></i> Mis puntos ganados</summary><div class="mt-3 space-y-1.5">' + ledgerRowsHtml(20) + '</div></details>';
+            box.innerHTML = '<div class="space-y-4">' + html + '</div>';
+        }
+
+        // ================= PUNTOS Y TIENDA (padres) =================
+        function parentName() { return currentRole === 'papa' ? 'Papá' : 'Mamá'; }
+
+        function giveExtraPoints() {
+            if (currentRole === 'hija') return;
+            const amount = parseInt(document.getElementById('extra-amount').value, 10);
+            const reason = document.getElementById('extra-reason').value.trim();
+            if (!amount || amount < 1) { alert('Escribe cuántos puntos quieres dar.'); return; }
+            const paths = {};
+            setLedger(paths, 'x_' + Date.now(), amount, (reason || 'Puntos extra') + ' (' + parentName() + ')', 'extra', localDateStr());
+            document.getElementById('extra-amount').value = '';
+            document.getElementById('extra-reason').value = '';
+            persist(paths);
+            render();
+        }
+
+        function savePointsConfig() {
+            const cfg = {};
+            ['rutina', 'dia', 'agenda', 'semana'].forEach(k => {
+                const v = parseInt(document.getElementById('cfg-' + k).value, 10);
+                cfg[k] = isNaN(v) || v < 0 ? appData.pointsConfig[k] : v;
+            });
+            appData.pointsConfig = cfg;
+            persist(metaPaths('pointsConfig'));
+            alert('Valores guardados. Se aplican a los puntos que se ganen desde ahora.');
+            render();
+        }
+
+        function addCatalogItem() {
+            const kind = document.getElementById('cat-kind').value;
+            const cost = parseInt(document.getElementById('cat-cost').value, 10);
+            let name = document.getElementById('cat-name').value.trim(), themeId = '';
+            if (kind === 'tema') {
+                themeId = document.getElementById('cat-theme').value;
+                if (!themeId) { alert('No quedan temas por agregar.'); return; }
+                name = 'Tema ' + THEMES[themeId].name + ' (' + THEMES[themeId].label + ')';
+            }
+            if (!name) { alert('Escribe el nombre del premio.'); return; }
+            if (!cost || cost < 1) { alert('Escribe cuántos puntos cuesta.'); return; }
+            const item = { id: Date.now(), name, cost, kind, themeId };
+            appData.catalog.push(item);
+            appData.catalog.sort((a, b) => a.cost - b.cost);
+            document.getElementById('cat-name').value = '';
+            document.getElementById('cat-cost').value = '';
+            persist(itemPath('catalog', item));
+            render();
+        }
+
+        function deleteCatalogItem(id) {
+            const item = appData.catalog.find(c => c.id === id);
+            if (!item || !confirm('¿Quitar "' + item.name + '" de la tienda?')) return;
+            appData.catalog = appData.catalog.filter(c => c.id !== id);
+            persist(removePath('catalog', id));
+            render();
+        }
+
+        function loadExampleCatalog() {
+            const base = Date.now();
+            const examples = [
+                { name: 'Un helado', cost: 40, kind: 'real' },
+                { name: 'Tema Zenitsu (Trueno)', cost: 60, kind: 'tema', themeId: 'zenitsu' },
+                { name: 'Tema Giyu (Agua)', cost: 60, kind: 'tema', themeId: 'giyu' },
+                { name: '30 minutos extra de pantalla', cost: 60, kind: 'real' },
+                { name: 'Tema Rengoku (Llamas)', cost: 80, kind: 'tema', themeId: 'rengoku' },
+                { name: 'Tema Inosuke (Bestia)', cost: 80, kind: 'tema', themeId: 'inosuke' },
+                { name: 'Elegir la película del fin de semana', cost: 100, kind: 'real' }
+            ];
+            const paths = {};
+            examples.forEach((e, i) => {
+                const item = Object.assign({ id: base + i, themeId: '' }, e);
+                appData.catalog.push(item);
+                Object.assign(paths, itemPath('catalog', item));
+            });
+            appData.catalog.sort((a, b) => a.cost - b.cost);
+            persist(paths);
+            render();
+        }
+
+        function markDelivered(id) {
+            const r = appData.redemptions.find(x => x.id === id);
+            if (!r) return;
+            r.status = 'entregado'; r.deliveredBy = parentName(); r.deliveredDate = localDateStr();
+            persist(itemPath('redemptions', r));
+            render();
+        }
+
+        function cancelRedemption(id) {
+            const r = appData.redemptions.find(x => x.id === id);
+            if (!r || !confirm('¿Cancelar el canje "' + r.name + '" y devolverle los ' + r.cost + ' puntos?')) return;
+            appData.redemptions = appData.redemptions.filter(x => x.id !== id);
+            const paths = removePath('redemptions', id);
+            setLedger(paths, 'c_' + id, null);
+            if (r.kind === 'tema' && r.themeId) {
+                delete appData.unlockedThemes[r.themeId];
+                paths['unlockedThemes/' + r.themeId] = null;
+                if (appData.theme === r.themeId) { appData.theme = 'tokito'; Object.assign(paths, metaPaths('theme')); }
+            }
+            persist(paths);
+            render();
+        }
+
+        function renderAdminPoints() {
+            const sum = document.getElementById('admin-points-summary');
+            if (!sum) return;
+            const bal = pointsBalance(), pend = pendingPoints();
+            sum.innerHTML = '<p class="text-2xl font-extrabold text-amber-100 leading-none">' + bal + ' <span class="text-xs text-amber-300">puntos</span></p>' +
+                (pend ? '<p class="text-[11px] text-amber-300 mt-1">+' + pend + ' esperando confirmación</p>' : '');
+
+            const pendingReds = appData.redemptions.filter(r => r.status !== 'entregado');
+            document.getElementById('admin-redemptions').innerHTML = pendingReds.length
+                ? '<div class="space-y-2"><p class="text-xs font-bold text-amber-300"><i class="fa-solid fa-box-open mr-1"></i> Canjes por entregar</p>' +
+                    pendingReds.map(r => '<div class="flex flex-wrap items-center gap-2 bg-amber-950/40 border border-amber-500/50 rounded-2xl px-3 py-2.5">' +
+                        '<span class="flex-1 min-w-0 text-sm font-bold text-amber-100 break-words">' + esc(r.name) + '<span class="block text-[10px] font-medium text-amber-300/80">' + r.cost + ' puntos · ' + shortDate(r.date) + '</span></span>' +
+                        '<button onclick="markDelivered(' + Number(r.id) + ')" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold px-3 py-1.5 rounded-xl"><i class="fa-solid fa-check mr-1"></i>Entregado</button>' +
+                        '<button onclick="cancelRedemption(' + Number(r.id) + ')" title="Cancelar y devolver puntos" class="text-slate-400 hover:text-rose-300 text-xs px-1"><i class="fa-solid fa-rotate-left"></i></button></div>').join('') + '</div>'
+                : '';
+
+            document.getElementById('admin-points-history').innerHTML = ledgerRowsHtml(60);
+
+            ['rutina', 'dia', 'agenda', 'semana'].forEach(k => {
+                const el = document.getElementById('cfg-' + k);
+                if (el && document.activeElement !== el) el.value = appData.pointsConfig[k];
+            });
+
+            const sel = document.getElementById('cat-theme');
+            if (sel) {
+                const used = appData.catalog.filter(c => c.kind === 'tema').map(c => c.themeId);
+                const opts = Object.keys(THEMES).filter(id => !THEMES[id].free && !used.includes(id));
+                const prev = sel.value;
+                sel.innerHTML = opts.length ? opts.map(id => '<option value="' + id + '">Tema ' + THEMES[id].name + ' (' + THEMES[id].label + ')</option>').join('') : '<option value="">Ya agregaste todos los temas</option>';
+                if (opts.includes(prev)) sel.value = prev;
+            }
+
+            const cat = document.getElementById('admin-catalog');
+            if (!appData.catalog.length) {
+                cat.innerHTML = '<div class="text-center space-y-2 py-2"><p class="text-xs text-slate-400">La tienda está vacía.</p>' +
+                    '<button onclick="loadExampleCatalog()" class="bg-slate-800 hover:bg-slate-700 text-teal-200 border border-teal-700 text-xs font-bold px-4 py-2 rounded-xl">Cargar premios de ejemplo</button></div>';
+            } else {
+                cat.innerHTML = appData.catalog.map(item => '<div class="flex items-center gap-3 bg-slate-950 border border-teal-900/60 rounded-2xl px-3 py-2">' +
+                    (item.kind === 'tema' ? '<span class="w-7 h-7 rounded-lg shrink-0" style="background:' + ((THEMES[item.themeId] || {}).swatch || '#334155') + '"></span>' : '<span class="w-7 h-7 rounded-lg shrink-0 bg-amber-950 border border-amber-700 text-amber-300 flex items-center justify-center text-xs"><i class="fa-solid fa-gift"></i></span>') +
+                    '<span class="flex-1 min-w-0 text-sm text-slate-200 break-words">' + esc(item.name) + '</span>' +
+                    '<span class="text-xs font-extrabold text-amber-300 shrink-0">' + Number(item.cost) + ' pts</span>' +
+                    '<button onclick="deleteCatalogItem(' + Number(item.id) + ')" class="text-slate-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button></div>').join('');
+            }
         }
 
         // ================= PLANNER SEMANAL =================
