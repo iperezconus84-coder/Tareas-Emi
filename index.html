@@ -51,9 +51,14 @@
             position: relative;
             background: linear-gradient(135deg, #0f172a 0%, #134e4a 50%, #0d9488 100%);
         }
-        .avatar-img {
-            object-fit: cover;
-            object-position: center;
+        .tokito-card::after {
+            content: '🌫️';
+            position: absolute;
+            right: 15px;
+            bottom: -10px;
+            font-size: 8rem;
+            opacity: 0.12;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -63,7 +68,7 @@
     <header class="bg-slate-900/90 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-teal-800/50">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <img src="https://cdn-icons-png.flaticon.com/512/3408/3408506.png" alt="Tokito Avatar" class="w-10 h-10 rounded-2xl bg-teal-900 p-1 border border-teal-500 shadow-md">
+                <img src="https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3408/3408506.png';" alt="Tokito Muichiro" class="w-10 h-10 rounded-2xl object-cover border-2 border-teal-400 shadow-md">
                 <div>
                     <h1 class="font-bold text-xl text-teal-200 leading-tight flex items-center gap-1.5">
                         Emilia Tokito <span class="text-teal-400 text-xs font-semibold bg-teal-950 px-2 py-0.5 rounded-full border border-teal-800">Pilar de la Niebla 🌫️</span>
@@ -158,13 +163,12 @@
         <!-- ================= VISTA EMILIA ================= -->
         <div id="view-hija" class="space-y-6">
             
-            <!-- Banner Ilustrado de Muichiro Tokito -->
+            <!-- Banner Ilustrado -->
             <div class="tokito-card rounded-3xl p-6 shadow-2xl border border-teal-500/30 overflow-hidden">
                 <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
-                        <!-- Ilustración Chibi / Anime de Muichiro Tokito -->
                         <div class="relative shrink-0">
-                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=TokitoEmilia&backgroundColor=14b8a6" alt="Tokito Chibi" class="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-slate-900 border-2 border-teal-400 shadow-xl object-cover">
+                            <img src="https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/3408/3408506.png';" alt="Muichiro Tokito Anime" class="w-20 h-20 md:w-24 md:h-24 rounded-3xl object-cover border-2 border-teal-400 shadow-xl">
                             <span class="absolute -bottom-2 -right-1 bg-teal-400 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow">Tokito 🌫️</span>
                         </div>
                         <div>
@@ -254,8 +258,8 @@
                         </h3>
                         <div id="chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
                         <div class="mt-3 flex gap-2">
-                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-4 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage()">
-                            <button onclick="sendChatMessage()" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
+                            <input type="text" id="chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-4 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage('chat-input')">
+                            <button onclick="sendChatMessage('chat-input')" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
@@ -308,7 +312,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Columna Izquierda: Rutinas -->
                 <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
                     <h3 class="font-bold text-teal-200 flex items-center gap-2">
                         <i class="fa-solid fa-clock text-teal-400"></i> Agregar Rutina con Horario
@@ -344,19 +349,42 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
-                    <h3 class="font-bold text-teal-200 flex items-center gap-2">
-                        <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
-                    </h3>
-                    <div class="space-y-2">
-                        <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="3" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
-                        <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">
-                            <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 🌫️
-                        </button>
+                <!-- Columna Derecha: Muro y Chat para Padres -->
+                <div class="space-y-6">
+                    <!-- Muro -->
+                    <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 space-y-3">
+                        <h3 class="font-bold text-teal-200 flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-amber-400"></i> Publicar en Muro de Emilia
+                        </h3>
+                        <div class="space-y-2">
+                            <textarea id="muro-input" placeholder="Escribe una nota cariñosa o aviso..." rows="2" class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400"></textarea>
+                            <button onclick="addMuroPost()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold py-2 rounded-2xl text-sm transition-all">
+                                <i class="fa-solid fa-bullhorn mr-1"></i> Publicar Nota 🌫️
+                            </button>
+                        </div>
+                        <div class="border-t border-teal-900/60 pt-2">
+                            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Notas en el Muro</h4>
+                            <div id="admin-muro-list" class="space-y-2 max-h-36 overflow-y-auto pr-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Familiar en Panel Admin -->
+                    <div class="bg-slate-900 p-5 rounded-3xl shadow-sm border border-teal-800/50 flex flex-col h-80">
+                        <h3 class="font-bold text-teal-200 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-teal-400"></i> Chat Familiar en Vivo
+                        </h3>
+                        <div id="admin-chat-container" class="flex-1 overflow-y-auto space-y-3 pr-1"></div>
+                        <div class="mt-3 flex gap-2">
+                            <input type="text" id="admin-chat-input" placeholder="Escribe un mensaje..." class="flex-1 bg-slate-950 border border-teal-800 rounded-2xl px-3.5 py-2 text-sm text-teal-100 focus:outline-none focus:border-teal-400" onkeypress="if(event.key==='Enter') sendChatMessage('admin-chat-input')">
+                            <button onclick="sendChatMessage('admin-chat-input')" class="bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-2xl text-sm font-bold transition-all">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Agenda Escolar vista por Padres -->
             <div class="bg-slate-900 p-6 rounded-3xl shadow-sm border border-teal-800/50 space-y-4">
                 <h3 class="font-bold text-teal-200 flex items-center gap-2">
                     <i class="fa-solid fa-scroll text-teal-400"></i> Agenda Escolar Registrada por Emilia
@@ -384,23 +412,16 @@
             { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
+        // Agenda y Muro completamente vacíos por defecto
         const defaultAgenda = [];
+        const defaultMuro = [];
+        const defaultChat = [];
 
-        const defaultMuro = [
-            { id: 1, author: 'Papá', text: '¡Mucho éxito en tu semana Emilia! Recuerda descansar entre tareas. 🌫️', date: '12 Oct' },
-            { id: 2, author: 'Mamá', text: '¡Concentración de Pilar para tus estudios! ⚔️', date: '13 Oct' }
-        ];
-
-        const defaultChat = [
-            { id: 1, sender: 'Papá', text: '¿Cómo te fue hoy en el colegio, Emilia?', time: '14:00' },
-            { id: 2, sender: 'Emilia', text: '¡Bien Papá! Anoté una tarea nueva en mi agenda 🌫️.', time: '14:05' }
-        ];
-
-        // Avatares visuales para cada integrante
+        // Avatares de la serie anime Demon Slayer
         const avatars = {
-            'Emilia': 'https://api.dicebear.com/7.x/bottts/svg?seed=TokitoEmilia&backgroundColor=14b8a6',
-            'Papá': 'https://api.dicebear.com/7.x/bottts/svg?seed=PapaHero&backgroundColor=0284c7',
-            'Mamá': 'https://api.dicebear.com/7.x/bottts/svg?seed=MamaHero&backgroundColor=ec4899'
+            'Emilia': 'https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg',
+            'Papá': 'https://i.pinimg.com/564x/c1/4e/6b/c14e6b7785d122a7407aa4b79eb5ea72.jpg',
+            'Mamá': 'https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg'
         };
 
         function sanitizeData(raw) {
@@ -409,8 +430,8 @@
                 adminPin: raw.adminPin || '1234',
                 rutinas: Array.isArray(raw.rutinas) && raw.rutinas.length > 0 ? raw.rutinas : defaultRutinas,
                 agenda: Array.isArray(raw.agenda) ? raw.agenda : [],
-                muro: Array.isArray(raw.muro) ? raw.muro : defaultMuro,
-                chat: Array.isArray(raw.chat) ? raw.chat : defaultChat,
+                muro: Array.isArray(raw.muro) ? raw.muro : [],
+                chat: Array.isArray(raw.chat) ? raw.chat : [],
                 streak: typeof raw.streak === 'number' ? raw.streak : 0
             };
         }
@@ -483,7 +504,7 @@
         }
 
         function resetDataToDefault() {
-            if (confirm("¿Quieres limpiar la agenda y reiniciar los datos al estado inicial?")) {
+            if (confirm("¿Quieres limpiar el muro, la agenda y reiniciar los datos al estado inicial?")) {
                 appData = sanitizeData({});
                 appData.streak = 0;
                 saveData();
@@ -698,8 +719,15 @@
             render();
         }
 
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
+        function deleteMuroPost(id) {
+            appData.muro = appData.muro.filter(m => m.id !== id);
+            saveData();
+            render();
+        }
+
+        function sendChatMessage(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
             const text = input.value.trim();
             if (!text) return;
 
@@ -773,12 +801,12 @@
 
             document.getElementById('rutinas-progress').innerText = completedCount + '/' + appData.rutinas.length + ' completados 🌫️';
 
-            // Agenda Escolar con ilustración de estado vacío
+            // Agenda Escolar
             const agendaContainer = document.getElementById('agenda-list-container');
             agendaContainer.innerHTML = '';
             if (appData.agenda.length === 0) {
-                agendaContainer.innerHTML = '<div class="text-center py-8 px-4 bg-slate-900/60 rounded-3xl border border-teal-900/50 space-y-2">' +
-                    '<img src="https://api.dicebear.com/7.x/bottts/svg?seed=EmptyAgenda&backgroundColor=0f766e" class="w-16 h-16 mx-auto rounded-2xl p-1 bg-slate-950 border border-teal-800/80 shadow-md" alt="Agenda vacía">' +
+                agendaContainer.innerHTML = '<div class="text-center py-8 px-4 bg-slate-900/60 rounded-3xl border border-teal-900/50 space-y-3">' +
+                    '<img src="https://i.pinimg.com/564x/82/8a/83/828a83080fcb8e1c896cad5017aefa2b.jpg" onerror="this.onerror=null;this.src=\'https://cdn-icons-png.flaticon.com/512/3408/3408506.png\';" class="w-16 h-16 mx-auto rounded-2xl object-cover border border-teal-500 shadow-md" alt="Muichiro Tokito">' +
                     '<p class="text-xs text-teal-200 font-bold">¡Tu agenda escolar está al día!</p>' +
                     '<p class="text-[11px] text-slate-400">No tienes pruebas ni tareas anotadas por el momento. 📜</p></div>';
             } else {
@@ -810,30 +838,38 @@
             // Muro
             const muroContainer = document.getElementById('muro-container');
             muroContainer.innerHTML = '';
-            appData.muro.forEach(post => {
-                const avatarSrc = avatars[post.author] || avatars['Papá'];
-                const div = document.createElement('div');
-                div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl flex gap-3 items-start";
-                div.innerHTML = '<img src="' + avatarSrc + '" class="w-8 h-8 rounded-xl bg-slate-900 border border-amber-500/50 shrink-0" alt="Avatar">' +
-                    '<div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300">' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p></div>';
-                muroContainer.appendChild(div);
-            });
+            if (appData.muro.length === 0) {
+                muroContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6 bg-slate-950/40 rounded-2xl border border-teal-900/40">El muro está limpio. Papá y Mamá publicarán notas aquí. 📜</p>';
+            } else {
+                appData.muro.forEach(post => {
+                    const avatarSrc = avatars[post.author] || avatars['Papá'];
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl flex gap-3 items-start";
+                    div.innerHTML = '<img src="' + avatarSrc + '" class="w-8 h-8 rounded-xl object-cover border border-amber-500/50 shrink-0" alt="Avatar">' +
+                        '<div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300">' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p></div>';
+                    muroContainer.appendChild(div);
+                });
+            }
 
-            // Chat con Avatares
+            // Chat
             const chatContainer = document.getElementById('chat-container');
             chatContainer.innerHTML = '';
-            appData.chat.forEach(msg => {
-                const isMe = msg.sender === 'Emilia';
-                const avatarSrc = avatars[msg.sender] || avatars['Emilia'];
-                const div = document.createElement('div');
-                div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
-                div.innerHTML = '<img src="' + avatarSrc + '" class="w-7 h-7 rounded-xl bg-slate-950 border border-teal-800 shrink-0" alt="Avatar">' +
-                    '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
-                    '<div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
-                    '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
-                chatContainer.appendChild(div);
-            });
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            if (appData.chat.length === 0) {
+                chatContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6 bg-slate-950/40 rounded-2xl border border-teal-900/40">No hay mensajes en el chat. ¡Escribe algo para la familia! 💬</p>';
+            } else {
+                appData.chat.forEach(msg => {
+                    const isMe = msg.sender === 'Emilia';
+                    const avatarSrc = avatars[msg.sender] || avatars['Emilia'];
+                    const div = document.createElement('div');
+                    div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
+                    div.innerHTML = '<img src="' + avatarSrc + '" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
+                        '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
+                        '<div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
+                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
+                    chatContainer.appendChild(div);
+                });
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         }
 
         function renderAdminView(role) {
@@ -865,6 +901,41 @@
                     '<button onclick="deleteRutina(' + rutina.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
                 adminRutinasList.appendChild(div);
             });
+
+            // Muro List en Admin
+            const adminMuroList = document.getElementById('admin-muro-list');
+            adminMuroList.innerHTML = '';
+            if (appData.muro.length === 0) {
+                adminMuroList.innerHTML = '<p class="text-[11px] text-slate-500 italic">No hay notas publicadas en el muro.</p>';
+            } else {
+                appData.muro.forEach(post => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between bg-slate-950 border border-amber-500/20 p-2 rounded-xl text-xs";
+                    div.innerHTML = '<div><span class="font-bold text-amber-300 mr-1">' + post.author + ':</span><span class="text-slate-300">' + post.text + '</span></div>' +
+                        '<button onclick="deleteMuroPost(' + post.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs shrink-0"><i class="fa-solid fa-trash"></i></button>';
+                    adminMuroList.appendChild(div);
+                });
+            }
+
+            // Chat Familiar en Admin
+            const adminChatContainer = document.getElementById('admin-chat-container');
+            adminChatContainer.innerHTML = '';
+            if (appData.chat.length === 0) {
+                adminChatContainer.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">No hay mensajes en el chat. ¡Escribe el primero! 💬</p>';
+            } else {
+                appData.chat.forEach(msg => {
+                    const isMe = msg.sender === (isPapa ? 'Papá' : 'Mamá');
+                    const avatarSrc = avatars[msg.sender] || avatars['Papá'];
+                    const div = document.createElement('div');
+                    div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
+                    div.innerHTML = '<img src="' + avatarSrc + '" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
+                        '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
+                        '<div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
+                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
+                    adminChatContainer.appendChild(div);
+                });
+                adminChatContainer.scrollTop = adminChatContainer.scrollHeight;
+            }
 
             // Agenda registrada por Emilia
             const adminAgendaList = document.getElementById('admin-agenda-list');
