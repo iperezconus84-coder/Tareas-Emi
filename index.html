@@ -389,7 +389,7 @@
                 <h3 class="font-bold text-amber-300 flex items-center gap-2 text-base">
                     <i class="fa-solid fa-gift text-amber-400"></i> Configurar Premio por Racha de Días
                 </h3>
-                <p class="text-xs text-slate-400">Define el premio acuerdado por cumplir cierta cantidad de días en racha (ej. 21 días = 3 semanas).</p>
+                <p class="text-xs text-slate-400">Define el premio acordado por cumplir cierta cantidad de días en racha (ej. 21 días = 3 semanas).</p>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <input type="text" id="admin-reward-title" placeholder="Ej. Desbloqueo de YouTube 🎬" class="sm:col-span-2 bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-400 select-text">
                     <div class="flex gap-2">
@@ -432,7 +432,7 @@
                     <div class="space-y-2">
                         <input type="text" id="new-rutina-title" placeholder="Nombre de la actividad..." class="w-full bg-slate-950 border border-teal-800 text-teal-100 rounded-2xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-400 select-text">
                         <div class="flex gap-2">
-                            <input type="time" id="new-rutina-time" value="15:00" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
+                            <input type="time" id="new-rutina-time" value="17:00" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-3 py-2 text-sm focus:outline-none focus:border-teal-400">
                             <select id="new-rutina-icon" class="w-1/2 bg-slate-950 border border-teal-800 text-teal-200 rounded-2xl px-2 py-2 text-sm focus:outline-none focus:border-teal-400">
                                 <option value="fa-cloud">🌫️ Niebla Tokito</option>
                                 <option value="fa-shield-halved">⚔️ Espada Katana</option>
@@ -507,20 +507,20 @@
 
     </main>
 
-    <!-- LÓGICA JAVASCRIPT GAMIFICADA -->
+    <!-- LÓGICA JAVASCRIPT GAMIFICADA CON NUEVO HORARIO -->
     <script>
         const defaultRutinas = [
-            { id: 1, time: "14:30", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
-            { id: 2, time: "15:15", title: "Cambiarme de ropa", icon: "fa-shirt", completed: false, status: 'idle' },
-            { id: 3, time: "15:30", title: "Hacer mi cama", icon: "fa-bed", completed: false, status: 'idle' },
-            { id: 4, time: "16:00", title: "Ordenar y limpiar mi habitación", icon: "fa-broom", completed: false, status: 'idle' },
-            { id: 5, time: "16:45", title: "Ayudar en la casa", icon: "fa-hands-holding-child", completed: false, status: 'idle' },
-            { id: 6, time: "17:15", title: "Revisar mis cuadernos para mañana", icon: "fa-book-open", completed: false, status: 'idle' },
-            { id: 7, time: "17:45", title: "Hacer mis tareas", icon: "fa-pencil", completed: false, status: 'idle' },
-            { id: 8, time: "19:30", title: "Cenar", icon: "fa-utensils", completed: false, status: 'idle' },
-            { id: 9, time: "20:15", title: "Ducharme", icon: "fa-shower", completed: false, status: 'idle' },
-            { id: 10, time: "20:45", title: "Lavar mis dientes", icon: "fa-face-smile", completed: false, status: 'idle' },
-            { id: 11, time: "21:00", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
+            { id: 1, time: "17:00", title: "Cambiarme de ropa", icon: "fa-shirt", completed: false, status: 'idle' },
+            { id: 2, time: "17:15", title: "Ver el capítulo de una serie", icon: "fa-tv", completed: false, status: 'idle' },
+            { id: 3, time: "17:45", title: "Hacer mi cama", icon: "fa-bed", completed: false, status: 'idle' },
+            { id: 4, time: "18:00", title: "Ordenar y limpiar mi habitación", icon: "fa-broom", completed: false, status: 'idle' },
+            { id: 5, time: "18:30", title: "Ayudar en la casa", icon: "fa-hands-holding-child", completed: false, status: 'idle' },
+            { id: 6, time: "18:50", title: "Revisar mis cuadernos para mañana", icon: "fa-book-open", completed: false, status: 'idle' },
+            { id: 7, time: "19:10", title: "Hacer mis tareas", icon: "fa-pencil", completed: false, status: 'idle' },
+            { id: 8, time: "20:15", title: "Cenar", icon: "fa-utensils", completed: false, status: 'idle' },
+            { id: 9, time: "20:45", title: "Ducharme", icon: "fa-shower", completed: false, status: 'idle' },
+            { id: 10, time: "21:10", title: "Lavar mis dientes", icon: "fa-face-smile", completed: false, status: 'idle' },
+            { id: 11, time: "21:30", title: "Ir a la cama", icon: "fa-moon", completed: false, status: 'idle' }
         ];
 
         const availableAvatars = [
@@ -642,8 +642,9 @@
         }
 
         function resetDataToDefault() {
-            if (confirm("¿Quieres limpiar el muro, la agenda y reiniciar los datos al estado inicial?")) {
+            if (confirm("¿Quieres restablecer las rutinas al nuevo horario (17:00 a 21:30) y reiniciar datos?")) {
                 appData = sanitizeData({});
+                appData.rutinas = JSON.parse(JSON.stringify(defaultRutinas));
                 appData.streak = 0;
                 saveData();
                 render();
@@ -831,7 +832,6 @@
                 rutina.completed = !rutina.completed;
                 if (rutina.completed) rutina.status = 'idle';
 
-                // Comprobar si completó el 100%
                 const total = appData.rutinas.length;
                 const completedNow = appData.rutinas.filter(r => r.completed).length;
 
@@ -884,7 +884,7 @@
 
         function addRutina() {
             const title = document.getElementById('new-rutina-title').value.trim();
-            const time = document.getElementById('new-rutina-time').value || '12:00';
+            const time = document.getElementById('new-rutina-time').value || '17:00';
             const icon = document.getElementById('new-rutina-icon').value || 'fa-cloud';
             if (!title) return;
 
@@ -1054,7 +1054,7 @@
                 const div = document.createElement('div');
                 div.className = 'flex items-center justify-between p-4 rounded-3xl border transition-all ' + (rutina.completed ? 'bg-emerald-950/40 border-emerald-700/60 opacity-80' : (isProgress ? 'bg-teal-950/90 border-teal-400 ring-2 ring-teal-400/40 shadow-lg' : 'bg-slate-900/90 border-teal-800/40 shadow-sm'));
                 
-                let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + (rutina.time || '12:00') + '</span>';
+                let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + (rutina.time || '17:00') + '</span>';
                 let progressBadge = isProgress ? '<span class="text-[11px] font-bold text-teal-950 bg-teal-300 px-2 py-0.5 rounded-full">🌫️ En progreso</span>' : '';
                 let checkIcon = rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : '';
                 let titleClass = rutina.completed ? 'line-through text-slate-500' : 'text-slate-100';
@@ -1166,7 +1166,6 @@
             badge.innerText = isPapa ? 'Panel de Papá ⚔️' : 'Panel de Mamá ⚔️';
             badge.className = isPapa ? 'bg-teal-500 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider' : 'bg-teal-400 text-slate-950 text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider';
 
-            // Cargar datos actuales de recompensa en los inputs del admin
             const rewardTitleInput = document.getElementById('admin-reward-title');
             const rewardTargetInput = document.getElementById('admin-reward-target');
             if (rewardTitleInput && !rewardTitleInput.value) rewardTitleInput.value = appData.rewardTitle || 'Desbloqueo de cuenta de YouTube 🎬';
@@ -1191,7 +1190,7 @@
                 const div = document.createElement('div');
                 div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-2.5 rounded-2xl text-sm gap-2";
                 div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + rutina.icon + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + rutina.title + '</span></div>' +
-                    '<div class="flex items-center gap-1"><input type="time" value="' + (rutina.time || '12:00') + '" onchange="updateRutinaTime(' + rutina.id + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
+                    '<div class="flex items-center gap-1"><input type="time" value="' + (rutina.time || '17:00') + '" onchange="updateRutinaTime(' + rutina.id + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
                     '<button onclick="deleteRutina(' + rutina.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
                 adminRutinasList.appendChild(div);
             });
