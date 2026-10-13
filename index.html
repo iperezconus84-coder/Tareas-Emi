@@ -176,7 +176,7 @@
             </div>
             <div>
                 <h3 class="font-bold text-lg text-teal-200">Acceso de Padres ⚔️</h3>
-                <p class="text-xs text-slate-400 mt-1">Ingresa el PIN de 4 dígitos (Inicial: 1234).</p>
+                <p class="text-xs text-slate-400 mt-1">Ingresa el PIN de 4 dígitos.</p>
             </div>
             
             <div class="space-y-3">
@@ -540,6 +540,13 @@
             imgElement.parentNode.replaceChild(container, imgElement);
         }
 
+        // Convierte texto en HTML seguro (evita que un mensaje inyecte código)
+        function esc(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
         function ensureArray(val, defaultVal = []) {
             if (!val) return defaultVal;
             if (Array.isArray(val)) return val;
@@ -550,7 +557,9 @@
         function sanitizeData(raw) {
             if (!raw || typeof raw !== 'object') raw = {};
             return {
-                adminPin: raw.adminPin || '1234',
+                // PIN antiguo en texto plano (se convierte a huella al primer uso)
+                adminPin: raw.adminPin || (raw.adminPinHash ? '' : '1234'),
+                adminPinHash: raw.adminPinHash || '',
                 rutinas: ensureArray(raw.rutinas, defaultRutinas),
                 agenda: ensureArray(raw.agenda, []),
                 muro: ensureArray(raw.muro, []),
@@ -707,7 +716,8 @@
             localStorage.setItem('agenda_app_data', JSON.stringify(appData));
             if (appRef) {
                 appRef.set({
-                    adminPin: appData.adminPin || '1234',
+                    adminPin: appData.adminPinHash ? null : (appData.adminPin || '1234'),
+                    adminPinHash: appData.adminPinHash || null,
                     rutinas: appData.rutinas,
                     agenda: appData.agenda,
                     muro: appData.muro,
@@ -726,7 +736,8 @@
 
         function resetDataToDefault() {
             if (confirm("¿Quieres restablecer las rutinas al nuevo horario (17:00 a 21:30) y reiniciar datos?")) {
-                appData = sanitizeData({});
+                const keepPin = { adminPin: appData.adminPin, adminPinHash: appData.adminPinHash };
+                appData = sanitizeData(keepPin);
                 appData.rutinas = JSON.parse(JSON.stringify(defaultRutinas));
                 appData.streak = 0;
                 saveData();
@@ -811,13 +822,33 @@
             }
         }
 
-        function verifyPin() {
-            const enteredPin = document.getElementById('pin-input').value.trim();
-            const correctPin = appData.adminPin || '1234';
+        // El PIN no se guarda tal cual: se guarda su huella (SHA-256)
+        async function hashPin(pin) {
+            const data = new TextEncoder().encode('agenda-emilia:' + pin);
+            const buf = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-            if (enteredPin === correctPin) {
+        async function verifyPin() {
+            const enteredPin = document.getElementById('pin-input').value.trim();
+            let ok = false;
+
+            if (appData.adminPinHash) {
+                ok = (await hashPin(enteredPin)) === appData.adminPinHash;
+            } else {
+                ok = enteredPin === (appData.adminPin || '1234');
+                if (ok) {
+                    // Migración: se reemplaza el PIN visible por su huella
+                    appData.adminPinHash = await hashPin(enteredPin);
+                    appData.adminPin = '';
+                    saveData();
+                }
+            }
+
+            if (ok) {
+                const role = pendingRole;
                 closePinModal();
-                switchRole(pendingRole);
+                switchRole(role);
             } else {
                 document.getElementById('pin-error').classList.remove('hidden');
                 document.getElementById('pin-input').value = '';
@@ -829,12 +860,13 @@
             pendingRole = null;
         }
 
-        function changeAdminPin() {
+        async function changeAdminPin() {
             const newPin = document.getElementById('new-pin-input').value.trim();
-            if (newPin.length === 4 && !isNaN(newPin)) {
-                appData.adminPin = newPin;
+            if (/^\d{4}$/.test(newPin)) {
+                appData.adminPinHash = await hashPin(newPin);
+                appData.adminPin = '';
                 saveData();
-                alert('¡PIN cambiado con éxito a ' + newPin + '!');
+                alert('¡PIN cambiado con éxito!');
                 document.getElementById('new-pin-input').value = '';
             } else {
                 alert('El PIN debe ser un número de exactamente 4 dígitos.');
@@ -1135,7 +1167,7 @@
                 const div = document.createElement('div');
                 div.className = 'flex items-center justify-between p-4 rounded-3xl border transition-all ' + (rutina.completed ? 'bg-emerald-950/40 border-emerald-700/60 opacity-80' : (isProgress ? 'bg-teal-950/90 border-teal-400 ring-2 ring-teal-400/40 shadow-lg' : 'bg-slate-900/90 border-teal-800/40 shadow-sm'));
                 
-                let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + (rutina.time || '17:00') + '</span>';
+                let timeBadge = '<span class="bg-slate-950 text-teal-300 font-bold text-xs px-2.5 py-0.5 rounded-lg border border-teal-800/80"><i class="fa-regular fa-clock mr-1"></i>' + esc(rutina.time || '17:00') + '</span>';
                 let progressBadge = isProgress ? '<span class="text-[11px] font-bold text-teal-950 bg-teal-300 px-2 py-0.5 rounded-full">🌫️ En progreso</span>' : '';
                 let checkIcon = rutina.completed ? '<i class="fa-solid fa-check text-base"></i>' : '';
                 let titleClass = rutina.completed ? 'line-through text-slate-500' : 'text-slate-100';
@@ -1144,12 +1176,12 @@
                 let btnCheckClass = rutina.completed ? 'bg-emerald-500 border-emerald-500 text-slate-950 shadow-md' : 'border-slate-600 hover:border-teal-400 bg-slate-950';
 
                 div.innerHTML = '<div class="flex items-center space-x-3">' +
-                    '<div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ' + iconClass + '"><i class="fa-solid ' + rutina.icon + '"></i></div>' +
+                    '<div class="w-11 h-11 rounded-2xl flex items-center justify-center text-lg ' + iconClass + '"><i class="fa-solid ' + esc(rutina.icon) + '"></i></div>' +
                     '<div><div class="flex items-center gap-2">' + timeBadge + progressBadge + '</div>' +
-                    '<h4 class="font-semibold text-sm md:text-base mt-1 ' + titleClass + '">' + rutina.title + '</h4></div></div>' +
+                    '<h4 class="font-semibold text-sm md:text-base mt-1 ' + titleClass + '">' + esc(rutina.title) + '</h4></div></div>' +
                     '<div class="flex items-center gap-2">' +
-                    '<button onclick="setRutinaProgress(' + rutina.id + ')" title="Marcar como en progreso" class="p-2.5 rounded-2xl text-xs font-semibold transition-all ' + btnBoltClass + '"><i class="fa-solid fa-bolt"></i></button>' +
-                    '<button onclick="toggleRutinaCheck(' + rutina.id + ')" class="w-9 h-9 rounded-2xl flex items-center justify-center border-2 transition-all ' + btnCheckClass + '">' + checkIcon + '</button>' +
+                    '<button onclick="setRutinaProgress(' + Number(rutina.id) + ')" title="Marcar como en progreso" class="p-2.5 rounded-2xl text-xs font-semibold transition-all ' + btnBoltClass + '"><i class="fa-solid fa-bolt"></i></button>' +
+                    '<button onclick="toggleRutinaCheck(' + Number(rutina.id) + ')" class="w-9 h-9 rounded-2xl flex items-center justify-center border-2 transition-all ' + btnCheckClass + '">' + checkIcon + '</button>' +
                     '</div>';
                 
                 rutinasContainer.appendChild(div);
@@ -1184,8 +1216,8 @@
                     const div = document.createElement('div');
                     div.className = 'p-4 rounded-3xl border transition-all ' + (item.completed ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-900 border-teal-800/50 shadow-sm');
                     
-                    let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + item.type + '</span>';
-                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + (item.nota || '') + '" onchange="updateNota(' + item.id + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400 select-text"></div>' : '';
+                    let typeBadge = '<span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ' + (isEval ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + esc(item.type) + '</span>';
+                    let notaInput = isEval ? '<div class="flex items-center gap-1"><span class="text-xs font-bold text-slate-400">Mi Nota:</span><input type="text" value="' + esc(item.nota || '') + '" onchange="updateNota(' + Number(item.id) + ', this.value)" placeholder="Ej. 6.5" class="w-16 bg-slate-950 border border-teal-700/80 rounded-xl px-2 py-1 text-xs text-center font-bold text-teal-300 focus:outline-none focus:border-teal-400 select-text"></div>' : '';
                     let checkBtnClass = item.completed ? 'bg-emerald-500 text-slate-950 font-bold shadow-sm' : 'bg-slate-800 text-slate-300 hover:bg-slate-700';
                     let checkBtnText = item.completed ? 'Completada ⚔️' : 'Marcar lista';
                     let checkBtnIcon = item.completed ? 'fa-check-double' : 'fa-check';
@@ -1193,11 +1225,11 @@
                     div.innerHTML = '<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">' +
                         '<div class="flex items-center space-x-3">' +
                         '<div class="w-10 h-10 rounded-2xl flex items-center justify-center text-slate-950 font-bold ' + (isEval ? 'bg-teal-400' : 'bg-cyan-400') + '"><i class="fa-solid ' + (isEval ? 'fa-scroll' : 'fa-book') + '"></i></div>' +
-                        '<div>' + typeBadge + '<h4 class="font-semibold text-slate-100 text-sm md:text-base mt-0.5">' + item.title + '</h4>' +
-                        '<p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ' + item.date + '</p></div></div>' +
+                        '<div>' + typeBadge + '<h4 class="font-semibold text-slate-100 text-sm md:text-base mt-0.5">' + esc(item.title) + '</h4>' +
+                        '<p class="text-xs text-slate-400"><i class="fa-regular fa-calendar mr-1"></i> Fecha: ' + esc(item.date) + '</p></div></div>' +
                         '<div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">' + notaInput +
-                        '<button onclick="toggleAgendaCheck(' + item.id + ')" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ' + checkBtnClass + '"><i class="fa-solid ' + checkBtnIcon + '"></i> ' + checkBtnText + '</button>' +
-                        '<button onclick="deleteAgendaItem(' + item.id + ')" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>' +
+                        '<button onclick="toggleAgendaCheck(' + Number(item.id) + ')" class="px-3.5 py-1.5 rounded-2xl text-xs font-semibold flex items-center gap-1 transition-all ' + checkBtnClass + '"><i class="fa-solid ' + checkBtnIcon + '"></i> ' + checkBtnText + '</button>' +
+                        '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" class="text-slate-500 hover:text-rose-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>' +
                         '</div></div>';
 
                     agendaContainer.appendChild(div);
@@ -1214,8 +1246,8 @@
                     const avatarSrc = avatarsMap[post.author] || avatarsMap['Papá'];
                     const div = document.createElement('div');
                     div.className = "bg-slate-950 border border-amber-500/30 p-3.5 rounded-2xl flex gap-3 items-start";
-                    div.innerHTML = '<img src="' + avatarSrc + '" onerror="handleImgError(this, \'📜\')" class="w-8 h-8 rounded-xl object-cover border border-amber-500/50 shrink-0" alt="Avatar">' +
-                        '<div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300">' + post.author + '</span><span class="text-[10px] text-slate-500">' + post.date + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + post.text + '</p></div>';
+                    div.innerHTML = '<img src=\"' + esc(avatarSrc) + '\" onerror="handleImgError(this, \'📜\')" class="w-8 h-8 rounded-xl object-cover border border-amber-500/50 shrink-0" alt="Avatar">' +
+                        '<div class="flex-1"><div class="flex justify-between items-center mb-1"><span class="font-bold text-xs text-amber-300">' + esc(post.author) + '</span><span class="text-[10px] text-slate-500">' + esc(post.date) + '</span></div><p class="text-xs text-slate-300 leading-relaxed">' + esc(post.text) + '</p></div>';
                     muroContainer.appendChild(div);
                 });
             }
@@ -1231,10 +1263,10 @@
                     const avatarSrc = avatarsMap[msg.sender] || avatarsMap['Emilia'];
                     const div = document.createElement('div');
                     div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
-                    div.innerHTML = '<img src="' + avatarSrc + '" onerror="handleImgError(this, \'💬\')" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
+                    div.innerHTML = '<img src=\"' + esc(avatarSrc) + '\" onerror="handleImgError(this, \'💬\')" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
                         '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
-                        '<div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
-                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
+                        '<div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + esc(msg.sender) + '</div><div>' + esc(msg.text) + '</div></div>' +
+                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + esc(msg.time) + '</span></div>';
                     chatContainer.appendChild(div);
                 });
                 chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -1270,9 +1302,9 @@
             appData.rutinas.forEach(rutina => {
                 const div = document.createElement('div');
                 div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-2.5 rounded-2xl text-sm gap-2";
-                div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + rutina.icon + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + rutina.title + '</span></div>' +
-                    '<div class="flex items-center gap-1"><input type="time" value="' + (rutina.time || '17:00') + '" onchange="updateRutinaTime(' + rutina.id + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
-                    '<button onclick="deleteRutina(' + rutina.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
+                div.innerHTML = '<div class="flex items-center space-x-2 truncate"><i class="fa-solid ' + esc(rutina.icon) + ' text-teal-400"></i><span class="truncate text-slate-200 text-xs font-medium">' + esc(rutina.title) + '</span></div>' +
+                    '<div class="flex items-center gap-1"><input type="time" value="' + esc(rutina.time || '17:00') + '" onchange="updateRutinaTime(' + Number(rutina.id) + ', this.value)" class="text-xs bg-slate-900 border border-teal-800 text-teal-200 rounded-lg px-1.5 py-0.5 focus:outline-none focus:border-teal-400">' +
+                    '<button onclick="deleteRutina(' + Number(rutina.id) + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs"><i class="fa-solid fa-trash"></i></button></div>';
                 adminRutinasList.appendChild(div);
             });
 
@@ -1285,8 +1317,8 @@
                 appData.muro.forEach(post => {
                     const div = document.createElement('div');
                     div.className = "flex items-center justify-between bg-slate-950 border border-amber-500/20 p-2 rounded-xl text-xs";
-                    div.innerHTML = '<div><span class="font-bold text-amber-300 mr-1">' + post.author + ':</span><span class="text-slate-300">' + post.text + '</span></div>' +
-                        '<button onclick="deleteMuroPost(' + post.id + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs shrink-0"><i class="fa-solid fa-trash"></i></button>';
+                    div.innerHTML = '<div><span class="font-bold text-amber-300 mr-1">' + esc(post.author) + ':</span><span class="text-slate-300">' + esc(post.text) + '</span></div>' +
+                        '<button onclick="deleteMuroPost(' + Number(post.id) + ')" class="text-rose-400 hover:text-rose-300 p-1 text-xs shrink-0"><i class="fa-solid fa-trash"></i></button>';
                     adminMuroList.appendChild(div);
                 });
             }
@@ -1309,10 +1341,10 @@
                     const avatarSrc = avatarsMap[msg.sender] || avatarsMap['Papá'];
                     const div = document.createElement('div');
                     div.className = 'flex items-end gap-2 ' + (isMe ? 'flex-row-reverse' : 'flex-row');
-                    div.innerHTML = '<img src="' + avatarSrc + '" onerror="handleImgError(this, \'💬\')" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
+                    div.innerHTML = '<img src=\"' + esc(avatarSrc) + '\" onerror="handleImgError(this, \'💬\')" class="w-7 h-7 rounded-xl object-cover border border-teal-800 shrink-0" alt="Avatar">' +
                         '<div class="flex flex-col ' + (isMe ? 'items-end' : 'items-start') + '">' +
-                        '<div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + msg.sender + '</div><div>' + msg.text + '</div></div>' +
-                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + msg.time + '</span></div>';
+                        '<div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs ' + (isMe ? 'bg-teal-500 text-slate-950 font-bold rounded-br-none' : 'bg-slate-950 border border-teal-800 text-slate-200 rounded-bl-none') + '"><div class="font-bold text-[10px] opacity-80 mb-0.5">' + esc(msg.sender) + '</div><div>' + esc(msg.text) + '</div></div>' +
+                        '<span class="text-[9px] text-slate-500 mt-0.5 px-1">' + esc(msg.time) + '</span></div>';
                     adminChatContainer.appendChild(div);
                 });
                 adminChatContainer.scrollTop = adminChatContainer.scrollHeight;
@@ -1327,11 +1359,11 @@
                 appData.agenda.forEach(item => {
                     const div = document.createElement('div');
                     div.className = "flex items-center justify-between bg-slate-950 border border-teal-800/60 p-3 rounded-2xl text-sm";
-                    let notaInfo = item.nota ? '| Nota de Emilia: <b class="text-teal-300">' + item.nota + '</b>' : '| (Sin nota registrada)';
-                    div.innerHTML = '<div><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ' + (item.type === 'evaluacion' ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + item.type + '</span>' +
-                        '<h4 class="font-semibold text-slate-100 text-sm mt-1">' + item.title + '</h4>' +
-                        '<span class="text-xs text-slate-400">Fecha: ' + item.date + ' ' + notaInfo + '</span></div>' +
-                        '<button onclick="deleteAgendaItem(' + item.id + ')" class="bg-rose-950/80 border border-rose-800 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>';
+                    let notaInfo = item.nota ? '| Nota de Emilia: <b class="text-teal-300">' + esc(item.nota) + '</b>' : '| (Sin nota registrada)';
+                    div.innerHTML = '<div><span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ' + (item.type === 'evaluacion' ? 'bg-teal-950 text-teal-300 border border-teal-700' : 'bg-cyan-950 text-cyan-300 border border-cyan-700') + '">' + esc(item.type) + '</span>' +
+                        '<h4 class="font-semibold text-slate-100 text-sm mt-1">' + esc(item.title) + '</h4>' +
+                        '<span class="text-xs text-slate-400">Fecha: ' + esc(item.date) + ' ' + notaInfo + '</span></div>' +
+                        '<button onclick="deleteAgendaItem(' + Number(item.id) + ')" class="bg-rose-950/80 border border-rose-800 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"><i class="fa-solid fa-trash mr-1"></i> Eliminar</button>';
                     adminAgendaList.appendChild(div);
                 });
             }
